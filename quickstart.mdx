@@ -1,7 +1,6 @@
----
-title: "Quickstart"
-description: "Get started with OpenRouter's unified API for hundreds of AI models. Learn how to integrate using OpenAI SDK, direct API calls, or third-party frameworks."
----
+# Quickstart
+
+> Get started with OpenRouter's unified API for hundreds of AI models. Learn how to integrate using OpenAI SDK, direct API calls, or third-party frameworks.
 
 OpenRouter provides a unified API that gives you access to hundreds of AI models through a single endpoint, while automatically handling fallbacks and selecting the most cost-effective options. Get started with just a few lines of code using your preferred SDK or framework.
 
@@ -14,8 +13,7 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
 ## Using the OpenAI SDK
 
 <CodeGroup>
-
-    ```python Python
+    ```python title="Python"
     from openai import OpenAI
 
     client = OpenAI(
@@ -40,8 +38,7 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
     print(completion.choices[0].message.content)
     ```
 
-
-    ```typescript TypeScript
+    ```typescript title="TypeScript"
     import OpenAI from 'openai';
 
     const openai = new OpenAI({
@@ -69,7 +66,6 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
 
     main();
     ```
-
 </CodeGroup>
 
 ## Using the OpenRouter API directly
@@ -79,8 +75,7 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
 </Tip>
 
 <CodeGroup>
-
-    ```python Python
+    ```python title="Python"
     import requests
     import json
 
@@ -103,8 +98,7 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
     )
     ```
 
-
-    ```typescript TypeScript
+    ```typescript title="TypeScript"
     fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -125,8 +119,7 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
 });
     ```
 
-
-    ```shell Shell
+    ```shell title="Shell"
     curl https://openrouter.ai/api/v1/chat/completions \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENROUTER_API_KEY" \
@@ -140,7 +133,6 @@ In the examples below, the OpenRouter-specific headers are optional. Setting the
     ]
 }'
     ```
-
 </CodeGroup>
 
 The API also supports [streaming](/docs/api-reference/streaming).

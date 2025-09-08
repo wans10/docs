@@ -11,15 +11,13 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "用户指南",
+        "tab": "Guides",
         "groups": [
           {
-            "group": "概述",
+            "group": "Getting started",
             "pages": [
-              "Quickstart",
-              "FAQ",
-              "Principles",
-              "Models"
+              "quickstart",
+              "faq"
             ]
           },
           {
@@ -49,7 +47,7 @@
         ]
       },
       {
-        "tab": "开发工具",
+        "tab": "API reference",
         "groups": [
           {
             "group": "API documentation",
