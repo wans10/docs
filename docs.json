@@ -14,11 +14,13 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "概述",
             "pages": [
               "index",
               "quickstart",
               "faq",
+              "principles",
+              "models",
               "development"
             ]
           },
