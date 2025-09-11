@@ -1,7 +1,0 @@
-[
-  "subpath/api/overview",
-  "subpath/api/apple/overview",
-  "subpath/api/apple/webhooks-1/create-pet",
-  "subpath/api/banana/overview",
-  "subpath/api/banana/webhooks-2/create-pet"
-]
