@@ -1,0 +1,136 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+  endpoint: endpoint.yml
+  type: type.yml
+  rootCommons: ../../../commons.yml
+  commons: ../commons.yml
+  webhook: webhook.yml
+  websocket: websocket.yml
+
+service:
+  base-path: /registry/api
+  auth: true
+  audiences:
+    - read
+  endpoints:
+    getApi:
+      method: GET
+      path: /load/{apiDefinitionId}
+      path-parameters:
+        apiDefinitionId: rootCommons.ApiDefinitionId
+      response: ApiDefinition
+      errors:
+        - rootCommons.UnauthorizedError
+        - ApiDoesNotExistError
+
+types:
+  ApiDefinition:
+    properties:
+      id: rootCommons.ApiDefinitionId
+      rootPackage: ApiDefinitionPackage
+      types: map<rootCommons.TypeId, type.TypeDefinition>
+      subpackages: map<commons.SubpackageId, ApiDefinitionSubpackage>
+      auth: optional<ApiAuth>
+      hasMultipleBaseUrls:
+        type: optional<boolean>
+        docs: |
+          If empty, assume false. 
+          Whether or not endpoints are being served at different 
+          base urls (i.e. https://a.com and https://b.com)
+      navigation:
+        type: optional<ApiNavigationConfigRoot>
+        availability: deprecated
+        docs: Use the docs navigation instead.
+      globalHeaders: optional<list<endpoint.Header>>
+
+  ApiNavigationConfigRoot:
+    properties:
+      items: list<ApiNavigationConfigItem>
+
+  ApiNavigationConfigItem:
+    union:
+      subpackage: ApiNavigationConfigSubpackage
+      endpointId: rootCommons.EndpointId
+      websocketId: rootCommons.WebSocketId
+      webhookId: rootCommons.WebhookId
+
+  ApiNavigationConfigSubpackage:
+    properties:
+      subpackageId: commons.SubpackageId
+      items: list<ApiNavigationConfigItem>
+
+  ApiDefinitionPackage:
+    properties:
+      endpoints: list<endpoint.EndpointDefinition>
+      websockets: list<websocket.WebSocketChannel>
+      webhooks: list<webhook.WebhookDefinition>
+      types: list<rootCommons.TypeId>
+      subpackages: list<commons.SubpackageId>
+      pointsTo:
+        docs: |
+          if present, this package should be replaced with the provided subpackage
+          in the docs navigation.
+        type: optional<commons.SubpackageId>
+
+  ApiDefinitionSubpackage:
+    extends:
+      - commons.WithDescription
+      - ApiDefinitionPackage
+    properties:
+      parent: optional<commons.SubpackageId>
+      subpackageId: commons.SubpackageId
+      name: string
+      urlSlug: string
+      displayName: optional<string>
+
+  ApiAuth:
+    union:
+      bearerAuth: BearerAuth
+      basicAuth: BasicAuth
+      header: HeaderAuth
+      oAuth: OAuth
+
+  BasicAuth:
+    extends:
+      - commons.WithDescription
+    properties:
+      usernameName: optional<string>
+      passwordName: optional<string>
+
+  BearerAuth:
+    extends:
+      - commons.WithDescription
+    properties:
+      tokenName: optional<string>
+
+  HeaderAuth:
+    extends:
+      - commons.WithDescription
+    properties:
+      nameOverride: optional<string>
+      headerWireValue: string
+      prefix:
+        type: optional<string>
+        docs: The prefix that comes before the header
+
+  OAuth:
+    union:
+      clientCredentials: OAuthClientCredentials
+
+  OAuthClientCredentials:
+    union:
+      referencedEndpoint: OAuthClientCredentialsReferencedEndpoint
+
+  OAuthClientCredentialsReferencedEndpoint:
+    extends:
+      - commons.WithDescription
+    properties:
+      endpointId: rootCommons.EndpointId
+      accessTokenLocator: rootCommons.JqString
+      headerName: optional<string>
+      tokenPrefix: optional<string>
+
+errors:
+  ApiDoesNotExistError:
+    status-code: 404

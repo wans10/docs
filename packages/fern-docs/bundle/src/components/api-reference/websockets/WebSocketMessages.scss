@@ -1,0 +1,48 @@
+@layer components {
+  .fern-web-socket-trigger {
+    @apply hover:data-[state=closed]:bg-(color:--grayscale-a3) flex w-full cursor-default items-center gap-2 py-2 pl-3 pr-5 transition-[background,border-radius] duration-75 ease-[cubic-bezier(0.87,_0,_0.13,_1)] data-[state=closed]:rounded-[inherit];
+    @apply sticky top-0 z-10 backdrop-blur;
+
+    .fern-web-socket-client,
+    .fern-web-socket-server,
+    .fern-web-socket-end-sample {
+      @apply inline-block shrink-0 rounded-full p-0.5;
+    }
+
+    .fern-web-socket-client {
+      @apply text-(color:--green-a11) bg-(color:--green-a3);
+    }
+
+    .fern-web-socket-server {
+      @apply text-(color:--accent-a12) bg-(color:--accent-a3);
+    }
+
+    .fern-web-socket-end-sample {
+      @apply text-(color:--red-a11) bg-(color:--red-a3);
+    }
+
+    .fern-web-socket-type {
+      @apply inline-flex flex-1 justify-end;
+
+      .fern-web-socket-badge {
+        @apply text-(color:--grayscale-a11) bg-(color:--grayscale-a3) rounded-3/2 h-5 whitespace-nowrap px-1.5 py-1 text-xs leading-none;
+      }
+    }
+
+    .fern-web-socket-trigger-data {
+      @apply text-(color:--grayscale-a11) min-w-0 flex-1 shrink truncate text-left font-mono text-xs;
+    }
+
+    .fern-web-socket-copy {
+      @apply -my-2 -ml-1 -mr-2;
+    }
+
+    .fern-web-socket-chevron {
+      @apply text-(color:--grayscale-a11) size-icon shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)];
+    }
+  }
+
+  .fern-web-socket-content {
+    @apply overflow-hidden;
+  }
+}

@@ -1,0 +1,123 @@
+@utility mask-grad-top-* {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    black calc(--value(integer) * var(--spacing))
+  );
+}
+
+@utility mask-grad-bottom-* {
+  mask-image: linear-gradient(
+    to top,
+    transparent 0,
+    black calc(--value(integer) * var(--spacing))
+  );
+}
+
+@utility mask-grad-y-* {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    black calc(--value(integer) * var(--spacing)),
+    black calc(100% - calc(--value(integer) * var(--spacing))),
+    transparent 100%
+  );
+}
+
+@layer components {
+  .clipped-background {
+    @apply pointer-events-none absolute inset-0 z-0 overflow-hidden;
+
+    clip-path: inset(0);
+
+    & ~ * {
+      @apply relative;
+    }
+  }
+}
+
+@utility description-mask {
+  @apply line-clamp-3 overflow-hidden;
+
+  text-overflow: -o-ellipsis-lastline;
+}
+
+@utility bg-search-dialog {
+  background-color: var(--bg-color-search-dialog, var(--color-background-a9));
+}
+
+@utility m-mdx {
+  @apply mb-6 mt-4 first:mt-0;
+}
+
+@utility text-body {
+  @apply text-black;
+
+  @variant dark {
+    @apply text-white;
+  }
+}
+
+@keyframes collapsible-closed {
+  0% {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes collapsible-open {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+
+  100% {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@utility fern-collapsible {
+  &[data-state="open"] {
+    animation: collapsible-open 0.18s var(--ease-collapse) none;
+
+    .fern-collapsible-child {
+      animation: slide-down 0.18s var(--ease-collapse) none;
+      width: var(--radix-collapsible-content-width);
+    }
+  }
+
+  &[data-state="closed"] {
+    animation: collapsible-closed 0.18s var(--ease-collapse) none;
+
+    .fern-collapsible-child {
+      animation: slide-up 0.18s var(--ease-collapse) none;
+      width: var(--radix-collapsible-content-width);
+    }
+  }
+}

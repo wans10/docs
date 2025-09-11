@@ -1,0 +1,50 @@
+{
+  "name": "@fern-docs/icons-cdn",
+  "version": "0.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fern-api/fern-platform.git",
+    "directory": "packages/fern-docs/icons-cdn"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "depcheck": "depcheck",
+    "dev": "next dev --turbopack",
+    "format": "prettier --write --ignore-unknown \"**\"",
+    "format:check": "prettier --check --ignore-unknown \"**\"",
+    "lint": "next lint",
+    "lint:eslint": "eslint --max-warnings 0 .",
+    "lint:eslint:fix": "pnpm lint:eslint --fix",
+    "lint:style": "stylelint 'src/**/*.scss' --allow-empty-input --max-warnings 0",
+    "lint:style:fix": "pnpm lint:style --fix",
+    "start": "next start",
+    "test": "vitest --run --passWithNoTests --globals"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/pro-duotone-svg-icons": "^6.7.2",
+    "@fortawesome/pro-light-svg-icons": "^6.7.2",
+    "@fortawesome/pro-regular-svg-icons": "^6.7.2",
+    "@fortawesome/pro-solid-svg-icons": "^6.7.2",
+    "@fortawesome/pro-thin-svg-icons": "^6.7.2",
+    "@fortawesome/sharp-light-svg-icons": "^6.7.2",
+    "@fortawesome/sharp-regular-svg-icons": "^6.7.2",
+    "@fortawesome/sharp-solid-svg-icons": "^6.7.2",
+    "@fortawesome/sharp-thin-svg-icons": "^6.7.2",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@fern-platform/configs": "workspace:*",
+    "@next/bundle-analyzer": "15.3.0-canary.1",
+    "@types/node": "^18.11.9",
+    "depcheck": "^1.4.7",
+    "next": "15.3.0-canary.1",
+    "stylelint": "^16.1.0",
+    "typescript": "^5",
+    "vitest": "^3.0.5"
+  }
+}

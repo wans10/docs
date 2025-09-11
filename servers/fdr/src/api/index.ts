@@ -1,0 +1,14 @@
+export { LatestService as APILatestService } from "./generated/api/resources/api/resources/latest/service/LatestService";
+export { ReadService as APIV1ReadService } from "./generated/api/resources/api/resources/v1/resources/read/service/ReadService";
+export { RegisterService as APIV1WriteService } from "./generated/api/resources/api/resources/v1/resources/register/service/RegisterService";
+export { DiffService } from "./generated/api/resources/diff/service/DiffService";
+export { ReadService as DocsV1ReadService } from "./generated/api/resources/docs/resources/v1/resources/read/service/ReadService";
+export { WriteService as DocsV1WriteService } from "./generated/api/resources/docs/resources/v1/resources/write/service/WriteService";
+export * as DocsV2Read from "./generated/api/resources/docs/resources/v2/resources/read";
+export { ReadService as DocsV2ReadService } from "./generated/api/resources/docs/resources/v2/resources/read/service/ReadService";
+export * as DocsV2Write from "./generated/api/resources/docs/resources/v2/resources/write";
+export { WriteService as DocsV2WriteService } from "./generated/api/resources/docs/resources/v2/resources/write/service/WriteService";
+export { SnippetsService } from "./generated/api/resources/snippets/service/SnippetsService";
+export { SnippetsFactoryService } from "./generated/api/resources/snippetsFactory/service/SnippetsFactoryService";
+export { TemplatesService } from "./generated/api/resources/templates/service/TemplatesService";
+export { register } from "./generated/register";

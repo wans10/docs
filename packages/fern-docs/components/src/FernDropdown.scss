@@ -1,0 +1,36 @@
+@layer components {
+  .fern-dropdown {
+    @apply relative z-50;
+    @apply animate-popover;
+    @apply min-w-(--radix-dropdown-menu-trigger-width);
+    @apply bg-background border-border-default rounded-2 flex max-h-[300px] flex-col border backdrop-blur will-change-[opacity,transform];
+    @apply shadow-xl;
+
+    .fern-dropdown-item {
+      @apply rounded-1 flex w-full cursor-default items-center justify-start px-2 py-1 text-left text-sm;
+      @apply data-[highlighted]:text-(color:--accent-contrast) data-[highlighted]:bg-(color:--accent) will-change-[background-color,color];
+
+      .fern-dropdown-item-indicator {
+        @apply mr-1 flex h-full w-4 flex-none items-center justify-center;
+      }
+
+      &[data-highlighted] .fern-api-property-meta {
+        color: var(--accent-contrast) !important;
+      }
+    }
+  }
+
+  .product-dropdown-trigger,
+  .version-dropdown-trigger {
+    @apply py-2 lg:py-0;
+    @apply rounded-3/2 hover:bg-(color:--grayscale-a4) flex cursor-pointer items-center gap-1 self-baseline px-2 transition-[background-color];
+  }
+
+  .product-dropdown-trigger {
+    @apply text-(color:--grayscale-a12);
+  }
+
+  .version-dropdown-trigger {
+    @apply text-(color:--grayscale-a11) lg:text-sm;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "@fern-platform/configs/tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "module": "esnext",
+    "moduleResolution": "node"
+  },
+  "include": ["./src/**/*"]
+}

@@ -1,0 +1,127 @@
+default-group: local
+
+groups:
+  local:
+    generators:
+      - name: fernapi/fern-typescript-express
+        version: 0.17.6
+        output:
+          location: local-file-system
+          path: ../../../servers/fdr/src/api/generated
+        config:
+          outputEsm: true
+          noSerdeLayer: true
+          noOptionalProperties: true
+          useBrandedStringAliases: true
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.51.0
+        output:
+          location: local-file-system
+          path: ../../../packages/fdr-sdk/src/client/generated
+        config:
+          outputEsm: true
+          noSerdeLayer: true
+          noOptionalProperties: true
+          useBrandedStringAliases: true
+          outputSourceFiles: true
+          neverThrowErrors: true
+          timeoutInSeconds: infinity
+
+  fdr-cjs-sdk:
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.51.0
+        output:
+          location: npm
+          url: npm.buildwithfern.com
+          package-name: "@fern-fern/fdr-cjs-sdk"
+        config:
+          useBrandedStringAliases: true
+          noSerdeLayer: true
+          noOptionalProperties: true
+          neverThrowErrors: true
+          timeoutInSeconds: infinity
+          packageJson: 
+            devDependencies: 
+              "typescript": "~5.7.2"
+
+  generators-sdk:
+    audiences:
+      - generators
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.40.5
+        output:
+          location: npm
+          url: npm.buildwithfern.com
+          package-name: "@fern-fern/generators-sdk"
+        config:
+          noSerdeLayer: false
+          skipResponseValidation: true
+          outputSourceFiles: true
+          neverThrowErrors: true
+          timeoutInSeconds: infinity
+
+  internal-snippets-sdks:
+    audiences:
+      - snippets
+    generators:
+      # Internal, unadulterated for the use of the APIs
+      - name: fernapi/fern-python-sdk
+        version: 1.4.0
+        output:
+          location: pypi
+          url: pypi.buildwithfern.com
+          package-name: "fern-fern-fdr-sdk"
+        config:
+          package_name: "fdr"
+          pydantic_config:
+            include_union_utils: true
+          client:
+            class_name: FdrClient
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.12.8-rc0
+        output:
+          location: npm
+          url: npm.buildwithfern.com
+          package-name: "@fern-fern/snippet-sdk"
+        config:
+          namespaceExport: FdrSnippetTemplate
+          includeUtilsOnUnionMembers: true
+
+  external-sdk:
+    audiences:
+      - external
+      - snippets
+    generators:
+      - name: fernapi/fern-typescript-node-sdk
+        version: 0.20.9
+        output:
+          location: npm
+          package-name: "@fern-api/sdk"
+          token: ${NPM_TOKEN}
+        github:
+          repository: fern-api/typescript-sdk
+          mode: pull-request
+          license: MIT
+        config:
+          noSerdeLayer: true
+          namespaceExport: Fern
+          includeApiReference: true
+          extraDependencies:
+            "@fern-api/template-resolver": "0.7.5"
+          allowCustomFetcher: true
+
+  fiddle:
+    audiences:
+      - fiddle
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 0.10.0
+        output:
+          location: maven
+          url: maven.buildwithfern.com
+          coordinate: com.fern.fern:fern-definition-registry
+        config:
+          wrapped-aliases: true
+          enable-forward-compatible-enums: true

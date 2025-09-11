@@ -1,44 +1,29 @@
-# Mintlify Starter Kit
+# :herb: Fern Platform
 
-Use the starter kit to get your docs deployed and ready to customize.
+The Fern Platform repository contains Fern's docs platform.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## API Definitions
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+All API Definitions should be defined in Fern. These definitions will be
+documented in our [internal documentation website](https://fern-internal.docs.buildwithfern.com/).
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+To check your API Definitions run `pnpm fern check`. All Fern commands
+should be prefixed with `pnpm` since our fern dependency is managed
+by our workspace root.
 
-## Development
+> Note: To upgrade fern run `pnpm upgrade fern-api`.
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+## Services
 
-```
-npm i -g mint
-```
+### FDR (Fern Definition Registry)
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+FDR is the backend for Fern's docs product and provides an API to
+store and retrieve API Definitions as well as docs. It's API is defined
+[here](./fern/apis/fdr/).
 
-```
-mint dev
-```
+FDR is implemented as a Node.js Express server and hosted on ECS. Any PR
+that is merged to main and contains changes to FDR, will automatically
+be deployed to our dev stack.
 
-View your local preview at `http://localhost:3000`.
-
-## Publishing changes
-
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
-
-## Need help?
-
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
-- [Mintlify community](https://mintlify.com/community)
+To release FDR on prod, you need to tag a release with the format "fdr@<tag>"
+on this repository.

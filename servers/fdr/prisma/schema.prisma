@@ -1,0 +1,304 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  engineType    = "binary"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model ApiDefinitionsV2 {
+  orgId           String
+  apiName         String
+  apiDefinitionId String
+  createdAt       DateTime @default(now())
+  definition      Bytes
+
+  @@id([apiDefinitionId])
+}
+
+model ApiDefinitionsLatest {
+  orgId           String
+  apiName         String
+  apiDefinitionId String
+  createdAt       DateTime @default(now())
+  definition      Bytes
+
+  @@id([apiDefinitionId])
+}
+
+model DocsRegistrations {
+  registrationID String
+  orgID          String
+  fernURL        String
+  customURLs     String[]
+  isPreview      Boolean
+  authType       AuthType
+  s3FileInfos    Bytes
+
+  @@id([registrationID])
+}
+
+model Docs {
+  url            String
+  docsDefinition Bytes
+
+  @@id([url])
+}
+
+model DocsV2 {
+  orgID                String
+  authType             AuthType @default(PUBLIC)
+  updatedTime          DateTime @updatedAt
+  domain               String
+  path                 String
+  algoliaIndex         String?
+  docsDefinition       Bytes
+  indexSegmentIds      Json?
+  docsConfigInstanceId String?
+  isPreview            Boolean  @default(false)
+  hasPublicS3Assets    Boolean  @default(false)
+  isArchived           Boolean  @default(false)
+
+  @@id([domain, path])
+}
+
+enum AuthType {
+  PUBLIC
+  WORKOS_SSO
+}
+
+model DocsConfigInstances {
+  docsConfigInstanceId       String   @id
+  createdAt                  DateTime @default(now())
+  referencedApiDefinitionIds Json?
+  docsConfig                 Bytes
+}
+
+model IndexSegment {
+  id        String   @id
+  createdAt DateTime @default(now())
+  version   String?
+
+  @@map("index_segments")
+}
+
+model OverwrittenAlgoliaIndex {
+  overwrittenTime DateTime @default(now())
+  indexId         String   @unique
+
+  @@map("overwritten_algolia_indexes")
+}
+
+model SnippetTemplate {
+  id                 String                         @id
+  orgId              String
+  apiName            String
+  apiDefinitionId    String
+  endpointPath       String
+  endpointMethod     HttpMethod
+  identifierOverride String?
+  sdkId              String
+  // sdk                 Sdk        @relation(fields: [sdkId], references: [id], onDelete: Cascade)
+  version            SnippetTemplateSemanticVersion
+
+  // The actual templates themselves held as binary data to save encoding the schema, which may change
+  functionInvocation  Bytes
+  clientInstantiation Bytes
+}
+
+model Snippet {
+  id                 String     @id
+  orgId              String
+  apiName            String
+  endpointPath       String
+  endpointMethod     HttpMethod
+  identifierOverride String?
+  exampleIdentifier  String?
+  sdkId              String
+  sdk                Sdk        @relation(fields: [sdkId], references: [id], onDelete: Cascade)
+  snippet            Bytes
+  createdAt          DateTime   @default(now())
+}
+
+model Sdk {
+  id        String    @id
+  // Optional for backcompat
+  // Package name used by registry (e.g. @velllum/api or com.vellum.ai:vellum)
+  package   String?
+  // Optional for backcompat
+  version   String?
+  language  Language
+  sdk       Bytes
+  createdAt DateTime  @default(now())
+  Snippet   Snippet[]
+
+  // Optional for backcompat
+  // templates SnippetTemplate[]
+}
+
+model SnippetApi {
+  orgId     String
+  apiName   String
+  createdAt DateTime @default(now())
+
+  @@id([orgId, apiName])
+}
+
+enum HttpMethod {
+  PUT
+  POST
+  GET
+  PATCH
+  DELETE
+  HEAD
+}
+
+enum Language {
+  TYPESCRIPT
+  PYTHON
+  GO
+  JAVA
+  RUBY
+  CSHARP
+  SWIFT
+  PHP
+  RUST
+}
+
+enum SnippetTemplateSemanticVersion {
+  v1
+}
+
+model Generator {
+  id                String    @id
+  displayName       String
+  generatorType     Bytes
+  dockerImage       String    @unique
+  generatorLanguage Language?
+
+  scripts Bytes?
+
+  releases GeneratorRelease[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ReleaseType {
+  ga
+  rc
+}
+
+model GeneratorRelease {
+  // A bit of duplication here, but it's easier to query this way
+  version String
+  major   Int
+  minor   Int
+  patch   Int
+  nonce   String
+
+  generatorId String
+  generator   Generator @relation(fields: [generatorId], references: [id], onDelete: Cascade)
+
+  isYanked       Bytes?
+  changelogEntry Bytes?
+
+  migration          Bytes?
+  irVersion          Int
+  customConfigSchema String?
+
+  releaseType ReleaseType
+  tags        String[]    @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([generatorId, version])
+}
+
+model CliRelease {
+  // A bit of duplication here, but it's easier to query this way
+  version String @id
+  major   Int
+  minor   Int
+  patch   Int
+  nonce   String
+
+  irVersion Int
+
+  isYanked       Bytes?
+  changelogEntry Bytes?
+
+  releaseType ReleaseType
+  tags        String[]    @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PullRequestState {
+  open
+  closed
+  merged
+}
+
+model PullRequest {
+  pullRequestNumber Int
+  // PRs coming from GitHub do not seem to contain the repo ID, but rather the owner and repo name, so let's use that
+  // instead of always performing a look up to get ID from name and owner.
+  repositoryOwner   String
+  repositoryName    String
+  repository        Repository @relation(fields: [repositoryOwner, repositoryName], references: [owner, name], onDelete: Cascade)
+
+  authorLogin String?
+  author      Bytes?
+  reviewers   Bytes
+  checks      Bytes
+
+  title String
+  url   String
+  state PullRequestState
+
+  createdAt DateTime
+  updatedAt DateTime?
+  mergedAt  DateTime?
+  closedAt  DateTime?
+
+  @@id([pullRequestNumber, repositoryOwner, repositoryName])
+}
+
+enum RepositorySystemType {
+  github
+}
+
+enum RepositoryContentType {
+  sdk
+  config
+}
+
+model Repository {
+  id                            String @id
+  name                          String
+  owner                         String
+  fullName                      String @unique
+  url                           String
+  repositoryOwnerOrganizationId String
+
+  pulls               PullRequest[]
+  defaultBranchChecks Bytes
+
+  contentType RepositoryContentType
+  systemType  RepositorySystemType
+
+  // Allows us to maintain the full union object, but also querying by the base
+  // properties with the columns above
+  rawRepository Bytes
+
+  @@unique([owner, name])
+}

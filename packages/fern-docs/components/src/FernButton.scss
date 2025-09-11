@@ -1,0 +1,315 @@
+@layer components {
+  .fern-button {
+    @apply transition-colors hover:transition-none;
+    @apply inline-flex items-center justify-center;
+    @apply rounded-2 h-10 px-3 py-1 text-sm sm:h-8;
+    @apply cursor-pointer;
+
+    &.multiline,
+    &.multiline > .fern-button-content {
+      height: auto !important;
+    }
+
+    &.rounded {
+      @apply rounded-full;
+    }
+
+    svg {
+      @apply size-icon shrink-0;
+    }
+
+    &:not(.square):has(> .fern-button-content > svg:first-child) {
+      @apply pl-2;
+    }
+
+    &:not(.square):has(> .fern-button-content > svg:last-child) {
+      @apply pr-2;
+    }
+
+    > .fern-button-content {
+      @apply inline-flex min-w-0 shrink items-center;
+      @apply h-6 gap-1.5;
+
+      .fern-button-text {
+        @apply min-w-0 shrink;
+      }
+    }
+
+    &:not(.multiline) {
+      .fern-button-text {
+        @apply truncate;
+      }
+    }
+
+    &:not(.text-left, .text-right) > .fern-button-content {
+      @apply justify-center text-center;
+    }
+
+    &.text-left > .fern-button-content {
+      @apply flex-1 justify-start;
+
+      .fern-button-text {
+        @apply flex-1;
+      }
+    }
+
+    &.square {
+      @apply px-1;
+
+      > .fern-button-content {
+        @apply h-7 w-7 sm:h-6 sm:w-6;
+      }
+    }
+
+    &.small {
+      @apply h-7 px-2 py-1 text-xs sm:h-6;
+
+      svg {
+        @apply size-icon-sm;
+      }
+
+      &:not(.square):has(> .fern-button-content > svg:first-child) {
+        @apply pl-1.5;
+      }
+
+      &:not(.square):has(> .fern-button-content > svg:last-child) {
+        @apply pr-1.5;
+      }
+
+      > .fern-button-content {
+        @apply h-4 gap-1.5;
+      }
+
+      &.square {
+        @apply px-1;
+
+        > .fern-button-content {
+          @apply w-6 sm:w-4;
+        }
+      }
+    }
+
+    &.large {
+      @apply h-11 px-3 py-2 text-base sm:h-10 lg:px-4;
+
+      svg {
+        @apply size-icon-md;
+      }
+
+      &:not(.square):has(> .fern-button-content > svg:first-child) {
+        @apply pl-3;
+      }
+
+      &:not(.square):has(> .fern-button-content > svg:last-child) {
+        @apply pr-3;
+      }
+
+      > .fern-button-content {
+        @apply h-6 gap-2;
+      }
+
+      &.square {
+        @apply px-2;
+
+        > .fern-button-content {
+          @apply w-7 sm:w-6;
+        }
+      }
+    }
+
+    &[disabled] {
+      @apply cursor-not-allowed bg-black/20;
+
+      color: --alpha(var(--color-black) / 40%);
+      background-color: --alpha(var(--color-black) / 20%);
+    }
+
+    @variant dark {
+      &[disabled] {
+        color: --alpha(var(--color-white) / 50%);
+        background-color: --alpha(var(--color-white) / 10%);
+      }
+    }
+
+    &:not([disabled]) {
+      &.minimal {
+        @apply text-(color:--grayscale-a11) bg-transparent;
+
+        &:hover {
+          @apply text-body;
+        }
+
+        @apply hover:bg-(color:--grayscale-a3) data-[selected=true]:bg-(color:--grayscale-a3) data-[state=checked]:bg-(color:--grayscale-a3) data-[state=on]:bg-(color:--grayscale-a3) data-[state=open]:bg-(color:--grayscale-a3) data-[state=opening]:bg-(color:--grayscale-a3);
+
+        &.primary {
+          @apply text-(color:--accent-a11) hover:text-(color:--accent-a11);
+          @apply hover:bg-(color:--accent-a3) data-[selected=true]:bg-(color:--accent-a3) data-[state=checked]:bg-(color:--accent-a3) data-[state=on]:bg-(color:--accent-a3) data-[state=open]:bg-(color:--accent-a3) data-[state=opening]:bg-(color:--accent-a3);
+        }
+
+        &.success {
+          @apply text-(color:--green-a11) hover:text-(color:--green-a11);
+          @apply hover:bg-(color:--green-a3) data-[selected=true]:bg-(color:--green-a3) data-[state=checked]:bg-(color:--green-a3) data-[state=on]:bg-(color:--green-a3) data-[state=open]:bg-(color:--green-a3) data-[state=opening]:bg-(color:--green-a3);
+        }
+
+        &.warning {
+          @apply text-(color:--amber-a11) hover:text-(color:--amber-a11);
+          @apply hover:bg-(color:--amber-a3) data-[selected=true]:bg-(color:--amber-a3) data-[state=checked]:bg-(color:--amber-a3) data-[state=on]:bg-(color:--amber-a3) data-[state=open]:bg-(color:--amber-a3) data-[state=opening]:bg-(color:--amber-a3);
+        }
+
+        &.danger {
+          @apply text-(color:--red-a11) hover:text-(color:--red-a11);
+          @apply hover:bg-(color:--red-a3) data-[selected=true]:bg-(color:--red-a3) data-[state=checked]:bg-(color:--red-a3) data-[state=on]:bg-(color:--red-a3) data-[state=open]:bg-(color:--red-a3) data-[state=opening]:bg-(color:--red-a3);
+        }
+      }
+
+      &.filled {
+        @apply bg-black/60 text-black dark:bg-white/60 dark:text-white;
+
+        &:hover,
+        &[data-state="on"],
+        &[data-state="checked"],
+        &[data-state="open"],
+        &[data-state="opening"] {
+          @apply bg-black/60 text-black dark:bg-white/60 dark:text-white;
+        }
+
+        &.primary {
+          @apply text-(color:--accent-contrast) bg-(color:--accent) hover:bg-(color:--accent);
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply text-(color:--accent-contrast) bg-(color:--accent-a10);
+          }
+        }
+
+        &.success {
+          @apply bg-(color:--green-a11) text-white dark:text-black;
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--green-a12) text-white dark:text-black;
+          }
+        }
+
+        &.warning {
+          @apply bg-(color:--amber-a11) text-white dark:text-black;
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--amber-a12) text-white dark:text-black;
+          }
+        }
+
+        &.danger {
+          @apply bg-(color:--red-a11) text-white dark:text-black;
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--red-a12) text-white dark:text-black;
+          }
+        }
+      }
+
+      &.outlined {
+        @apply ring-1 ring-inset transition-[box-shadow,background] hover:transition-none;
+        @apply text-body ring-border-default;
+
+        &:hover,
+        &[data-state="on"],
+        &[data-state="checked"],
+        &[data-state="open"],
+        &[data-state="opening"] {
+          @apply text-body bg-(color:--grayscale-a3);
+        }
+
+        &.primary {
+          @apply text-(color:--accent-a11) ring-(color:--accent-a5);
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply text-(color:--accent-a12) bg-(color:--accent-a3);
+          }
+        }
+
+        &.success {
+          @apply text-(color:--green-a11) ring-(--green-a5);
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--green-a3) text-(color:--green-a11);
+          }
+        }
+
+        &.warning {
+          @apply text-(color:--amber-a11) ring-(--amber-a5);
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--amber-a3) text-(color:--amber-a11);
+          }
+        }
+
+        &.danger {
+          @apply text-(color:--red-a11) ring-(--red-a5);
+
+          &:hover,
+          &[data-state="on"],
+          &[data-state="checked"],
+          &[data-state="open"],
+          &[data-state="opening"] {
+            @apply bg-(color:--red-a3) text-(color:--red-a11);
+          }
+        }
+      }
+    }
+  }
+
+  .fern-button-group {
+    @apply inline-flex items-center;
+
+    > .fern-button:has(+ .fern-button.outlined, + .fern-button.filled),
+    > .fern-button.outlined:has(+ .fern-button.minimal),
+    > .fern-button.filled:has(+ .fern-button.minimal) {
+      @apply mr-2;
+
+      &.small {
+        @apply mr-1;
+      }
+
+      &.large {
+        @apply mr-3;
+      }
+    }
+  }
+
+  #fern-search-desktop-command {
+    .fern-copy-button {
+      top: 0.1rem !important;
+    }
+  }
+
+  .fern-copy-button {
+    @apply size-fit backdrop-blur;
+  }
+}

@@ -1,0 +1,313 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+  rootCommons: ../../../commons.yml
+  type: type.yml
+  commons: ../commons.yml
+  snippetTemplate: ../../../templates.yml
+
+types:
+  EndpointDefinition:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      authed:
+        type: boolean
+        docs: When this is true, the api definition will have a union for auth
+      defaultEnvironment: optional<rootCommons.EnvironmentId>
+      environments: list<commons.Environment>
+      method: rootCommons.HttpMethod
+      id: rootCommons.EndpointId
+      originalEndpointId: optional<string>
+      urlSlug: string
+      migratedFromUrlSlugs: optional<list<string>>
+      name: optional<string>
+      path: EndpointPath
+      queryParameters: list<QueryParameter>
+      headers: list<Header>
+      request: optional<HttpRequest>
+      response: optional<HttpResponse>
+      errors:
+        type: list<ErrorDeclaration>
+        availability: deprecated
+      errorsV2: optional<list<ErrorDeclarationV2>>
+      examples: list<ExampleEndpointCall>
+      snippetTemplates: optional<EndpointSnippetTemplates>
+      protocol: optional<commons.Protocol>
+
+  EndpointSnippetTemplates:
+    properties:
+      typescript: optional<snippetTemplate.VersionedSnippetTemplate>
+      python: optional<snippetTemplate.VersionedSnippetTemplate>
+
+  EndpointPath:
+    properties:
+      parts: list<EndpointPathPart>
+      pathParameters: list<PathParameter>
+
+  EndpointPathPart:
+    union:
+      literal: string
+      pathParameter: rootCommons.PropertyKey
+
+  PathParameter:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      key: rootCommons.PropertyKey
+      type: type.TypeReference
+
+  QueryParameter:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      key: string
+      type: type.TypeReference
+
+  Header:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      key: string
+      type: type.TypeReference
+
+  HttpRequest:
+    extends: commons.WithDescription
+    properties:
+      contentType: string
+      type: HttpRequestBodyShape
+
+  HttpRequestBodyShape:
+    union:
+      object: type.ObjectType
+      reference: type.TypeReference
+      bytes: type.BytesRequest
+      formData: type.FormDataRequest
+      # deprecated, use formData
+      fileUpload:
+        type: optional<type.FormDataRequest>
+        docs: "`fileUpload` is optional only to be backwards compatible. It should be required."
+
+  HttpResponse:
+    extends: commons.WithDescription
+    properties:
+      type: HttpResponseBodyShape
+      statusCode:
+        type: optional<integer>
+        docs: Defaults to 200
+
+  JsonBodyShape:
+    union:
+      object: type.ObjectType
+      reference: type.TypeReference
+
+  HttpResponseBodyShape:
+    union:
+      object: type.ObjectType
+      reference: type.TypeReference
+      fileDownload: FileDownloadResponseBodyShape
+      streamingText: {}
+      stream: StreamResponseV2
+      # deprecated
+      streamCondition:
+        type: StreamConditionResponse
+        docs: |
+          A response that can either be streaming or REST
+
+  FileDownloadResponseBodyShape:
+    properties:
+      contentType: optional<string>
+
+  StreamResponseV2:
+    properties:
+      terminator:
+        type: optional<string>
+        docs: |
+          The terminator for each message. For example, for OpenAPI 
+          the terminator is [DATA].
+      shape: JsonBodyShape
+
+  StreamConditionResponse:
+    availability: deprecated
+    properties:
+      response: NonStreamResponse
+      streamResponse: StreamResponse
+      streamCondition: StreamCondition
+
+  NonStreamResponse:
+    availability: deprecated
+    properties:
+      shape: JsonBodyShape
+      examples: list<ExampleEndpointCall>
+
+  StreamResponse:
+    availability: deprecated
+    properties:
+      shape: JsonBodyShape
+      examples: list<ExampleEndpointCall>
+
+  StreamCondition:
+    union:
+      booleanRequestProperty: rootCommons.PropertyKey
+
+  ErrorDeclaration:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      type: optional<type.TypeReference>
+      statusCode: integer
+
+  ErrorDeclarationV2:
+    extends:
+      - commons.WithDescription
+      - commons.WithAvailability
+    properties:
+      type: optional<type.TypeShape>
+      statusCode: integer
+      name: optional<string>
+      examples: optional<list<ErrorExample>>
+  # examples
+
+  ExampleEndpointCall:
+    extends: commons.WithDescription
+    properties:
+      name: optional<string>
+      path: string
+      pathParameters: map<rootCommons.PropertyKey, unknown>
+      queryParameters: map<string, unknown>
+      headers: map<string, unknown>
+      requestBody: unknown
+      requestBodyV3: optional<ExampleEndpointRequest>
+      responseStatusCode: integer
+      responseBody: unknown
+      responseBodyV3: optional<ExampleEndpointResponse>
+      codeExamples: CodeExamples
+      codeSamples: list<CustomCodeSample>
+
+  CodeExamples:
+    properties:
+      nodeAxios: optional<string>
+      pythonSdk: optional<PythonSnippet>
+      typescriptSdk: optional<TypescriptSnippet>
+      goSdk: optional<GoSnippet>
+      rubySdk: optional<RubySnippet>
+      csharpSdk: optional<CsharpSnippet>
+
+  CustomCodeSample:
+    docs: Hand-written code samples
+    extends: commons.WithDescription
+    properties:
+      language: Language
+      code: string
+      name: optional<string>
+      install: optional<string>
+
+  Language:
+    discriminated: false
+    union:
+      - SupportedLanguage
+      - string
+    docs: Fallback to string to catch-all for languages that are not supported by fern
+
+  SupportedLanguage:
+    enum:
+      - curl
+      - python
+      - javascript
+      - js # alias to javascript
+      - node # alias to javascript
+      - typescript
+      - ts # alias to typescript
+      - go
+      - ruby
+      - csharp
+
+  ExampleEndpointRequest:
+    union:
+      json: unknown
+      form: map<string, FormValue>
+      bytes: BytesValue
+
+  FormValue:
+    union:
+      json: unknown
+      filename: string
+      filenames: list<string>
+      filenameWithData: FilenameWithData
+      filenamesWithData: list<FilenameWithData>
+      exploded: list<unknown>
+
+  BytesValue:
+    union:
+      base64: string
+
+  FilenameWithData:
+    properties:
+      filename: string
+      data: rootCommons.FileId
+
+  ExampleEndpointResponse:
+    union:
+      json: unknown
+      filename: string
+      stream: list<unknown>
+      sse: list<ExampleServerSentEvent>
+
+  ExampleServerSentEvent:
+    properties:
+      event: string
+      data: unknown
+
+  ErrorExample:
+    extends:
+      - commons.WithDescription
+    properties:
+      name: optional<string>
+      responseBody: ExampleErrorResponse
+
+  ExampleErrorResponse:
+    union:
+      json: unknown
+
+  PythonSnippet:
+    properties:
+      async_client: string
+      sync_client: string
+      install: optional<string>
+
+  TypescriptSnippet:
+    properties:
+      client:
+        type: string
+        docs: |
+          The client code that is generated by the fern compiler
+      install: optional<string>
+
+  GoSnippet:
+    properties:
+      client:
+        type: string
+        docs: |
+          The client code that is generated by the fern compiler
+      install: optional<string>
+
+  RubySnippet:
+    properties:
+      client:
+        type: string
+        docs: |
+          The client code that is generated by the fern compiler
+      install: optional<string>
+
+  CsharpSnippet:
+    properties:
+      client:
+        type: string
+        docs: |
+          The client code that is generated by the fern compiler
+      install: optional<string>

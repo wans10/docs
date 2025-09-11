@@ -1,0 +1,15 @@
+@layer base {
+  kbd {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace !important;
+    font-variant-numeric: slashed-zero;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .fern-kbd {
+    @apply border-(color:--grayscale-a6) bg-(color:--grayscale-surface) text-(color:--grayscale-a12) rounded-3/2 border px-1.5 py-0.5 text-xs;
+  }
+}

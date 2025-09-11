@@ -1,0 +1,41 @@
+{
+  "name": "@fern-platform/cdk",
+  "version": "0.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fern-api/fern-platform.git",
+    "directory": "packages/cdk"
+  },
+  "sideEffects": false,
+  "type": "commonjs",
+  "main": "dist/cdk.js",
+  "source": "src/cdk.ts",
+  "types": "dist/cdk.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "cdk": "cdk",
+    "deploy-app:dev2": "cdk deploy local-preview-bundle4-dev2 --require-approval never --progress events",
+    "deploy-app:prod": "cdk deploy local-preview-bundle4-prod --require-approval never --progress events",
+    "deploy:dev2": "cdk deploy local-preview-bundle2-dev2 --require-approval never --progress events",
+    "deploy:prod": "cdk deploy local-preview-bundle2-prod --require-approval never --progress events",
+    "synth-app:dev2": "cdk synth local-preview-bundle4-dev2",
+    "synth:dev2": "cdk synth local-preview-bundle2-dev2"
+  },
+  "dependencies": {
+    "@fern-fern/fern-cloud-sdk": "^0.0.305",
+    "archiver": "^7.0.1",
+    "aws-cdk-lib": "^2.179.0",
+    "constructs": "^10.3.0",
+    "tsx": "^4.7.1"
+  },
+  "devDependencies": {
+    "@fern-platform/configs": "workspace:*",
+    "@types/archiver": "^6.0.2",
+    "@types/node": "^18.11.9",
+    "aws-cdk": "^2.179.0",
+    "typescript": "^5"
+  }
+}
