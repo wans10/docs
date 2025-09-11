@@ -1,7 +1,0 @@
-instances:
-  - url: https://launchdarkly-test.docs.dev.buildwithfern.com
-title: Launch Darkly Test
-navigation: []
-landing-page:
-  page: Test
-  path: test.mdx
