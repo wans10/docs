@@ -1,1 +1,0 @@
-ALTER TYPE "Language" ADD VALUE 'SWIFT';
