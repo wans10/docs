@@ -9,12 +9,31 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
-      "settings",
-      "pages",
-      "navigation",
-      "themes",
-      "custom-domain"
+    "groups": [
+      {
+        "group": "Getting started",
+        "icon": "play",
+        "pages": [
+          "quickstart",
+          {
+            "group": "Editing",
+            "icon": "pencil",
+            "pages": [
+              "installation",
+              "editor"
+            ]
+          }
+        ]
+      },
+      {
+        "group": "Writing content",
+        "icon": "notebook-text",
+        "tag": "NEW",
+        "pages": [
+          "writing-content/page",
+          "writing-content/text"
+        ]
+      }
     ]
   },
   "logo": {
