@@ -43,6 +43,7 @@
               "ai-tools/cursor",
               "ai-tools/claude-code",
               "ai-tools/openai",
+              "ai-tools/responses",
               "ai-tools/windsurf"
             ]
           }
