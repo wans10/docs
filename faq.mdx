@@ -1,0 +1,240 @@
+---
+title: "常见问题"
+description: "查找有关 LLM Hub 的统一 API、模型访问、定价和集成的常见问题的答案。"
+icon: 'question'
+---
+
+## Getting started
+
+<AccordionGroup>
+    <Accordion title="为什么选择 LLM Hub ？">
+        LLM Hub 提供统一的 API，可访问市场上所有主流的 LLM 模型。它还允许用户将账单汇总到一处，并使用我们的分析功能跟踪所有使用情况。
+
+        LLM Hub 会将底层提供商的定价传递给用户，同时整合他们的正常运行时间，因此，您可以获得与直接从提供商处获得的相同的定价，同时拥有统一的
+        API 和回退机制，从而获得更好的正常运行时间。
+    </Accordion>
+
+    <Accordion title="如何使用 LLM Hub ？">
+        首先，请创建一个帐户并在[账户](https://www.llmhub.com.cn/console/topup)页面添加积分。积分只是您在 LLM Hub 上用于
+        LLM 推理的
+        存款。当您使用 API 或聊天界面时，我们会从您的积分中扣除请求费用。每个模型和提供商每百万代币的价格都不同。
+
+        获得积分后，您可以使用聊天室，也可以创建 API 密钥并开始使用 API。您可以阅读我们的[快速开始](/quickstart)指南，了解代码示例及更多信
+        息。
+    </Accordion>
+
+    <Accordion title="如何获得支持？">
+        获得支持的最佳方式是加入我们的[Discord](https://discord.gg/fVyRaUDgxW)并在 #help 论坛中向我们发送消息。
+    </Accordion>
+
+    <Accordion title="如何支付 LLM Hub 的使用费用？">
+        对于每个模型，我们都会显示每百万个令牌的定价。提示令牌和完成令牌的价格通常不同。有些模型会按请求、图像和推理令牌收费。所有这些详细信息
+        都将在模型页面上显示。
+
+        当您向 LLM Hub 发出请求时，我们会收到提供商处理的令牌总数。然后，我们会计算相应的费用并从您的积分中扣除。
+        您可以在[使用日志](https://www.llmhub.com.cn/console/log)中查看完整的使用历史记录。
+
+        您还可以在聊天请求中添加 `usage: {include: true}` 参数，以便在响应中获取使用信息。
+
+        我们通过底层提供商的定价；推理定价没有加价（但我们在购买信用时会收取费用）。
+    </Accordion>
+</AccordionGroup>
+
+## 定价和费用
+
+<AccordionGroup>
+    <Accordion title="使用 LLM Hub 的费用是多少？">
+        LLM Hub 在您购买信用额度时收取 5.5%（最低 0.80 美元）的费用。我们会直接转嫁底层模型提供商的定价，不加价，因此您支付的费用与直接向提供商支付的费用相同。
+
+        加密支付收取 5% 的手续费。
+    </Accordion>
+
+    <Accordion title="使用我自己的提供商密钥 (BYOK) 是否需要付费？">
+        是的，如果您选择使用自带提供商 API 密钥（自带密钥 - BYOK），则需要支付相同型号和提供商在 LLM Hub 上正常价格的 5%
+        作为费用。此费用将从您的 LLM Hub 积分中扣除。这样，您就可以直接与提供商管理速率限制和费用，同时仍然使用 LLM Hub
+        的统一界面。
+    </Accordion>
+</AccordionGroup>
+
+## 模型和提供者
+
+<AccordionGroup>
+    <Accordion title="LLM Hub 支持哪些 LLM 模型？">
+        LLM Hub 提供各种 LLM 模型，包括来自各大 AI 实验室的前沿模型。
+        如需查看完整的模型列表，您可以访问[模型
+        广场](https://www.llmhub.com.cn/pricing)获取列表。
+    </Accordion>
+
+    <Accordion title="新模型添加的频率是多少？">
+        我们致力于尽快添加模型。我们经常与发布模型的实验室合作，并会在模型可用时立即发布。如果您希望 LLM Hub 支持某个缺失的模型，请随时在
+        [Discord](https://discord.gg/fVyRaUDgxW) 上给我们留言。
+    </Accordion>
+
+    <Accordion title="什么是模型变体？">
+        变体是可以添加到模型 slug 以改变其行为的后缀。
+
+        静态变体只能与特定模型一起使用，这些模型在我们的[模型 api](https://openrouter.ai/api/v1/models)中列出。
+
+        1. `:free` - 该模型始终免费提供，且速率限制较低。
+        2. `:beta` - 该模型不受 LLM Hub 监管。
+        3. `:extended` - 该模型的上下文长度比通常更长。
+        4. `:thinking` - 该模型默认支持推理。
+
+        动态变体可用于所有模型，它们会改变请求的路由或使用方式的行为。
+
+        1. `:online` - 所有请求都将运行查询以提取附加到提示符的 Web 结果。
+        2. `:nitro` - 提供商将按吞吐量排序，而非默认排序，以优化更快的响应时间。
+        3. `:floor` - 提供商将按价格排序，而非默认排序，优先考虑最具成本效益的选项。
+    </Accordion>
+
+    <Accordion title="我是推理提供商，如何在 LLM Hub 上列出？">
+        您可以在[提供商页面](/docs/use-cases/for-providers)阅读我们的要求。如果您想联系我们，最好的方式是通过电子邮件。
+    </Accordion>
+
+    <Accordion title="不同型号的预期延迟/响应时间是多少？">
+        对于 LLM Hub 上的每个模型，我们都会显示所有提供商的延迟（第一个令牌的时间）和令牌吞吐量。您可以使用这些信息来估算请求所需的时间。如果您想优化吞吐量，可以使用
+        `:nitro` 变体路由到最快的提供商。
+    </Accordion>
+
+    <Accordion title="如果提供商不可用，模型回退如何工作？">
+        如果某个提供程序返回错误，LLM Hub 将自动回退到下一个提供程序。这对用户来说是透明的，并且能够显著提高生产环境应用的弹性。LLM
+        Hub 提供了很多选项来配置提供程序的路由行为。完整文档可以在[此处](/docs/features/provider-routing) 找到。
+    </Accordion>
+</AccordionGroup>
+
+## API技术规范
+
+<AccordionGroup>
+    <Accordion title="支持哪些身份验证方法？">
+        LLM Hub 使用三种身份验证方法：
+
+        1. 基于 Cookie 的身份验证，用于 Web 界面和聊天室
+        2. API 密钥（以 Bearer 令牌形式传递），用于访问 Completion API 和其他核心端点
+        3. [Provisioning API 密钥](/docs/features/provisioning-api-keys)，用于通过密钥管理端点以编程方式管理 API 密钥
+    </Accordion>
+
+    <Accordion title="如何计算速率限制？">
+        对于免费模型，速率限制取决于您购买的积分。
+        如果您购买了至少 10 个积分，您的免费模型请求次数将限制为每天 1000 次。否则，您的免费模型 API 请求次数将限制为每天
+        50 次。
+
+        您可以在我们的[速率限制文档](/docs/api-reference/limits)中了解更多关于付费帐户速率限制的工作原理。
+    </Accordion>
+
+    <Accordion title="有哪些 API 端点可用？">
+        LLM Hub 实现了 OpenAI API 规范的 /completions 和 /chat/completions 端点，允许您使用具有相同请求/响应格式的任何模型。此外，还提供其他端点，例如
+        /api/v1/models。
+        请参阅我们的[API 文档](/docs/api-reference/overview)，了解详细规范。
+    </Accordion>
+
+    <Accordion title="支持哪些格式？">
+        API 支持文本和图像。
+        [图片](/docs/api-reference/overview#images--multimodal) 可以作为 URL 或 base64 编码图片传递。PDF 和其他文件类型即将推出。
+    </Accordion>
+
+    <Accordion title="流式传输如何运作？">
+        流式传输使用服务器发送事件 (SSE) 进行实时令牌传递。在请求中设置 `stream: true` 以启用流式响应。
+    </Accordion>
+
+    <Accordion title="有哪些 SDK 支持？">
+        LLM Hub 是 OpenAI 的直接替代品。因此，任何默认支持 OpenAI 的 SDK 也支持 LLM
+        Hub。查看我们的[docs](/docs/community/open-ai-sdk) 了解更多详情。
+    </Accordion>
+</AccordionGroup>
+
+## 隐私和数据记录
+
+请参阅我们的[服务条款](https://openrouter.ai/terms) 和[隐私政策](https://openrouter.ai/privacy)。
+
+<AccordionGroup>
+    <Accordion title="API 使用过程中会记录哪些数据？">
+        我们记录基本的请求元数据（时间戳、使用的模型、令牌计数）。默认情况下，不会记录提示和完成操作。即使发生错误，我们也不会记录您的提示/完成操作，除非您选择记录它们。
+
+        我们有一个可选的[设置](https://openrouter.ai/settings/privacy)，允许用户选择记录他们的提示和完成操作，以换取 1%
+        的使用费用折扣。
+    </Accordion>
+
+    <Accordion title="使用聊天室时会记录哪些数据？">
+        聊天室的数据隐私保护与 API 相同。聊天室中的所有对话都存储在您的设备本地。对话不会跨设备同步。您可以使用聊天室中的设置菜单导出和导入对话。
+    </Accordion>
+
+    <Accordion title="会发生哪些第三方共享？">
+        LLM Hub 是一个代理，它会将您的请求发送给模型提供商以完成请求。
+        我们与所有提供商合作，尽可能确保提示和完成操作不会被记录或用于训练。
+        除非在[隐私设置](https://openrouter.ai/settings/privacy)选项卡中启用模型训练开关，否则不会将请求路由到会记录或用于训练的提供商。
+
+        如果您在请求中指定了 [提供商路由](/docs/features/provider-routing)，但所有提供商均不符合您账户设置中指定的隐私级别，您将收到错误消息，请求将无法完成。
+    </Accordion>
+</AccordionGroup>
+
+## 信用和计费系统
+
+<AccordionGroup>
+    <Accordion title="有哪些购买选项？">
+        LLM Hub 使用以美元为基础货币的信用系统。我们网站和 API 上的所有定价均以美元计价。用户可以手动充值，也可以设置自动充值，以便在余额低于设定阈值时自动补足。
+    </Accordion>
+
+    <Accordion title="信用会过期吗？">
+        根据我们的[条款](https://openrouter.ai/terms)，我们保留以下权利：
+    </Accordion>
+
+    <Accordion title="我的积分未显示在我的账户中">
+        如果您使用 Stripe 付款，有时 Stripe 集成存在问题，积分可能会延迟显示在您的账户中。请等待最多一小时。
+        如果您的积分在一小时后仍未显示，请在 [Discord](https://discord.gg/fVyRaUDgxW) 上联系我们，我们将进行调查。
+
+        如果您使用加密货币付款，请在 [Discord](https://discord.gg/fVyRaUDgxW) 上联系我们，我们将进行调查。
+    </Accordion>
+
+    <Accordion title="退款政策是什么？">
+        您可以在交易处理后的二十四 (24) 小时内申请退款。如果在购买后的二十四 (24)
+        小时内未收到退款申请，则任何未使用的积分将不予退款。要在有效期内申请退款，您可以使用
+        [Credits](https://openrouter.ai/settings/credits) 页面上的退款按钮。未使用的信用额度将退还到您的付款方式；平台费用不予退还。请注意，加密货币付款不予退还。
+    </Accordion>
+
+    <Accordion title="如何监控信用额度使用情况？">
+        [Activity](https://openrouter.ai/activity) 页面允许用户查看他们的历史使用情况，并按型号、提供商和 API 密钥筛选使用情况。
+
+        我们还提供了一个 [credits api](/docs/api-reference/get-credits)，其中包含帐户余额和剩余信用额度的实时信息。
+    </Accordion>
+
+    <Accordion title="有哪些免费套餐选项？">
+        所有新用户均可获得少量免费配额，用于测试 LLM Hub。LLM Hub 上提供许多免费模型，但需要注意的是，这些模型的速率限制较低（每天最多
+        50 个请求），通常不适合用于生产环境。如果您购买了至少 10 个配额，则免费模型的每日请求数将限制为 1000 个。
+    </Accordion>
+
+    <Accordion title="批量折扣如何运作？">
+        LLM Hub 目前不提供批量折扣，但如果您认为自己有特殊用例，可以通过电子邮件联系我们。
+    </Accordion>
+
+    <Accordion title="我们接受哪些付款方式？">
+        我们接受所有主流信用卡、支付宝和 USDC 加密货币付款。我们即将集成 PayPal，如果您希望我们支持任何付款方式，请在
+        [Discord](https://discord.gg/fVyRaUDgxW) 上联系我们。
+    </Accordion>
+
+    <Accordion title="LLM Hub 如何盈利？">
+        购买积分时，我们会收取少量 [费用](/docs/faq#pricing-and-fees)。我们绝不会提高底层提供商的价格，您支付的费用始终与提供商的标价相同。
+    </Accordion>
+</AccordionGroup>
+
+## 账户管理
+
+<AccordionGroup>
+    <Accordion title="如何删除我的账户？">
+        前往 [设置](https://openrouter.ai/settings/preferences) 页面，然后点击“管理账户”。
+        在打开的模式中，选择“安全”选项卡。您会在那里找到删除账户的选项。
+
+        请注意，如果您删除帐户并重新创建，未使用的积分将会丢失，并且无法恢复。
+    </Accordion>
+
+    <Accordion title="团队访问权限如何运作？">
+        团队管理功能即将推出！目前，您可以使用 [Provisioning API 密钥](/docs/features/provisioning-api-keys) 与团队成员共享积分。
+    </Accordion>
+
+    <Accordion title="有哪些可用的分析功能？">
+        我们的 [活动仪表板](https://openrouter.ai/activity) 提供实时使用情况指标。如果您需要任何具体的报告或指标，请联系我们。
+    </Accordion>
+
+    <Accordion title="如何联系客服？">
+        联系我们的最佳方式是加入我们的[Discord](https://discord.gg/fVyRaUDgxW) 并在 #help 论坛中向我们发送消息。
+    </Accordion>
+</AccordionGroup>

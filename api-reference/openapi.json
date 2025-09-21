@@ -1,217 +1,1001 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "OpenAI Chat Completions API",
+    "description": "OpenAI对话格式（Chat Completions）API文档\n\n给定一组包含对话的消息列表，模型将返回一个响应。相关指南可参阅OpenAI官网：[Chat Completions](https://platform.openai.com/docs/guides/chat)",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "url": "https://platform.openai.com/docs/api-reference/chat"
+    }
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
+      "url": "https://api.llmhub.com.cn/v1",
+      "description": "Production server"
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+    "/chat/completions": {
+      "post": {
+        "summary": "创建聊天补全",
+        "description": "给定一组包含对话的消息列表，模型将返回一个响应。",
+        "operationId": "createChatCompletion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChatCompletionRequest"
+              },
+              "examples": {
+                "text_example": {
+                  "summary": "基础文本对话",
+                  "value": {
+                    "model": "gpt-5",
+                    "messages": [
+                      {
+                        "role": "developer",
+                        "content": "你是一个有帮助的助手。"
+                      },
+                      {
+                        "role": "user",
+                        "content": "你好！"
+                      }
+                    ]
+                  }
+                },
+                "image_example": {
+                  "summary": "图像分析对话",
+                  "value": {
+                    "model": "gpt-5",
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "这张图片里有什么？"
+                          },
+                          {
+                            "type": "image_url",
+                            "image_url": {
+                              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "max_tokens": 300
+                  }
+                },
+                "function_example": {
+                  "summary": "函数调用",
+                  "value": {
+                    "model": "gpt-5",
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": "波士顿今天的天气怎么样？"
+                      }
+                    ],
+                    "tools": [
+                      {
+                        "type": "function",
+                        "function": {
+                          "name": "get_current_weather",
+                          "description": "获取指定位置的当前天气",
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "location": {
+                                "type": "string",
+                                "description": "城市和州，例如 San Francisco, CA"
+                              },
+                              "unit": {
+                                "type": "string",
+                                "enum": ["celsius", "fahrenheit"]
+                              }
+                            },
+                            "required": ["location"]
+                          }
+                        }
+                      }
+                    ],
+                    "tool_choice": "auto"
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/CreateChatCompletionResponse"
+                },
+                "examples": {
+                  "text_response": {
+                    "summary": "文本对话响应示例",
+                    "value": {
+                      "id": "chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT",
+                      "object": "chat.completion",
+                      "created": 1741569952,
+                      "model": "gpt-5-2025-04-14",
+                      "choices": [
+                        {
+                          "index": 0,
+                          "message": {
+                            "role": "assistant",
+                            "content": "你好！我能为你提供什么帮助？",
+                            "refusal": null,
+                            "annotations": []
+                          },
+                          "logprobs": null,
+                          "finish_reason": "stop"
+                        }
+                      ],
+                      "usage": {
+                        "prompt_tokens": 19,
+                        "completion_tokens": 10,
+                        "total_tokens": 29,
+                        "prompt_tokens_details": {
+                          "cached_tokens": 0,
+                          "audio_tokens": 0
+                        },
+                        "completion_tokens_details": {
+                          "reasoning_tokens": 0,
+                          "audio_tokens": 0,
+                          "accepted_prediction_tokens": 0,
+                          "rejected_prediction_tokens": 0
+                        }
+                      },
+                      "service_tier": "default"
+                    }
+                  },
+                  "image_response": {
+                    "summary": "图像分析响应示例",
+                    "value": {
+                      "id": "chatcmpl-B9MHDbslfkBeAs8l4bebGdFOJ6PeG",
+                      "object": "chat.completion",
+                      "created": 1741570283,
+                      "model": "gpt-5-2025-04-14",
+                      "choices": [
+                        {
+                          "index": 0,
+                          "message": {
+                            "role": "assistant",
+                            "content": "图片展示了一条穿过茂密绿色草地或草甸的木制栈道。天空湛蓝，点缀着几朵散落的云彩，给整个场景营造出宁静祥和的氛围。背景中可以看到树木和灌木丛。",
+                            "refusal": null,
+                            "annotations": []
+                          },
+                          "logprobs": null,
+                          "finish_reason": "stop"
+                        }
+                      ],
+                      "usage": {
+                        "prompt_tokens": 1117,
+                        "completion_tokens": 46,
+                        "total_tokens": 1163,
+                        "prompt_tokens_details": {
+                          "cached_tokens": 0,
+                          "audio_tokens": 0
+                        },
+                        "completion_tokens_details": {
+                          "reasoning_tokens": 0,
+                          "audio_tokens": 0,
+                          "accepted_prediction_tokens": 0,
+                          "rejected_prediction_tokens": 0
+                        }
+                      },
+                      "service_tier": "default",
+                      "system_fingerprint": "fp_fc9f1d7035"
+                    }
+                  },
+                  "function_response": {
+                    "summary": "函数调用响应示例",
+                    "value": {
+                      "id": "chatcmpl-abc123",
+                      "object": "chat.completion",
+                      "created": 1699896916,
+                      "model": "gpt-4o-mini",
+                      "choices": [
+                        {
+                          "index": 0,
+                          "message": {
+                            "role": "assistant",
+                            "content": null,
+                            "tool_calls": [
+                              {
+                                "id": "call_abc123",
+                                "type": "function",
+                                "function": {
+                                  "name": "get_current_weather",
+                                  "arguments": "{\n\"location\": \"Boston, MA\"\n}"
+                                }
+                              }
+                            ]
+                          },
+                          "logprobs": null,
+                          "finish_reason": "tool_calls"
+                        }
+                      ],
+                      "usage": {
+                        "prompt_tokens": 82,
+                        "completion_tokens": 17,
+                        "total_tokens": 99,
+                        "completion_tokens_details": {
+                          "reasoning_tokens": 0,
+                          "accepted_prediction_tokens": 0,
+                          "rejected_prediction_tokens": 0
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
+            "BearerAuth": []
           }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "CreateChatCompletionRequest": {
         "type": "object",
+        "required": ["model", "messages"],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "model": {
+            "type": "string",
+            "description": "要使用的模型 ID。有关哪些模型适用于 Chat API 的详细信息，请参阅模型端点兼容性表。"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "messages": {
+            "type": "array",
+            "description": "到目前为止包含对话的消息列表。根据使用的模型，支持不同的消息类型（形式），如文本、图像和音频。",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionMessage"
+            }
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "如果设置为 true，模型响应数据将在生成时通过服务器发送事件流式传输到客户端。",
+            "default": false
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "description": "要使用的采样温度，介于 0 和 2 之间。较高的值（如0.8）会使输出更加随机，而较低的值（如0.2）会使其更加集中和确定性。",
+            "default": 1
+          },
+          "top_p": {
+            "type": "number",
+            "description": "一种替代采样温度的方法，称为核采样，其中模型考虑具有 top_p 概率质量的标记结果。",
+            "default": 1
+          },
+          "n": {
+            "type": "integer",
+            "description": "为每个输入消息生成多少个聊天补全选择。",
+            "default": 1
+          },
+          "stop": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "description": "API 将停止生成更多标记的最多 4 个序列。"
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "聊天补全中可以生成的最大标记数。"
+          },
+          "max_completion_tokens": {
+            "type": "integer",
+            "description": "补全中可以生成的标记数的上限，包括可见输出标记和推理标记。"
+          },
+          "presence_penalty": {
+            "type": "number",
+            "minimum": -2,
+            "maximum": 2,
+            "description": "正值根据新标记到目前为止在文本中出现的情况来惩罚它们，从而增加模型讨论新主题的可能性。",
+            "default": 0
+          },
+          "frequency_penalty": {
+            "type": "number",
+            "minimum": -2,
+            "maximum": 2,
+            "description": "正值根据新标记到目前为止在文本中的现有频率来惩罚它们，从而降低模型逐字重复同一行的可能性。",
+            "default": 0
+          },
+          "logit_bias": {
+            "type": "object",
+            "description": "修改指定标记出现在补全中的可能性。"
+          },
+          "user": {
+            "type": "string",
+            "description": "表示最终用户的唯一标识符，可以帮助 OpenAI 监控和检测滥用行为。"
+          },
+          "response_format": {
+            "$ref": "#/components/schemas/ResponseFormat"
+          },
+          "tools": {
+            "type": "array",
+            "description": "模型可能调用的工具列表。目前仅支持函数作为工具。",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionTool"
+            }
+          },
+          "tool_choice": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": ["none", "auto", "required"]
+              },
+              {
+                "$ref": "#/components/schemas/ChatCompletionNamedToolChoice"
+              }
+            ],
+            "description": "控制模型调用哪个工具（如果有）"
+          },
+          "logprobs": {
+            "type": "boolean",
+            "description": "是否返回输出标记的对数概率。",
+            "default": false
+          },
+          "top_logprobs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20,
+            "description": "0 到 20 之间的整数，指定在每个标记位置返回的最可能标记的数量"
+          },
+          "seed": {
+            "type": "integer",
+            "description": "Beta 功能。如果指定，我们的系统将尽最大努力进行确定性采样"
+          },
+          "store": {
+            "type": "boolean",
+            "description": "是否存储此聊天补全请求的输出以用于我们的模型蒸馏或评估产品。",
+            "default": false
+          },
+          "reasoning_effort": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "约束推理模型的推理工作。当前支持的值为 `low`、`medium` 和 `high`。",
+            "default": "medium"
+          },
+          "modalities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["text", "audio"]
+            },
+            "description": "您希望模型为此请求生成的输出类型。"
+          },
+          "audio": {
+            "$ref": "#/components/schemas/AudioParameters"
+          },
+          "service_tier": {
+            "type": "string",
+            "enum": ["auto", "default", "flex"],
+            "description": "指定用于处理请求的延迟层级。"
+          },
+          "stream_options": {
+            "$ref": "#/components/schemas/ChatCompletionStreamOptions"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/PredictionContent"
+          },
+          "parallel_tool_calls": {
+            "type": "boolean",
+            "description": "是否在工具使用期间启用并行函数调用。",
+            "default": true
+          },
+          "web_search_options": {
+            "$ref": "#/components/schemas/WebSearchOptions"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
+      "ChatCompletionMessage": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["developer", "system", "user", "assistant", "tool", "function"],
+            "description": "消息作者的角色"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionContentPart"
+                }
+              }
+            ],
+            "description": "消息的内容"
+          },
+          "name": {
+            "type": "string",
+            "description": "参与者的可选名称"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "description": "此消息响应的工具调用"
+          },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionMessageToolCall"
+            },
+            "description": "模型生成的工具调用"
+          },
+          "refusal": {
+            "type": ["string", "null"],
+            "description": "助手的拒绝消息"
+          },
+          "audio": {
+            "type": ["object", "null"],
+            "description": "关于模型先前音频响应的数据"
+          }
+        },
+        "required": ["role"]
+      },
+      "ChatCompletionContentPart": {
+        "oneOf": [
           {
-            "$ref": "#/components/schemas/Plant"
+            "$ref": "#/components/schemas/ChatCompletionContentPartText"
           },
           {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
+            "$ref": "#/components/schemas/ChatCompletionContentPartImage"
+          },
+          {
+            "$ref": "#/components/schemas/ChatCompletionContentPartAudio"
+          },
+          {
+            "$ref": "#/components/schemas/ChatCompletionContentPartFile"
           }
         ]
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "ChatCompletionContentPartText": {
         "type": "object",
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "type": {
+            "type": "string",
+            "enum": ["text"]
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["type", "text"]
+      },
+      "ChatCompletionContentPartImage": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["image_url"]
+          },
+          "image_url": {
+            "$ref": "#/components/schemas/ChatCompletionContentPartImageURL"
+          }
+        },
+        "required": ["type", "image_url"]
+      },
+      "ChatCompletionContentPartImageURL": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string",
+            "enum": ["auto", "low", "high"],
+            "default": "auto"
+          }
+        },
+        "required": ["url"]
+      },
+      "ChatCompletionContentPartAudio": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["input_audio"]
+          },
+          "input_audio": {
+            "$ref": "#/components/schemas/InputAudio"
+          }
+        },
+        "required": ["type", "input_audio"]
+      },
+      "InputAudio": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string",
+            "description": "base64编码的音频数据"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["wav", "mp3"],
+            "description": "编码音频数据的格式"
+          }
+        },
+        "required": ["data", "format"]
+      },
+      "ChatCompletionContentPartFile": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["file"]
+          },
+          "file": {
+            "$ref": "#/components/schemas/FileObject"
+          }
+        },
+        "required": ["type", "file"]
+      },
+      "FileObject": {
+        "type": "object",
+        "properties": {
+          "file_data": {
+            "type": "string",
+            "description": "base64编码的文件数据"
+          },
+          "file_id": {
+            "type": "string",
+            "description": "已上传文件的ID"
+          },
+          "filename": {
+            "type": "string",
+            "description": "文件名"
+          }
+        }
+      },
+      "ChatCompletionTool": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["function"]
+          },
+          "function": {
+            "$ref": "#/components/schemas/FunctionObject"
+          }
+        },
+        "required": ["type", "function"]
+      },
+      "FunctionObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "要调用的函数名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "函数功能的描述"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "函数接受的参数，描述为JSON Schema对象"
+          },
+          "strict": {
+            "type": "boolean",
+            "description": "是否在生成函数调用时启用严格架构遵守"
+          }
+        },
+        "required": ["name"]
+      },
+      "ChatCompletionNamedToolChoice": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["function"]
+          },
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": ["name"]
+          }
+        },
+        "required": ["type", "function"]
+      },
+      "ChatCompletionMessageToolCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["function"]
+          },
+          "function": {
+            "$ref": "#/components/schemas/ChatCompletionFunctionCall"
+          }
+        },
+        "required": ["id", "type", "function"]
+      },
+      "ChatCompletionFunctionCall": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "要调用的函数的名称"
+          },
+          "arguments": {
+            "type": "string",
+            "description": "用于调用函数的参数，由模型以JSON格式生成"
+          }
+        },
+        "required": ["name"]
+      },
+      "ResponseFormat": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ResponseFormatText"
+          },
+          {
+            "$ref": "#/components/schemas/ResponseFormatJSONObject"
+          },
+          {
+            "$ref": "#/components/schemas/ResponseFormatJSONSchema"
+          }
+        ]
+      },
+      "ResponseFormatText": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["text"]
+          }
+        },
+        "required": ["type"]
+      },
+      "ResponseFormatJSONObject": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["json_object"]
+          }
+        },
+        "required": ["type"]
+      },
+      "ResponseFormatJSONSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["json_schema"]
+          },
+          "json_schema": {
+            "$ref": "#/components/schemas/JSONSchema"
+          }
+        },
+        "required": ["type", "json_schema"]
+      },
+      "JSONSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "object"
+          },
+          "strict": {
+            "type": "boolean"
+          }
+        },
+        "required": ["name"]
+      },
+      "AudioParameters": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "enum": ["wav", "mp3", "flac", "opus", "pcm16"]
+          },
+          "voice": {
+            "type": "string",
+            "enum": ["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer"]
+          }
+        },
+        "required": ["format", "voice"]
+      },
+      "ChatCompletionStreamOptions": {
+        "type": "object",
+        "properties": {
+          "include_usage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PredictionContent": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                }
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["content"]
+          }
+        },
+        "required": ["content", "type"]
+      },
+      "WebSearchOptions": {
+        "type": "object",
+        "properties": {
+          "search_context_size": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "user_location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserLocation"
+              }
+            ]
+          }
+        }
+      },
+      "UserLocation": {
+        "type": "object",
+        "properties": {
+          "approximate": {
+            "$ref": "#/components/schemas/ApproximateLocation"
+          }
+        },
+        "required": ["approximate"]
+      },
+      "ApproximateLocation": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["approximate"]
+          }
+        },
+        "required": ["type"]
+      },
+      "CreateChatCompletionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "object": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionChoice"
+            }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/CompletionUsage"
+          },
+          "system_fingerprint": {
+            "type": "string"
+          },
+          "service_tier": {
+            "type": ["string", "null"]
+          }
+        },
+        "required": ["id", "object", "created", "model", "choices"]
+      },
+      "ChatCompletionChoice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
           },
           "message": {
+            "$ref": "#/components/schemas/ChatCompletionMessage"
+          },
+          "logprobs": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ChatCompletionTokenLogprob"
+              }
+            ]
+          },
+          "finish_reason": {
+            "type": "string",
+            "enum": ["stop", "length", "content_filter", "tool_calls", "function_call"]
+          }
+        },
+        "required": ["index", "message", "finish_reason"]
+      },
+      "ChatCompletionTokenLogprob": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionTokenLogprobContent"
+            }
+          },
+          "refusal": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionTokenLogprobContent"
+            }
+          }
+        }
+      },
+      "ChatCompletionTokenLogprobContent": {
+        "type": "object",
+        "properties": {
+          "token": {
             "type": "string"
+          },
+          "logprob": {
+            "type": "number"
+          },
+          "bytes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "top_logprobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatCompletionTokenLogprobTopLogprobs"
+            }
+          }
+        },
+        "required": ["token", "logprob", "bytes", "top_logprobs"]
+      },
+      "ChatCompletionTokenLogprobTopLogprobs": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "logprob": {
+            "type": "number"
+          },
+          "bytes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": ["token", "logprob", "bytes"]
+      },
+      "CompletionUsage": {
+        "type": "object",
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer"
+          },
+          "completion_tokens": {
+            "type": "integer"
+          },
+          "total_tokens": {
+            "type": "integer"
+          },
+          "prompt_tokens_details": {
+            "$ref": "#/components/schemas/PromptTokensDetails"
+          },
+          "completion_tokens_details": {
+            "$ref": "#/components/schemas/CompletionTokensDetails"
+          }
+        },
+        "required": ["prompt_tokens", "completion_tokens", "total_tokens"]
+      },
+      "PromptTokensDetails": {
+        "type": "object",
+        "properties": {
+          "cached_tokens": {
+            "type": "integer"
+          },
+          "audio_tokens": {
+            "type": "integer"
+          }
+        }
+      },
+      "CompletionTokensDetails": {
+        "type": "object",
+        "properties": {
+          "reasoning_tokens": {
+            "type": "integer"
+          },
+          "audio_tokens": {
+            "type": "integer"
+          },
+          "accepted_prediction_tokens": {
+            "type": "integer"
+          },
+          "rejected_prediction_tokens": {
+            "type": "integer"
           }
         }
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
+      "BearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "description": "API 密钥认证"
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Chat",
+      "description": "聊天补全相关接口"
+    }
+  ]
 }

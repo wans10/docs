@@ -1,0 +1,114 @@
+---
+title: "模型"
+description: "通过 LLM Hub 的统一 API 访问所有主流语言模型 (LLM)。浏览可用的模型，比较功能，并与您首选的提供商集成。"
+icon: 'cube'
+---
+
+在我们的[网站](/models)或[使用我们的 API](/docs/api-reference/list-available-models) 探索和浏览 400 多个模型和提供商。(including RSS).
+
+## 模型 API 标准
+
+我们的[模型 API](/docs/api-reference/list-available-models) 会在确认后立即免费提供所有 LLM 的最重要信息。
+
+### API 响应架构
+
+模型 API 返回标准化的 JSON 响应格式，其中包含每个可用模型的全面元数据。此架构缓存在边缘设备上，旨在实现与生产应用程序的可靠集成。
+
+#### Root 响应对象
+
+```json
+{
+  "data": [
+    /* Array of Model objects */
+  ]
+}
+```
+
+#### 模型对象模式
+
+`data` 数组中的每个模型包含以下标准化字段：
+
+| Field                  | Type                                          | Description                                                                            |
+| ---------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `id`                   | `string`                                      | Unique model identifier used in API requests (e.g., `"google/gemini-2.5-pro-preview"`) |
+| `canonical_slug`       | `string`                                      | Permanent slug for the model that never changes                                        |
+| `name`                 | `string`                                      | Human-readable display name for the model                                              |
+| `created`              | `number`                                      | Unix timestamp of when the model was added to LLM Hub                               |
+| `description`          | `string`                                      | Detailed description of the model's capabilities and characteristics                   |
+| `context_length`       | `number`                                      | Maximum context window size in tokens                                                  |
+| `architecture`         | `Architecture`                                | Object describing the model's technical capabilities                                   |
+| `pricing`              | `Pricing`                                     | Lowest price structure for using this model                                            |
+| `top_provider`         | `TopProvider`                                 | Configuration details for the primary provider                                         |
+| `per_request_limits`   | Rate limiting information (null if no limits) |                                                                                        |
+| `supported_parameters` | `string[]`                                    | Array of supported API parameters for this model                                       |
+
+#### Architecture Object
+
+```typescript
+{
+  "input_modalities": string[], // Supported input types: ["file", "image", "text"]
+  "output_modalities": string[], // Supported output types: ["text"]
+  "tokenizer": string,          // Tokenization method used
+  "instruct_type": string | null // Instruction format type (null if not applicable)
+}
+```
+
+#### Pricing Object
+
+All pricing values are in USD per token/request/unit. A value of `"0"` indicates the feature is free.
+
+```typescript
+{
+  "prompt": string,           // Cost per input token
+  "completion": string,       // Cost per output token
+  "request": string,          // Fixed cost per API request
+  "image": string,           // Cost per image input
+  "web_search": string,      // Cost per web search operation
+  "internal_reasoning": string, // Cost for internal reasoning tokens
+  "input_cache_read": string,   // Cost per cached input token read
+  "input_cache_write": string   // Cost per cached input token write
+}
+```
+
+#### Top Provider Object
+
+```typescript
+{
+  "context_length": number,        // Provider-specific context limit
+  "max_completion_tokens": number, // Maximum tokens in response
+  "is_moderated": boolean         // Whether content moderation is applied
+}
+```
+
+#### Supported Parameters
+
+The `supported_parameters` array indicates which OpenAI-compatible parameters work with each model:
+
+- `tools` - Function calling capabilities
+- `tool_choice` - Tool selection control
+- `max_tokens` - Response length limiting
+- `temperature` - Randomness control
+- `top_p` - Nucleus sampling
+- `reasoning` - Internal reasoning mode
+- `include_reasoning` - Include reasoning in response
+- `structured_outputs` - JSON schema enforcement
+- `response_format` - Output format specification
+- `stop` - Custom stop sequences
+- `frequency_penalty` - Repetition reduction
+- `presence_penalty` - Topic diversity
+- `seed` - Deterministic outputs
+
+<Note>
+    Some models break up text into chunks of multiple characters (GPT, Claude,
+    Llama, etc), while others tokenize by character (PaLM). This means that token
+    counts (and therefore costs) will vary between models, even when inputs and
+    outputs are the same. Costs are displayed and billed according to the
+    tokenizer for the model in use. You can use the `usage` field in the response
+    to get the token counts for the input and output.
+</Note>
+
+If there are models or providers you are interested in that LLM Hub doesn't have, please tell us about them in our [Discord channel](https://openrouter.ai/discord).
+
+## For Providers
+
+If you're interested in working with LLM Hub, you can learn more on our [providers page](/docs/use-cases/for-providers).

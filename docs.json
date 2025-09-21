@@ -11,25 +11,43 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "用户指南",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "概述",
+            "icon": "compass",
             "pages": [
-              "index",
               "quickstart",
-              "development"
+              "faq",
+              "principles",
+              "models"
             ]
           },
           {
-            "group": "Customization",
+            "group": "API 参考",
+            "icon": "code",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "api-reference/overview",
+              "api-reference/streaming",
+              "api-reference/limits",
+              "api-reference/authentication",
+              "api-reference/parameters",
+              "api-reference/errors",
+              {
+                "group": "Chat API",
+                "icon": "chat",
+                "pages": [
+                  "api-reference/chat-completion",
+                  "api-reference/responses",
+                  "api-reference/messages",
+                  "api-reference/chat/responses.mdx",
+                  "api-reference/chat/messages.mdx"
+                ]
+              }
             ]
           },
           {
-            "group": "Writing content",
+            "group": "平台管理",
             "pages": [
               "essentials/markdown",
               "essentials/code",
@@ -38,86 +56,31 @@
             ]
           },
           {
-            "group": "AI tools",
+            "group": "隐私和条款",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/openai",
-              "ai-tools/responses",
-              "ai-tools/windsurf"
+              "terms-and-privacy/terms",
+              "terms-and-privacy/privacy"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "开发工具",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "概述",
+            "icon": "compass",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "development-tools/claude-code"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
   },
   "footer": {
     "socials": {
