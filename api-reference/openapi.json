@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://你的newapi服务器地址/v1",
+      "url": "https://api.llmhub.com.cn/v1",
       "description": "NewAPI 服务器"
     }
   ],
