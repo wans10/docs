@@ -8,22 +8,23 @@
     "light": "#F8FAFC",
     "dark": "#0F172A"
   },
+  "favicon": "/favicon.svg",
   "appearance": {
     "default": "light",
     "strict": true
   },
   "navigation": {
-    "dropdowns": [
+    "tabs": [
       {
-        "dropdown": "Documentation",
-        "icon": "book",
-        "description": "How to use the Example Co. product",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "概述",
             "pages": [
-              "index",
-              "quickstart"
+              "quickstart",
+              "faq",
+              "principles",
+              "models"
             ]
           },
           {
@@ -45,9 +46,7 @@
         ]
       },
       {
-        "dropdown": "Changelog",
-        "icon": "history",
-        "description": "Updates and changes",
+        "tab": "Changelog",
         "pages": [
           "changelog"
         ]
