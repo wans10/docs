@@ -28,11 +28,13 @@
             ]
           },
           {
-            "group": "Customization",
+            "group": "API 参考",
             "pages": [
-              "settings",
-              "users",
-              "features"
+              "api-reference/openai-responses",
+              "api-reference/openai-chat-completions",
+              "api-reference/anthropic-messages",
+              "api-reference/google-generate",
+              "api-reference/deepseek-reasoner"
             ]
           },
           {
