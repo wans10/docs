@@ -11,7 +11,7 @@
       name: MIT
       url: https://github.com/openai/openai-openapi/blob/master/LICENSE
   servers:
-    - url: https://api.openai.com/v1
+    - url: https://api.llmhub.com.cn/v1
   security:
     - ApiKeyAuth: []
   tags:
@@ -164,7 +164,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/assistants?order=desc&limit=20" \
+                curl "https://api.llmhub.com.cn/v1/assistants?order=desc&limit=20" \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -264,7 +264,7 @@
             - title: Code Interpreter
               request:
                 curl: |
-                  curl "https://api.openai.com/v1/assistants" \
+                  curl "https://api.llmhub.com.cn/v1/assistants" \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -369,7 +369,7 @@
             - title: Files
               request:
                 curl: |
-                  curl https://api.openai.com/v1/assistants \
+                  curl https://api.llmhub.com.cn/v1/assistants \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -526,7 +526,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/assistants/asst_abc123 \
+                curl https://api.llmhub.com.cn/v1/assistants/asst_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -654,7 +654,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/assistants/asst_abc123 \
+                curl https://api.llmhub.com.cn/v1/assistants/asst_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -769,7 +769,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/assistants/asst_abc123 \
+                curl https://api.llmhub.com.cn/v1/assistants/asst_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -879,7 +879,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/speech \
+                  curl https://api.llmhub.com.cn/v1/audio/speech \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d '{
@@ -1018,7 +1018,7 @@
             - title: SSE Stream Format
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/speech \
+                  curl https://api.llmhub.com.cn/v1/audio/speech \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -d '{
@@ -1156,7 +1156,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/transcriptions \
+                  curl https://api.llmhub.com.cn/v1/audio/transcriptions \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: multipart/form-data" \
                     -F file="@/path/to/file/audio.mp3" \
@@ -1292,7 +1292,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/transcriptions \
+                  curl https://api.llmhub.com.cn/v1/audio/transcriptions \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: multipart/form-data" \
                     -F file="@/path/to/file/audio.mp3" \
@@ -1554,7 +1554,7 @@
             - title: Logprobs
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/transcriptions \
+                  curl https://api.llmhub.com.cn/v1/audio/transcriptions \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: multipart/form-data" \
                     -F file="@/path/to/file/audio.mp3" \
@@ -1722,7 +1722,7 @@
             - title: Word timestamps
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/transcriptions \
+                  curl https://api.llmhub.com.cn/v1/audio/transcriptions \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: multipart/form-data" \
                     -F file="@/path/to/file/audio.mp3" \
@@ -1879,7 +1879,7 @@
             - title: Segment timestamps
               request:
                 curl: |
-                  curl https://api.openai.com/v1/audio/transcriptions \
+                  curl https://api.llmhub.com.cn/v1/audio/transcriptions \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: multipart/form-data" \
                     -F file="@/path/to/file/audio.mp3" \
@@ -2072,7 +2072,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/audio/translations \
+                curl https://api.llmhub.com.cn/v1/audio/translations \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: multipart/form-data" \
                   -F file="@/path/to/file/german.m4a" \
@@ -2287,7 +2287,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/batches \
+                curl https://api.llmhub.com.cn/v1/batches \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -2474,7 +2474,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/batches?limit=2 \
+                curl https://api.llmhub.com.cn/v1/batches?limit=2 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -2619,7 +2619,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/batches/batch_abc123 \
+                curl https://api.llmhub.com.cn/v1/batches/batch_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
               python: |-
@@ -2760,7 +2760,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/batches/batch_abc123/cancel \
+                curl https://api.llmhub.com.cn/v1/batches/batch_abc123/cancel \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -X POST
@@ -2955,7 +2955,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/chat/completions \
+                curl https://api.llmhub.com.cn/v1/chat/completions \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -3063,7 +3063,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/chat/completions \
+                  curl https://api.llmhub.com.cn/v1/chat/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -3230,7 +3230,7 @@
             - title: Image input
               request:
                 curl: |
-                  curl https://api.openai.com/v1/chat/completions \
+                  curl https://api.llmhub.com.cn/v1/chat/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -3408,7 +3408,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/chat/completions \
+                  curl https://api.llmhub.com.cn/v1/chat/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -3576,7 +3576,7 @@
             - title: Functions
               request:
                 curl: |
-                  curl https://api.openai.com/v1/chat/completions \
+                  curl https://api.llmhub.com.cn/v1/chat/completions \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -d '{
@@ -3792,7 +3792,7 @@
             - title: Logprobs
               request:
                 curl: |
-                  curl https://api.openai.com/v1/chat/completions \
+                  curl https://api.llmhub.com.cn/v1/chat/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -4210,7 +4210,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/chat/completions/chatcmpl-abc123 \
+                curl https://api.llmhub.com.cn/v1/chat/completions/chatcmpl-abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -4361,7 +4361,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/chat/completions/chat_abc123 \
+                curl -X POST https://api.llmhub.com.cn/v1/chat/completions/chat_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{"metadata": {"foo": "bar"}}'
@@ -4490,7 +4490,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/chat/completions/chat_abc123 \
+                curl -X DELETE https://api.llmhub.com.cn/v1/chat/completions/chat_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -4632,7 +4632,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/chat/completions/chat_abc123/messages \
+                curl https://api.llmhub.com.cn/v1/chat/completions/chat_abc123/messages \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -4747,7 +4747,7 @@
             - title: No streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/completions \
+                  curl https://api.llmhub.com.cn/v1/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -4864,7 +4864,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/completions \
+                  curl https://api.llmhub.com.cn/v1/completions \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -5045,7 +5045,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/containers \
+                curl https://api.llmhub.com.cn/v1/containers \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
                 import OpenAI from 'openai';
@@ -5153,7 +5153,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/containers \
+                curl https://api.llmhub.com.cn/v1/containers \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -5269,7 +5269,7 @@
               }
             request:
               curl: >
-                curl https://api.openai.com/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863
+                curl https://api.llmhub.com.cn/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
@@ -5367,7 +5367,7 @@
             request:
               curl: >
                 curl -X DELETE
-                https://api.openai.com/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863 \
+                https://api.llmhub.com.cn/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
                 import OpenAI from 'openai';
@@ -5479,7 +5479,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/containers/cntr_682e0e7318108198aa783fd921ff305e08e78805b9fdbb04/files
+                https://api.llmhub.com.cn/v1/containers/cntr_682e0e7318108198aa783fd921ff305e08e78805b9fdbb04/files
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -F file="@example.txt"
@@ -5629,7 +5629,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/containers/cntr_682e0e7318108198aa783fd921ff305e08e78805b9fdbb04/files
+                https://api.llmhub.com.cn/v1/containers/cntr_682e0e7318108198aa783fd921ff305e08e78805b9fdbb04/files
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
@@ -5747,7 +5747,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/containers/container_123/files/file_456 \
+                curl https://api.llmhub.com.cn/v1/containers/container_123/files/file_456 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: >-
                 import OpenAI from 'openai';
@@ -5861,7 +5861,7 @@
             request:
               curl: >
                 curl -X DELETE
-                https://api.openai.com/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863/files/cfile_682e0e8a43c88191a7978f477a09bdf5
+                https://api.llmhub.com.cn/v1/containers/cntr_682dfebaacac8198bbfe9c2474fb6f4a085685cbe3cb5863/files/cfile_682e0e8a43c88191a7978f477a09bdf5
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
@@ -5962,7 +5962,7 @@
               <binary content of the file>
             request:
               curl: |
-                curl https://api.openai.com/v1/containers/container_123/files/cfile_456/content \
+                curl https://api.llmhub.com.cn/v1/containers/container_123/files/cfile_456/content \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: >-
                 import OpenAI from 'openai';
@@ -6080,7 +6080,7 @@
             - title: Create a conversation.
               request:
                 curl: |
-                  curl https://api.openai.com/v1/conversations \
+                  curl https://api.llmhub.com.cn/v1/conversations \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -6238,7 +6238,7 @@
             - title: Retrieve a conversation
               request:
                 curl: |
-                  curl https://api.openai.com/v1/conversations/conv_123 \
+                  curl https://api.llmhub.com.cn/v1/conversations/conv_123 \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
                 javascript: |
                   import OpenAI from "openai";
@@ -6367,7 +6367,7 @@
             - title: Update conversation metadata
               request:
                 curl: |
-                  curl https://api.openai.com/v1/conversations/conv_123 \
+                  curl https://api.llmhub.com.cn/v1/conversations/conv_123 \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -6529,7 +6529,7 @@
             - title: Delete a conversation
               request:
                 curl: |
-                  curl -X DELETE https://api.openai.com/v1/conversations/conv_123 \
+                  curl -X DELETE https://api.llmhub.com.cn/v1/conversations/conv_123 \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
                 javascript: |
                   import OpenAI from "openai";
@@ -6680,7 +6680,7 @@
             - title: Add a user message to a conversation
               request:
                 curl: |
-                  curl https://api.openai.com/v1/conversations/conv_123/items \
+                  curl https://api.llmhub.com.cn/v1/conversations/conv_123/items \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -6966,7 +6966,7 @@
             - title: List items in a conversation
               request:
                 curl: |
-                  curl "https://api.openai.com/v1/conversations/conv_123/items?limit=10" \
+                  curl "https://api.llmhub.com.cn/v1/conversations/conv_123/items?limit=10" \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
                 javascript: |
                   import OpenAI from "openai";
@@ -7133,7 +7133,7 @@
             - title: Retrieve an item
               request:
                 curl: |
-                  curl https://api.openai.com/v1/conversations/conv_123/items/msg_abc \
+                  curl https://api.llmhub.com.cn/v1/conversations/conv_123/items/msg_abc \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
                 javascript: |
                   import OpenAI from "openai";
@@ -7291,7 +7291,7 @@
             - title: Delete an item
               request:
                 curl: |
-                  curl -X DELETE https://api.openai.com/v1/conversations/conv_123/items/msg_abc \
+                  curl -X DELETE https://api.llmhub.com.cn/v1/conversations/conv_123/items/msg_abc \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
                 javascript: |
                   import OpenAI from "openai";
@@ -7449,7 +7449,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/embeddings \
+                curl https://api.llmhub.com.cn/v1/embeddings \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -7697,7 +7697,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals?limit=1 \
+                curl https://api.llmhub.com.cn/v1/evals?limit=1 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -7836,7 +7836,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals \
+                curl https://api.llmhub.com.cn/v1/evals \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -8056,7 +8056,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a \
+                curl https://api.llmhub.com.cn/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -8192,7 +8192,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a \
+                curl https://api.llmhub.com.cn/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{"name": "Updated Eval", "metadata": {"description": "Updated description"}}'
@@ -8295,7 +8295,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/eval_abc123 \
+                curl https://api.llmhub.com.cn/v1/evals/eval_abc123 \
                   -X DELETE \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
@@ -8492,7 +8492,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/egroup_67abd54d9b0081909a86353f6fb9317a/runs \
+                curl https://api.llmhub.com.cn/v1/evals/egroup_67abd54d9b0081909a86353f6fb9317a/runs \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
               python: |-
@@ -8647,7 +8647,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/eval_67e579652b548190aaa83ada4b125f47/runs \
+                curl https://api.llmhub.com.cn/v1/evals/eval_67e579652b548190aaa83ada4b125f47/runs \
                   -X POST \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
@@ -8914,7 +8914,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7
+                https://api.llmhub.com.cn/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
@@ -9153,7 +9153,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7/cancel
+                https://api.llmhub.com.cn/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7/cancel
                 \
                   -X POST \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -9265,7 +9265,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/evals/eval_123abc/runs/evalrun_abc456 \
+                curl https://api.llmhub.com.cn/v1/evals/eval_123abc/runs/evalrun_abc456 \
                   -X DELETE \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
@@ -9465,7 +9465,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/evals/egroup_67abd54d9b0081909a86353f6fb9317a/runs/erun_67abd54d60ec8190832b46859da808f7/output_items
+                https://api.llmhub.com.cn/v1/evals/egroup_67abd54d9b0081909a86353f6fb9317a/runs/erun_67abd54d60ec8190832b46859da808f7/output_items
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
@@ -9630,7 +9630,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7/output_items/outputitem_67abd55eb6548190bb580745d5644a33
+                https://api.llmhub.com.cn/v1/evals/eval_67abd54d9b0081909a86353f6fb9317a/runs/evalrun_67abd54d60ec8190832b46859da808f7/output_items/outputitem_67abd55eb6548190bb580745d5644a33
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json"
@@ -9777,7 +9777,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/files \
+                curl https://api.llmhub.com.cn/v1/files \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -9883,7 +9883,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/files \
+                curl https://api.llmhub.com.cn/v1/files \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -F purpose="fine-tune" \
                   -F file="@mydata.jsonl"
@@ -10022,7 +10022,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/files/file-abc123 \
+                curl https://api.llmhub.com.cn/v1/files/file-abc123 \
                   -X DELETE \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
@@ -10130,7 +10130,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/files/file-abc123 \
+                curl https://api.llmhub.com.cn/v1/files/file-abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -10227,7 +10227,7 @@
             response: ''
             request:
               curl: |
-                curl https://api.openai.com/v1/files/file-abc123/content \
+                curl https://api.llmhub.com.cn/v1/files/file-abc123/content \
                   -H "Authorization: Bearer $OPENAI_API_KEY" > file.jsonl
               python: |-
                 from openai import OpenAI
@@ -10370,7 +10370,7 @@
               }
             request:
               curl: >
-                curl -X POST https://api.openai.com/v1/fine_tuning/alpha/graders/run \
+                curl -X POST https://api.llmhub.com.cn/v1/fine_tuning/alpha/graders/run \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -d '{
@@ -10536,7 +10536,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/fine_tuning/alpha/graders/validate \
+                curl https://api.llmhub.com.cn/v1/fine_tuning/alpha/graders/validate \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -10727,7 +10727,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions
+                https://api.llmhub.com.cn/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: >-
@@ -10863,7 +10863,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions
+                https://api.llmhub.com.cn/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
                   -d '{"project_ids": ["proj_abGMw1llN8IrBb6SvvY5A1iH"]}'
@@ -11002,7 +11002,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions/cp_zc4Q7MP6XxulcVzj4MZdwsAB
+                https://api.llmhub.com.cn/v1/fine_tuning/checkpoints/ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd/permissions/cp_zc4Q7MP6XxulcVzj4MZdwsAB
                 \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: >-
@@ -11120,7 +11120,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -11235,7 +11235,7 @@
             - title: Epochs
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -11376,7 +11376,7 @@
             - title: DPO
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -11531,7 +11531,7 @@
             - title: Reinforcement
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -11684,7 +11684,7 @@
             - title: Validation file
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -11800,7 +11800,7 @@
             - title: W&B Integration
               request:
                 curl: |
-                  curl https://api.openai.com/v1/fine_tuning/jobs \
+                  curl https://api.llmhub.com.cn/v1/fine_tuning/jobs \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -12015,7 +12015,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/fine_tuning/jobs?limit=2&metadata[key]=value \
+                curl https://api.llmhub.com.cn/v1/fine_tuning/jobs?limit=2&metadata[key]=value \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12153,7 +12153,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/fine_tuning/jobs/ft-AF1WoRqd3aJAHsqc9NY7iL8F \
+                curl https://api.llmhub.com.cn/v1/fine_tuning/jobs/ft-AF1WoRqd3aJAHsqc9NY7iL8F \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12269,7 +12269,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/cancel \
+                curl -X POST https://api.llmhub.com.cn/v1/fine_tuning/jobs/ftjob-abc123/cancel \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12417,7 +12417,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/checkpoints \
+                curl https://api.llmhub.com.cn/v1/fine_tuning/jobs/ftjob-abc123/checkpoints \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
                 import OpenAI from 'openai';
@@ -12564,7 +12564,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/events \
+                curl https://api.llmhub.com.cn/v1/fine_tuning/jobs/ftjob-abc123/events \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12688,7 +12688,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/pause \
+                curl -X POST https://api.llmhub.com.cn/v1/fine_tuning/jobs/ftjob-abc123/pause \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12800,7 +12800,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/fine_tuning/jobs/ftjob-abc123/resume \
+                curl -X POST https://api.llmhub.com.cn/v1/fine_tuning/jobs/ftjob-abc123/resume \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -12902,7 +12902,7 @@
                 curl: |
                   curl -s -D >(grep -i x-request-id >&2) \
                     -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \
-                    -X POST "https://api.openai.com/v1/images/edits" \
+                    -X POST "https://api.llmhub.com.cn/v1/images/edits" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -F "model=gpt-image-1" \
                     -F "image[]=@body-lotion.png" \
@@ -13000,7 +13000,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl -s -N -X POST "https://api.openai.com/v1/images/edits" \
+                  curl -s -N -X POST "https://api.llmhub.com.cn/v1/images/edits" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -F "model=gpt-image-1" \
                     -F "image[]=@body-lotion.png" \
@@ -13139,7 +13139,7 @@
             - title: Generate image
               request:
                 curl: |
-                  curl https://api.openai.com/v1/images/generations \
+                  curl https://api.llmhub.com.cn/v1/images/generations \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -13240,7 +13240,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/images/generations \
+                  curl https://api.llmhub.com.cn/v1/images/generations \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -13372,7 +13372,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/images/variations \
+                curl https://api.llmhub.com.cn/v1/images/variations \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -F image="@otter.png" \
                   -F n=2 \
@@ -13514,7 +13514,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/models \
+                curl https://api.llmhub.com.cn/v1/models \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -13635,7 +13635,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/models/VAR_chat_model_id \
+                curl https://api.llmhub.com.cn/v1/models/VAR_chat_model_id \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
                 from openai import OpenAI
@@ -13751,7 +13751,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/models/ft:gpt-4o-mini:acemeco:suffix:abc123 \
+                curl https://api.llmhub.com.cn/v1/models/ft:gpt-4o-mini:acemeco:suffix:abc123 \
                   -X DELETE \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               python: |-
@@ -13860,7 +13860,7 @@
             - title: Single string
               request:
                 curl: |
-                  curl https://api.openai.com/v1/moderations \
+                  curl https://api.llmhub.com.cn/v1/moderations \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -13990,7 +13990,7 @@
             - title: Image and text
               request:
                 curl: |
-                  curl https://api.openai.com/v1/moderations \
+                  curl https://api.llmhub.com.cn/v1/moderations \
                     -X POST \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
@@ -14238,7 +14238,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/admin_api_keys?after=key_abc&limit=20 \
+                curl https://api.llmhub.com.cn/v1/organization/admin_api_keys?after=key_abc&limit=20 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
       post:
@@ -14291,7 +14291,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/admin_api_keys \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/admin_api_keys \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -14342,7 +14342,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/admin_api_keys/key_abc \
+                curl https://api.llmhub.com.cn/v1/organization/admin_api_keys/key_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
       delete:
@@ -14386,7 +14386,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/admin_api_keys/key_abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/admin_api_keys/key_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
     /organization/audit_logs:
@@ -14563,7 +14563,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/audit_logs \
+                curl https://api.llmhub.com.cn/v1/organization/audit_logs \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: List user actions and configuration changes within this organization.
@@ -14617,7 +14617,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/certificates \
+                curl https://api.llmhub.com.cn/v1/organization/certificates \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY"
             response: |
               {
@@ -14666,7 +14666,7 @@
           examples:
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/certificates \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/certificates \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -14717,7 +14717,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/certificates/activate \
+                curl https://api.llmhub.com.cn/v1/organization/certificates/activate \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -14784,7 +14784,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/certificates/deactivate \
+                curl https://api.llmhub.com.cn/v1/organization/certificates/deactivate \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -14861,7 +14861,7 @@
           examples:
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/certificates/cert_abc?include[]=content" \
+                curl "https://api.llmhub.com.cn/v1/organization/certificates/cert_abc?include[]=content" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY"
             response: |
               {
@@ -14907,7 +14907,7 @@
           examples:
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/certificates/cert_abc \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/certificates/cert_abc \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -14945,7 +14945,7 @@
           examples:
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/certificates/cert_abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/certificates/cert_abc \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY"
             response: |
               {
@@ -15059,7 +15059,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/costs?start_time=1730419200&limit=1" \
+                curl "https://api.llmhub.com.cn/v1/organization/costs?start_time=1730419200&limit=1" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: Get costs details for the organization.
@@ -15121,7 +15121,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/invites?after=invite-abc&limit=20 \
+                curl https://api.llmhub.com.cn/v1/organization/invites?after=invite-abc&limit=20 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Returns a list of invites in the organization.
@@ -15172,7 +15172,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/invites \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/invites \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -15232,7 +15232,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/invites/invite-abc \
+                curl https://api.llmhub.com.cn/v1/organization/invites/invite-abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves an invite.
@@ -15268,7 +15268,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/invites/invite-abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/invites/invite-abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Delete an invite. If the invite has already been accepted, it cannot be deleted.
@@ -15337,7 +15337,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/organization/projects?after=proj_abc&limit=20&include_archived=false \
+                https://api.llmhub.com.cn/v1/organization/projects?after=proj_abc&limit=20&include_archived=false \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Returns a list of projects.
@@ -15376,7 +15376,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -15422,7 +15422,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves a project.
@@ -15466,7 +15466,7 @@
             response: ''
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -15548,7 +15548,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/api_keys?after=key_abc&limit=20 \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/api_keys?after=key_abc&limit=20 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Returns a list of API keys in the project.
@@ -15607,7 +15607,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/api_keys/key_abc \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/api_keys/key_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves an API key in the project.
@@ -15655,7 +15655,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/projects/proj_abc/api_keys/key_abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/projects/proj_abc/api_keys/key_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Deletes an API key from the project.
@@ -15695,7 +15695,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc/archive \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc/archive \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Archives a project in the organization. Archived projects cannot be used or updated.
@@ -15755,7 +15755,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/certificates \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/certificates \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY"
             response: |
               {
@@ -15814,7 +15814,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/certificates/activate \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/certificates/activate \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -15888,7 +15888,7 @@
           examples:
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/certificates/deactivate \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/certificates/deactivate \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -15998,7 +15998,7 @@
               }
             request:
               curl: >
-                curl https://api.openai.com/v1/organization/projects/proj_abc/rate_limits?after=rl_xxx&limit=20
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/rate_limits?after=rl_xxx&limit=20
                 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
@@ -16066,7 +16066,7 @@
                 }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc/rate_limits/rl_xxx \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc/rate_limits/rl_xxx \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -16149,7 +16149,7 @@
             request:
               curl: >
                 curl
-                https://api.openai.com/v1/organization/projects/proj_abc/service_accounts?after=custom_id&limit=20
+                https://api.llmhub.com.cn/v1/organization/projects/proj_abc/service_accounts?after=custom_id&limit=20
                 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
@@ -16211,7 +16211,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc/service_accounts \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc/service_accounts \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -16264,7 +16264,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/service_accounts/svc_acct_abc \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/service_accounts/svc_acct_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves a service account in the project.
@@ -16309,7 +16309,7 @@
             request:
               curl: >
                 curl -X DELETE
-                https://api.openai.com/v1/organization/projects/proj_abc/service_accounts/svc_acct_abc \
+                https://api.llmhub.com.cn/v1/organization/projects/proj_abc/service_accounts/svc_acct_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Deletes a service account from the project.
@@ -16383,7 +16383,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/users?after=user_abc&limit=20 \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/users?after=user_abc&limit=20 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Returns a list of users in the project.
@@ -16436,7 +16436,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc/users \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc/users \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -16490,7 +16490,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/projects/proj_abc/users/user_abc \
+                curl https://api.llmhub.com.cn/v1/organization/projects/proj_abc/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves a user in the project.
@@ -16550,7 +16550,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/projects/proj_abc/users/user_abc \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/projects/proj_abc/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -16603,7 +16603,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/projects/proj_abc/users/user_abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/projects/proj_abc/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Deletes a user from the project.
@@ -16741,7 +16741,7 @@
               }
             request:
               curl: >
-                curl "https://api.openai.com/v1/organization/usage/audio_speeches?start_time=1730419200&limit=1"
+                curl "https://api.llmhub.com.cn/v1/organization/usage/audio_speeches?start_time=1730419200&limit=1"
                 \
 
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
@@ -16883,7 +16883,7 @@
             request:
               curl: >
                 curl
-                "https://api.openai.com/v1/organization/usage/audio_transcriptions?start_time=1730419200&limit=1"
+                "https://api.llmhub.com.cn/v1/organization/usage/audio_transcriptions?start_time=1730419200&limit=1"
                 \
 
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
@@ -16993,7 +16993,7 @@
             request:
               curl: >
                 curl
-                "https://api.openai.com/v1/organization/usage/code_interpreter_sessions?start_time=1730419200&limit=1"
+                "https://api.llmhub.com.cn/v1/organization/usage/code_interpreter_sessions?start_time=1730419200&limit=1"
                 \
 
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
@@ -17148,7 +17148,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/usage/completions?start_time=1730419200&limit=1" \
+                curl "https://api.llmhub.com.cn/v1/organization/usage/completions?start_time=1730419200&limit=1" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: Get completions usage details for the organization.
@@ -17286,7 +17286,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/usage/embeddings?start_time=1730419200&limit=1" \
+                curl "https://api.llmhub.com.cn/v1/organization/usage/embeddings?start_time=1730419200&limit=1" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: Get embeddings usage details for the organization.
@@ -17458,7 +17458,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/usage/images?start_time=1730419200&limit=1" \
+                curl "https://api.llmhub.com.cn/v1/organization/usage/images?start_time=1730419200&limit=1" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: Get images usage details for the organization.
@@ -17596,7 +17596,7 @@
               }
             request:
               curl: |
-                curl "https://api.openai.com/v1/organization/usage/moderations?start_time=1730419200&limit=1" \
+                curl "https://api.llmhub.com.cn/v1/organization/usage/moderations?start_time=1730419200&limit=1" \
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                 -H "Content-Type: application/json"
         description: Get moderations usage details for the organization.
@@ -17701,7 +17701,7 @@
               }
             request:
               curl: >
-                curl "https://api.openai.com/v1/organization/usage/vector_stores?start_time=1730419200&limit=1"
+                curl "https://api.llmhub.com.cn/v1/organization/usage/vector_stores?start_time=1730419200&limit=1"
                 \
 
                 -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
@@ -17772,7 +17772,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/users?after=user_abc&limit=20 \
+                curl https://api.llmhub.com.cn/v1/organization/users?after=user_abc&limit=20 \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Lists all of the users in the organization.
@@ -17814,7 +17814,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/organization/users/user_abc \
+                curl https://api.llmhub.com.cn/v1/organization/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Retrieves a user by their identifier.
@@ -17860,7 +17860,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/organization/users/user_abc \
+                curl -X POST https://api.llmhub.com.cn/v1/organization/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -17899,7 +17899,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/organization/users/user_abc \
+                curl -X DELETE https://api.llmhub.com.cn/v1/organization/users/user_abc \
                   -H "Authorization: Bearer $OPENAI_ADMIN_KEY" \
                   -H "Content-Type: application/json"
         description: Deletes a user from the organization.
@@ -17976,7 +17976,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/realtime/client_secrets \
+                curl -X POST https://api.llmhub.com.cn/v1/realtime/client_secrets \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -18086,7 +18086,7 @@
           examples:
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/realtime/sessions \
+                curl -X POST https://api.llmhub.com.cn/v1/realtime/sessions \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{
@@ -18157,7 +18157,7 @@
           examples:
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/realtime/transcription_sessions \
+                curl -X POST https://api.llmhub.com.cn/v1/realtime/transcription_sessions \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{}'
@@ -18220,7 +18220,7 @@
             - title: Text input
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -18382,7 +18382,7 @@
             - title: Image input
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -18574,7 +18574,7 @@
             - title: File input
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -18746,7 +18746,7 @@
             - title: Web search
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -18956,7 +18956,7 @@
             - title: File search
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -19208,7 +19208,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -19408,7 +19408,7 @@
             - title: Functions
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -19655,7 +19655,7 @@
             - title: Reasoning
               request:
                 curl: |
-                  curl https://api.openai.com/v1/responses \
+                  curl https://api.llmhub.com.cn/v1/responses \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -d '{
@@ -19968,7 +19968,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/responses/resp_123 \
+                curl https://api.llmhub.com.cn/v1/responses/resp_123 \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
               javascript: |
@@ -20088,7 +20088,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/responses/resp_123 \
+                curl -X DELETE https://api.llmhub.com.cn/v1/responses/resp_123 \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
               javascript: |
@@ -20251,7 +20251,7 @@
               }
             request:
               curl: |
-                curl -X POST https://api.openai.com/v1/responses/resp_123/cancel \
+                curl -X POST https://api.llmhub.com.cn/v1/responses/resp_123/cancel \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY"
               javascript: |
@@ -20412,7 +20412,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/responses/resp_abc123/input_items \
+                curl https://api.llmhub.com.cn/v1/responses/resp_abc123/input_items \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY"
               javascript: |
@@ -20524,7 +20524,7 @@
             - title: Empty
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads \
+                  curl https://api.llmhub.com.cn/v1/threads \
                     -H "Content-Type: application/json" \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -20606,7 +20606,7 @@
             - title: Messages
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads \
+                  curl https://api.llmhub.com.cn/v1/threads \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -20722,7 +20722,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -20842,7 +20842,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -21022,7 +21022,7 @@
             - title: Streaming with Functions
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -21268,7 +21268,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -21385,7 +21385,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -21501,7 +21501,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -21694,7 +21694,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/messages \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/messages \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -21829,7 +21829,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/messages \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/messages \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -21983,7 +21983,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/messages/msg_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/messages/msg_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -22130,7 +22130,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/messages/msg_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/messages/msg_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -22262,7 +22262,7 @@
               }
             request:
               curl: |
-                curl -X DELETE https://api.openai.com/v1/threads/thread_abc123/messages/msg_abc123 \
+                curl -X DELETE https://api.llmhub.com.cn/v1/threads/thread_abc123/messages/msg_abc123 \
                   -H "Content-Type: application/json" \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -22513,7 +22513,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -22643,7 +22643,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/thread_abc123/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -22770,7 +22770,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/thread_123/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/thread_123/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -22949,7 +22949,7 @@
             - title: Streaming with Functions
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/thread_abc123/runs \
+                  curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -23225,7 +23225,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs/run_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2"
               python: |-
@@ -23395,7 +23395,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs/run_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -23553,7 +23553,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123/cancel \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs/run_abc123/cancel \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "OpenAI-Beta: assistants=v2" \
                   -X POST
@@ -23755,7 +23755,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123/steps \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs/run_abc123/steps \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -23930,7 +23930,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/threads/thread_abc123/runs/run_abc123/steps/step_abc123 \
+                curl https://api.llmhub.com.cn/v1/threads/thread_abc123/runs/run_abc123/steps/step_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -24068,7 +24068,7 @@
             - title: Default
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/thread_123/runs/run_123/submit_tool_outputs \
+                  curl https://api.llmhub.com.cn/v1/threads/thread_123/runs/run_123/submit_tool_outputs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -24225,7 +24225,7 @@
             - title: Streaming
               request:
                 curl: |
-                  curl https://api.openai.com/v1/threads/thread_123/runs/run_123/submit_tool_outputs \
+                  curl https://api.llmhub.com.cn/v1/threads/thread_123/runs/run_123/submit_tool_outputs \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -24486,7 +24486,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/uploads \
+                curl https://api.llmhub.com.cn/v1/uploads \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -d '{
                     "purpose": "fine-tune",
@@ -24662,7 +24662,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/uploads/upload_abc123/cancel
+                curl https://api.llmhub.com.cn/v1/uploads/upload_abc123/cancel
               node.js: |-
                 import OpenAI from 'openai';
 
@@ -24788,7 +24788,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/uploads/upload_abc123/complete
+                curl https://api.llmhub.com.cn/v1/uploads/upload_abc123/complete
                   -d '{
                     "part_ids": ["part_def456", "part_ghi789"]
                   }'
@@ -24925,7 +24925,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/uploads/upload_abc123/parts
+                curl https://api.llmhub.com.cn/v1/uploads/upload_abc123/parts
                   -F data="aHR0cHM6Ly9hcGkub3BlbmFpLmNvbS92MS91cGxvYWRz..."
               node.js: |-
                 import OpenAI from 'openai';
@@ -25116,7 +25116,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores \
+                curl https://api.llmhub.com.cn/v1/vector_stores \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -25229,7 +25229,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores \
+                curl https://api.llmhub.com.cn/v1/vector_stores \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -25338,7 +25338,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -25458,7 +25458,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -25570,7 +25570,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -25695,7 +25695,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/file_batches \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/file_batches \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -25839,7 +25839,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -25973,7 +25973,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123/cancel \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123/cancel \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -26164,7 +26164,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123/files \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files_batches/vsfb_abc123/files \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -26351,7 +26351,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -26476,7 +26476,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files \
                     -H "Authorization: Bearer $OPENAI_API_KEY" \
                     -H "Content-Type: application/json" \
                     -H "OpenAI-Beta: assistants=v2" \
@@ -26613,7 +26613,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files/file-abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files/file-abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2"
@@ -26737,7 +26737,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/vs_abc123/files/file-abc123 \
+                curl https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files/file-abc123 \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -H "OpenAI-Beta: assistants=v2" \
@@ -26881,7 +26881,7 @@
               }
             request:
               curl: |
-                curl https://api.openai.com/v1/vector_stores/{vector_store_id}/files/{file_id} \
+                curl https://api.llmhub.com.cn/v1/vector_stores/{vector_store_id}/files/{file_id} \
                   -H "Authorization: Bearer $OPENAI_API_KEY" \
                   -H "Content-Type: application/json" \
                   -d '{"attributes": {"key1": "value1", "key2": 2}}'
@@ -27028,7 +27028,7 @@
             request:
               curl: |
                 curl \
-                https://api.openai.com/v1/vector_stores/vs_abc123/files/file-abc123/content \
+                https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/files/file-abc123/content \
                 -H "Authorization: Bearer $OPENAI_API_KEY"
               node.js: |-
                 import OpenAI from 'openai';
@@ -27184,7 +27184,7 @@
             request:
               curl: |
                 curl -X POST \
-                https://api.openai.com/v1/vector_stores/vs_abc123/search \
+                https://api.llmhub.com.cn/v1/vector_stores/vs_abc123/search \
                 -H "Authorization: Bearer $OPENAI_API_KEY" \
                 -H "Content-Type: application/json" \
                 -d '{"query": "What is the return policy?", "filters": {...}}'
