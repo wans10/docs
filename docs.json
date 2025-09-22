@@ -8,6 +8,10 @@
     "light": "#F8FAFC",
     "dark": "#0F172A"
   },
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
   "navigation": {
     "dropdowns": [
       {
