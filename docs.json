@@ -25,17 +25,11 @@
           {
             "group": "API 参考",
             "pages": [
-              "api-reference/overview",
-              "api-reference/streaming",
-              "api-reference/limits",
-              "api-reference/authentication",
-              "api-reference/parameters",
-              "api-reference/errors",
               {
                 "group": "Chat API",
                 "pages": [
-                  "api-reference/chat-completion",
                   "api-reference/responses",
+                  "api-reference/chat-completion",
                   "api-reference/messages",
                   "api-reference/chat/responses.mdx",
                   "api-reference/chat/messages.mdx"
