@@ -34,16 +34,25 @@
                   "api-reference/chat/responses.mdx",
                   "api-reference/chat/messages.mdx"
                 ]
+              },
+              {
+                "group": "Audio API",
+                "pages": [
+                  "api-reference/openai-audio"
+                ]
+              },
+              {
+                "group": "Image API",
+                "pages": [
+                  "api-reference/openai-image"
+                ]
+              },
+              {
+                "group": "Embeddings API",
+                "pages": [
+                  "api-reference/openai-embeddings"
+                ]
               }
-            ]
-          },
-          {
-            "group": "平台管理",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
             ]
           },
           {
