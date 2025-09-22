@@ -16,7 +16,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "用户指南",
         "groups": [
           {
             "group": "概述",
@@ -46,7 +46,7 @@
         ]
       },
       {
-        "tab": "Changelog",
+        "tab": "开发工具",
         "pages": [
           "changelog"
         ]
