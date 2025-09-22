@@ -18190,16 +18190,24 @@ paths:
         for the Realtime API.
   /responses:
     post:
+      summary: Create a response
       operationId: createResponse
-      tags:
-        - Responses
-      summary: Create a model response
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateResponse'
+              type: object
+              properties:
+                model:
+                  type: string
+                  description: ID of the model to use.
+                input:
+                  type: string
+                  description: The input text prompt.
+            example:
+              model: gpt-4.1-mini
+              input: Write a haiku about recursion in programming.
       responses:
         '200':
           description: OK
