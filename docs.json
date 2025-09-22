@@ -15,7 +15,6 @@
         "groups": [
           {
             "group": "概述",
-            "icon": "compass",
             "pages": [
               "quickstart",
               "faq",
@@ -25,7 +24,6 @@
           },
           {
             "group": "API 参考",
-            "icon": "code",
             "pages": [
               "api-reference/overview",
               "api-reference/streaming",
@@ -35,7 +33,6 @@
               "api-reference/errors",
               {
                 "group": "Chat API",
-                "icon": "chat",
                 "pages": [
                   "api-reference/chat-completion",
                   "api-reference/responses",
@@ -69,7 +66,6 @@
         "groups": [
           {
             "group": "概述",
-            "icon": "compass",
             "pages": [
               "development-tools/claude-code"
             ]
