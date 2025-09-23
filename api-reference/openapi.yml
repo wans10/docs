@@ -751,8 +751,8 @@ paths:
                   - $ref: '#/components/schemas/Response'
                   - $ref: '#/components/schemas/StreamingResponse'
               examples:
-                bedtimeStoryResponse:
-                  summary: 独角兽睡前故事的响应
+                文本描述响应:
+                  summary: 文本描述的响应
                   value:
                     id: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
                     object: response
@@ -796,7 +796,7 @@ paths:
                       total_tokens: 123
                     user: null
                     metadata: {}
-                imageDescriptionResponse:
+                图像描述响应:
                   summary: 图像描述的响应
                   value:
                     id: resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41
@@ -841,7 +841,7 @@ paths:
                       total_tokens: 380
                     user: null
                     metadata: {}
-                fileDescriptionResponse:
+                文件描述响应:
                   summary: 文件描述的响应
                   value:
                     id: resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86
@@ -891,7 +891,7 @@ paths:
                       total_tokens: 8836
                     user: null
                     metadata: {}
-                webSearchResponse:
+                网络搜索响应:
                   summary: 工具调用网络搜索的响应
                   value:
                     id: resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c
@@ -963,7 +963,7 @@ paths:
                       total_tokens: 684
                     user: null
                     metadata: {}
-                fileSearchResponse:
+                文件搜索响应:
                   summary: 工具调用文件搜索的响应
                   value:
                     id: resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7
@@ -1054,7 +1054,7 @@ paths:
                       total_tokens: 18655
                     user: null
                     metadata: {}
-                streamingResponse:
+                流式响应:
                   summary: 流式响应的示例
                   value:
                     - event: response.created
@@ -1220,7 +1220,7 @@ paths:
                             total_tokens: 48
                           user: null
                           metadata: {}
-                functionCallResponse:
+                函数响应:
                   summary: 工具调用函数的响应
                   value:
                     id: resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0
@@ -1279,7 +1279,7 @@ paths:
                       total_tokens: 314
                     user: null
                     metadata: {}
-                highReasoningResponse:
+                推理响应:
                   summary: 高级推理的响应
                   value:
                     id: resp_67ccd7eca01881908ff0b5146584e408072912b2993db808
@@ -1333,6 +1333,7 @@ paths:
         - bearerAuth: []
       x-codeSamples:
         - lang: cURL
+          label: 文本输入示例
           source: |
             curl https://api.openai.com/v1/chat/completions \
               -H "Content-Type: application/json" \
@@ -1351,6 +1352,7 @@ paths:
                 ]
               }'
         - lang: Python
+          label: 文本输入示例
           source: |
             from openai import OpenAI
             client = OpenAI()
@@ -1365,6 +1367,7 @@ paths:
 
             print(completion.choices[0].message)
         - lang: JavaScript
+          label: 文本输入示例
           source: |
             import OpenAI from "openai";
 
@@ -1382,6 +1385,7 @@ paths:
 
             main();
         - lang: C#
+          label: 文本输入示例
           source: |
             using System;
             using System.Collections.Generic;
