@@ -1550,7 +1550,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ChatCompletion'
               examples:
-                chatCompletionResponse:
+                文本描述响应:
                   summary: 聊天完成的响应
                   value:
                     id: chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT
@@ -1579,7 +1579,7 @@ paths:
                         accepted_prediction_tokens: 0
                         rejected_prediction_tokens: 0
                     service_tier: default
-                imageChatResponse:
+                图片描述响应:
                   summary: 图像输入的聊天完成响应
                   value:
                     id: chatcmpl-B9MHDbslfkBeAs8l4bebGdFOJ6PeG
