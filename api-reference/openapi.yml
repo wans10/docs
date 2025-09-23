@@ -1,86 +1,106 @@
 openapi: 3.1.0
 info:
-  title: LLM Hub API
-  description: API for accessing various language models through a unified interface
+  title: OpenAI Responses API
+  description: API for generating responses using OpenAI's language models.
   version: 1.0.0
 servers:
-  - url: https://api.llmhub.com.cn
-    description: Production server
-
+  - url: https://api.openai.com/v1
+    description: OpenAI API production server
 paths:
-  /v1/responses:
+  /responses:
     post:
-      summary: Create a response
-      description: Generate a response using the specified model
       operationId: createResponse
+      summary: Creates a response using a specified model.
+      description: Generates a text response based on the provided model and input prompt. Requires an API key for authentication.
+      tags:
+        - Responses
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResponseRequest'
+              $ref: '#/components/schemas/CreateResponseRequest'
+            examples:
+              bedtimeStory:
+                summary: Generate a bedtime story about a unicorn
+                value:
+                  model: gpt-4.1
+                  input: Tell me a three sentence bedtime story about a unicorn.
       responses:
         '200':
-          description: Successful response
+          description: Successful response with generated text.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseObject'
-      x-codeSamples:
-        - lang: curl
-          label: cURL
-          source: |
-            curl https://api.openai.com/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $OPENAI_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "input": "Tell me a three sentence bedtime story about a unicorn."
-              }'
-        - lang: javascript
-          label: JavaScript
-          source: |
-            import OpenAI from "openai";
-            
-            const openai = new OpenAI();
-            
-            const response = await openai.responses.create({
-                model: "gpt-4.1",
-                input: "Tell me a three sentence bedtime story about a unicorn."
-            });
-            
-            console.log(response);
-        - lang: python
-          label: Python
-          source: |
-            from openai import OpenAI
-            
-            client = OpenAI()
-            
-            response = client.responses.create(
-              model="gpt-4.1",
-              input="Tell me a three sentence bedtime story about a unicorn."
-            )
-            
-            print(response)
-        - lang: csharp
-          label: C#
-          source: |
-            using System;
-            using OpenAI.Responses;
-            
-            OpenAIResponseClient client = new(
-                model: "gpt-4.1",
-                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
-            );
-            
-            OpenAIResponse response = client.CreateResponse("Tell me a three sentence bedtime story about a unicorn.");
-            
-            Console.WriteLine(response.GetOutputText());
-
+                $ref: '#/components/schemas/Response'
+              examples:
+                bedtimeStoryResponse:
+                  summary: Response for a unicorn bedtime story
+                  value:
+                    id: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
+                    object: response
+                    created_at: 1741476542
+                    status: completed
+                    error: null
+                    incomplete_details: null
+                    instructions: null
+                    max_output_tokens: null
+                    model: gpt-4.1-2025-04-14
+                    output:
+                      - type: message
+                        id: msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b
+                        status: completed
+                        role: assistant
+                        content:
+                          - type: output_text
+                            text: In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust.
+                            annotations: []
+                    parallel_tool_calls: true
+                    previous_response_id: null
+                    reasoning:
+                      effort: null
+                      summary: null
+                    store: true
+                    temperature: 1.0
+                    text:
+                      format:
+                        type: text
+                    tool_choice: auto
+                    tools: []
+                    top_p: 1.0
+                    truncation: disabled
+                    usage:
+                      input_tokens: 36
+                      input_tokens_details:
+                        cached_tokens: 0
+                      output_tokens: 87
+                      output_tokens_details:
+                        reasoning_tokens: 0
+                      total_tokens: 123
+                    user: null
+                    metadata: {}
+        '401':
+          description: Unauthorized request due to invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    ResponseRequest:
+    CreateResponseRequest:
       type: object
       required:
         - model
@@ -88,189 +108,195 @@ components:
       properties:
         model:
           type: string
-          description: ID of the model to use
-          example: "gpt-4.1"
+          description: The ID of the model to use for generating the response (e.g., gpt-4.1).
+          example: gpt-4.1
         input:
           type: string
-          description: The input prompt for the model
-          example: "Tell me a three sentence bedtime story about a unicorn."
-
-    ResponseObject:
+          description: The input prompt to generate a response for.
+          example: Tell me a three sentence bedtime story about a unicorn.
+      additionalProperties: false
+    Response:
       type: object
       properties:
         id:
           type: string
-          description: Unique identifier for the response
-          example: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
+          description: Unique identifier for the response.
+          example: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
         object:
           type: string
-          description: The object type, which is always response
-          example: "response"
+          description: Object type, always "response".
+          example: response
         created_at:
           type: integer
-          description: The Unix timestamp (in seconds) of when the response was created
+          description: Unix timestamp (in seconds) when the response was created.
           example: 1741476542
         status:
           type: string
-          description: The status of the response
-          example: "completed"
+          description: Status of the response.
+          example: completed
         error:
           type: object
+          description: Error details, if any.
           nullable: true
-          description: Error information if the response failed
         incomplete_details:
           type: object
+          description: Details about incomplete responses, if applicable.
           nullable: true
-          description: Details about why the response is incomplete
         instructions:
           type: object
+          description: Instructions provided, if any.
           nullable: true
-          description: Instructions for the response
         max_output_tokens:
-          type: object
+          type: integer
+          description: Maximum number of output tokens, if specified.
           nullable: true
-          description: Maximum number of output tokens
         model:
           type: string
-          description: The model used for the response
-          example: "gpt-4.1-2025-04-14"
+          description: The model used to generate the response.
+          example: gpt-4.1-2025-04-14
         output:
           type: array
+          description: Array of output messages.
           items:
             $ref: '#/components/schemas/OutputMessage'
         parallel_tool_calls:
           type: boolean
-          description: Whether parallel tool calls are enabled
+          description: Whether parallel tool calls are enabled.
           example: true
         previous_response_id:
           type: string
+          description: ID of the previous response, if any.
           nullable: true
-          description: ID of the previous response in a conversation
         reasoning:
-          $ref: '#/components/schemas/Reasoning'
+          type: object
+          description: Reasoning details for the response.
+          properties:
+            effort:
+              type: string
+              nullable: true
+            summary:
+              type: string
+              nullable: true
         store:
           type: boolean
-          description: Whether the response is stored
+          description: Whether the response is stored.
           example: true
         temperature:
           type: number
-          format: float
-          description: Sampling temperature
+          description: Sampling temperature used for the response.
           example: 1.0
         text:
-          $ref: '#/components/schemas/TextFormat'
+          type: object
+          description: Text format details.
+          properties:
+            format:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: text
         tool_choice:
           type: string
-          description: How tools are chosen
-          example: "auto"
+          description: Tool selection strategy.
+          example: auto
         tools:
           type: array
+          description: List of tools used, if any.
           items:
             type: object
-          description: List of tools used
+          example: []
         top_p:
           type: number
-          format: float
-          description: Nucleus sampling parameter
+          description: Top-p sampling value.
           example: 1.0
         truncation:
           type: string
-          description: Truncation setting
-          example: "disabled"
+          description: Truncation strategy.
+          example: disabled
         usage:
-          $ref: '#/components/schemas/Usage'
+          type: object
+          description: Token usage details.
+          properties:
+            input_tokens:
+              type: integer
+              example: 36
+            input_tokens_details:
+              type: object
+              properties:
+                cached_tokens:
+                  type: integer
+                  example: 0
+            output_tokens:
+              type: integer
+              example: 87
+            output_tokens_details:
+              type: object
+              properties:
+                reasoning_tokens:
+                  type: integer
+                  example: 0
+            total_tokens:
+              type: integer
+              example: 123
         user:
-          type: string
+          type: object
+          description: User information, if provided.
           nullable: true
-          description: User identifier
         metadata:
           type: object
-          description: Additional metadata
-
+          description: Additional metadata for the response.
+          example: {}
     OutputMessage:
       type: object
       properties:
         type:
           type: string
-          example: "message"
+          description: Type of the output message.
+          example: message
         id:
           type: string
-          example: "msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b"
+          description: Unique identifier for the message.
+          example: msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b
         status:
           type: string
-          example: "completed"
+          description: Status of the message.
+          example: completed
         role:
           type: string
-          example: "assistant"
+          description: Role of the message sender.
+          example: assistant
         content:
           type: array
-          items:
-            $ref: '#/components/schemas/Content'
-
-    Content:
-      type: object
-      properties:
-        type:
-          type: string
-          example: "output_text"
-        text:
-          type: string
-          example: "In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust."
-        annotations:
-          type: array
+          description: Content of the message.
           items:
             type: object
-
-    Reasoning:
+            properties:
+              type:
+                type: string
+                description: Type of content.
+                example: output_text
+              text:
+                type: string
+                description: The generated text content.
+                example: In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust.
+              annotations:
+                type: array
+                description: Annotations for the content, if any.
+                items:
+                  type: object
+                example: []
+    ErrorResponse:
       type: object
       properties:
-        effort:
+        error:
           type: object
-          nullable: true
-        summary:
-          type: object
-          nullable: true
-
-    TextFormat:
-      type: object
-      properties:
-        format:
-          $ref: '#/components/schemas/Format'
-
-    Format:
-      type: object
-      properties:
-        type:
-          type: string
-          example: "text"
-
-    Usage:
-      type: object
-      properties:
-        input_tokens:
-          type: integer
-          example: 36
-        input_tokens_details:
-          $ref: '#/components/schemas/InputTokenDetails'
-        output_tokens:
-          type: integer
-          example: 87
-        output_tokens_details:
-          $ref: '#/components/schemas/OutputTokenDetails'
-        total_tokens:
-          type: integer
-          example: 123
-
-    InputTokenDetails:
-      type: object
-      properties:
-        cached_tokens:
-          type: integer
-          example: 0
-
-    OutputTokenDetails:
-      type: object
-      properties:
-        reasoning_tokens:
-          type: integer
-          example: 0
+          properties:
+            message:
+              type: string
+              description: Description of the error.
+            type:
+              type: string
+              description: Type of the error.
+            code:
+              type: string
+              description: Error code, if applicable.
