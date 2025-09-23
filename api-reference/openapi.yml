@@ -1,21 +1,68 @@
 openapi: 3.1.0
 info:
   title: OpenAI Responses API
-  description: API for generating responses using OpenAI's language models.
+  description: 使用 OpenAI 的语言模型生成响应的 API。
   version: 1.0.0
 servers:
   - url: https://api.openai.com/v1
-    description: OpenAI API production server
+    description: OpenAI API 生产服务器
 paths:
   /responses:
     post:
       operationId: createResponse
-      summary: Creates a response using a specified model.
-      description: Generates a text response based on the provided model and input prompt. Requires an API key for authentication.
+      summary: 创建使用指定模型的响应
+      description: 根据提供的模型和输入提示生成文本响应。需要 API 密钥进行身份验证。
       tags:
         - Responses
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.openai.com/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $OPENAI_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "input": "Tell me a three sentence bedtime story about a unicorn."
+              }'
+        - lang: JavaScript
+          source: |
+            import OpenAI from "openai";
+            
+            const openai = new OpenAI();
+            
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                input: "Tell me a three sentence bedtime story about a unicorn."
+            });
+            
+            console.log(response);
+        - lang: Python
+          source: |
+            from openai import OpenAI
+            
+            client = OpenAI()
+            
+            response = client.responses.create(
+              model="gpt-4.1",
+              input="Tell me a three sentence bedtime story about a unicorn."
+            )
+            
+            print(response)
+        - lang: C#
+          source: |
+            using System;
+            using OpenAI.Responses;
+            
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+            
+            OpenAIResponse response = client.CreateResponse("Tell me a three sentence bedtime story about a unicorn.");
+            
+            Console.WriteLine(response.GetOutputText());
       requestBody:
         required: true
         content:
@@ -24,20 +71,20 @@ paths:
               $ref: '#/components/schemas/CreateResponseRequest'
             examples:
               bedtimeStory:
-                summary: Generate a bedtime story about a unicorn
+                summary: 生成关于独角兽的睡前故事
                 value:
                   model: gpt-4.1
                   input: Tell me a three sentence bedtime story about a unicorn.
       responses:
         '200':
-          description: Successful response with generated text.
+          description: 成功生成包含文本的响应。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
               examples:
                 bedtimeStoryResponse:
-                  summary: Response for a unicorn bedtime story
+                  summary: 独角兽睡前故事的响应
                   value:
                     id: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
                     object: response
@@ -55,8 +102,8 @@ paths:
                         role: assistant
                         content:
                           - type: output_text
-                            text: In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust.
-                            annotations: []
+                            text: 在银色月光下的宁静树林中，一只名叫卢米娜的独角兽发现了一个反射星光的隐秘水池。当她将角浸入水中，水池开始闪烁，揭示出一条通往无尽夜空的神奇路径。卢米娜满怀惊奇，低语了一个愿望，希望所有梦想者都能找到属于自己的魔法，然后回头一看，她的蹄印如星尘般闪耀。
+                            annotations: [ ]
                     parallel_tool_calls: true
                     previous_response_id: null
                     reasoning:
@@ -68,7 +115,7 @@ paths:
                       format:
                         type: text
                     tool_choice: auto
-                    tools: []
+                    tools: [ ]
                     top_p: 1.0
                     truncation: disabled
                     usage:
@@ -80,15 +127,15 @@ paths:
                         reasoning_tokens: 0
                       total_tokens: 123
                     user: null
-                    metadata: {}
+                    metadata: { }
         '401':
-          description: Unauthorized request due to invalid or missing API key.
+          description: 由于无效或缺少 API 密钥导致的未授权请求。
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '429':
-          description: Rate limit exceeded.
+          description: 超过速率限制。
           content:
             application/json:
               schema:
@@ -108,11 +155,11 @@ components:
       properties:
         model:
           type: string
-          description: The ID of the model to use for generating the response (e.g., gpt-4.1).
+          description: 用于生成响应的模型 ID（例如 gpt-4.1）。
           example: gpt-4.1
         input:
           type: string
-          description: The input prompt to generate a response for.
+          description: 用于生成响应的输入提示。
           example: Tell me a three sentence bedtime story about a unicorn.
       additionalProperties: false
     Response:
@@ -120,56 +167,56 @@ components:
       properties:
         id:
           type: string
-          description: Unique identifier for the response.
+          description: 响应的唯一标识符。
           example: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
         object:
           type: string
-          description: Object type, always "response".
+          description: 对象类型，始终为 "response"。
           example: response
         created_at:
           type: integer
-          description: Unix timestamp (in seconds) when the response was created.
+          description: 响应创建时的 Unix 时间戳（秒）。
           example: 1741476542
         status:
           type: string
-          description: Status of the response.
+          description: 响应的状态。
           example: completed
         error:
           type: object
-          description: Error details, if any.
+          description: 错误详情（如果有）。
           nullable: true
         incomplete_details:
           type: object
-          description: Details about incomplete responses, if applicable.
+          description: 关于不完整响应的详细信息（如果适用）。
           nullable: true
         instructions:
           type: object
-          description: Instructions provided, if any.
+          description: 提供的指令（如果有）。
           nullable: true
         max_output_tokens:
           type: integer
-          description: Maximum number of output tokens, if specified.
+          description: 最大输出令牌数（如果指定）。
           nullable: true
         model:
           type: string
-          description: The model used to generate the response.
+          description: 用于生成响应的模型。
           example: gpt-4.1-2025-04-14
         output:
           type: array
-          description: Array of output messages.
+          description: 输出消息数组。
           items:
             $ref: '#/components/schemas/OutputMessage'
         parallel_tool_calls:
           type: boolean
-          description: Whether parallel tool calls are enabled.
+          description: 是否启用并行工具调用。
           example: true
         previous_response_id:
           type: string
-          description: ID of the previous response, if any.
+          description: 前一个响应的 ID（如果有）。
           nullable: true
         reasoning:
           type: object
-          description: Reasoning details for the response.
+          description: 响应的推理详情。
           properties:
             effort:
               type: string
@@ -179,15 +226,15 @@ components:
               nullable: true
         store:
           type: boolean
-          description: Whether the response is stored.
+          description: 是否存储响应。
           example: true
         temperature:
           type: number
-          description: Sampling temperature used for the response.
+          description: 采样的温度值。
           example: 1.0
         text:
           type: object
-          description: Text format details.
+          description: 文本格式详情。
           properties:
             format:
               type: object
@@ -197,25 +244,25 @@ components:
                   example: text
         tool_choice:
           type: string
-          description: Tool selection strategy.
+          description: 工具选择策略。
           example: auto
         tools:
           type: array
-          description: List of tools used, if any.
+          description: 使用的工具列表（如果有）。
           items:
             type: object
-          example: []
+          example: [ ]
         top_p:
           type: number
-          description: Top-p sampling value.
+          description: Top-p 采样值。
           example: 1.0
         truncation:
           type: string
-          description: Truncation strategy.
+          description: 截断策略。
           example: disabled
         usage:
           type: object
-          description: Token usage details.
+          description: 令牌使用详情。
           properties:
             input_tokens:
               type: integer
@@ -240,51 +287,51 @@ components:
               example: 123
         user:
           type: object
-          description: User information, if provided.
+          description: 用户信息（如果提供）。
           nullable: true
         metadata:
           type: object
-          description: Additional metadata for the response.
-          example: {}
+          description: 响应的附加元数据。
+          example: { }
     OutputMessage:
       type: object
       properties:
         type:
           type: string
-          description: Type of the output message.
+          description: 输出消息的类型。
           example: message
         id:
           type: string
-          description: Unique identifier for the message.
+          description: 消息的唯一标识符。
           example: msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b
         status:
           type: string
-          description: Status of the message.
+          description: 消息的状态。
           example: completed
         role:
           type: string
-          description: Role of the message sender.
+          description: 消息发送者的角色。
           example: assistant
         content:
           type: array
-          description: Content of the message.
+          description: 消息的内容。
           items:
             type: object
             properties:
               type:
                 type: string
-                description: Type of content.
+                description: 内容的类型。
                 example: output_text
               text:
                 type: string
-                description: The generated text content.
-                example: In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust.
+                description: 生成的文本内容。
+                example: 在银色月光下的宁静树林中，一只名叫卢米娜的独角兽发现了一个反射星光的隐秘水池。当她将角浸入水中，水池开始闪烁，揭示出一条通往无尽夜空的神奇路径。卢米娜满怀惊奇，低语了一个愿望，希望所有梦想者都能找到属于自己的魔法，然后回头一看，她的蹄印如星尘般闪耀。
               annotations:
                 type: array
-                description: Annotations for the content, if any.
+                description: 内容的注解（如果有）。
                 items:
                   type: object
-                example: []
+                example: [ ]
     ErrorResponse:
       type: object
       properties:
@@ -293,10 +340,10 @@ components:
           properties:
             message:
               type: string
-              description: Description of the error.
+              description: 错误描述。
             type:
               type: string
-              description: Type of the error.
+              description: 错误类型。
             code:
               type: string
-              description: Error code, if applicable.
+              description: 错误代码（如果适用）。
