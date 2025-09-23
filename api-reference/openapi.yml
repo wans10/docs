@@ -1220,7 +1220,7 @@ paths:
                             total_tokens: 48
                           user: null
                           metadata: {}
-                函数响应:
+                函数调用响应:
                   summary: 工具调用函数的响应
                   value:
                     id: resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0
@@ -1438,7 +1438,7 @@ paths:
                 "tool_choice": "auto"
               }'
         - lang: cURL
-          label: 日志概率示例
+          label: 对数概率示例
           source: |
             curl https://api.openai.com/v1/chat/completions \
               -H "Content-Type: application/json" \
@@ -1549,7 +1549,7 @@ paths:
 
             print(completion)
         - lang: Python
-          label: 日志概率示例
+          label: 对数概率示例
           source: |
             from openai import OpenAI
             client = OpenAI()
@@ -1676,7 +1676,7 @@ paths:
 
             main();
         - lang: JavaScript
-          label: 日志概率示例
+          label: 对数概率示例
           source: |
             import OpenAI from "openai";
 
@@ -1821,7 +1821,7 @@ paths:
 
             ChatCompletion completion = client.CompleteChat(messages, options);
         - lang: C#
-          label: 日志概率示例
+          label: 对数概率示例
           source: |
             using System;
             using System.Collections.Generic;
@@ -1910,7 +1910,7 @@ paths:
                           required: ["location"]
                   tool_choice: auto
               logprobsChat:
-                summary: 日志概率的聊天完成
+                summary: 对数概率的聊天完成
                 value:
                   model: gpt-4.1
                   messages:
@@ -2020,7 +2020,7 @@ paths:
                           delta: {}
                           logprobs: null
                           finish_reason: stop
-                functionCallResponse:
+                函数调用响应:
                   summary: 函数调用的聊天完成响应
                   value:
                     id: chatcmpl-abc123
@@ -2050,8 +2050,8 @@ paths:
                         reasoning_tokens: 0
                         accepted_prediction_tokens: 0
                         rejected_prediction_tokens: 0
-                logprobsResponse:
-                  summary: 日志概率的聊天完成响应
+                对数概率响应:
+                  summary: 对数概率的聊天完成响应
                   value:
                     id: chatcmpl-123
                     object: chat.completion
@@ -2775,7 +2775,7 @@ components:
                       example: ...
               logprobs:
                 type: array
-                description: 日志概率（如果有）。
+                description: 对数概率（如果有）。
                 items:
                   type: object
                 example: []
