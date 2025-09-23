@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: OpenAI Responses API
-  description: 使用 OpenAI 的语言模型生成响应的 API，支持文本、图像、文件和工具调用输入。
+  description: 使用 OpenAI 的语言模型生成响应的 API，支持文本、图像、文件、网络搜索和文件搜索输入。
   version: 1.0.0
 servers:
   - url: https://api.openai.com/v1
@@ -11,7 +11,7 @@ paths:
     post:
       operationId: createResponse
       summary: 创建使用指定模型的响应
-      description: 根据提供的模型和输入（支持文本、消息数组包含文本、图像、文件，或工具调用）生成文本响应。需要 API 密钥进行身份验证。
+      description: 根据提供的模型和输入（支持文本、消息数组包含文本、图像、文件，或工具调用如网络搜索和文件搜索）生成文本响应。需要 API 密钥进行身份验证。
       tags:
         - Responses
       security:
@@ -70,7 +70,7 @@ paths:
                 ]
               }'
         - lang: cURL
-          label: 工具调用示例
+          label: 网络搜索示例
           source: |
             curl https://api.openai.com/v1/responses \
               -H "Content-Type: application/json" \
@@ -79,6 +79,21 @@ paths:
                 "model": "gpt-4.1",
                 "tools": [{ "type": "web_search_preview" }],
                 "input": "What was a positive news story from today?"
+              }'
+        - lang: cURL
+          label: 文件搜索示例
+          source: |
+            curl https://api.openai.com/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $OPENAI_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "tools": [{
+                  "type": "file_search",
+                  "vector_store_ids": ["vs_1234567890"],
+                  "max_num_results": 20
+                }],
+                "input": "What are the attributes of an ancient brown dragon?"
               }'
         - lang: JavaScript
           label: 文本输入示例
@@ -143,7 +158,7 @@ paths:
 
             console.log(response);
         - lang: JavaScript
-          label: 工具调用示例
+          label: 网络搜索示例
           source: |
             import OpenAI from "openai";
 
@@ -153,6 +168,24 @@ paths:
                 model: "gpt-4.1",
                 tools: [{ type: "web_search_preview" }],
                 input: "What was a positive news story from today?",
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 文件搜索示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                tools: [{
+                    type: "file_search",
+                    vector_store_ids: ["vs_1234567890"],
+                    max_num_results: 20
+                }],
+                input: "What are the attributes of an ancient brown dragon?",
             });
 
             console.log(response);
@@ -218,9 +251,9 @@ paths:
 
             print(response)
         - lang: Python
-          label: 工具调用示例
+          label: 网络搜索示例
           source: |
-            from opene import OpenAI
+            from openai import OpenAI
 
             client = OpenAI()
 
@@ -228,6 +261,24 @@ paths:
                 model="gpt-4.1",
                 tools=[{ "type": "web_search_preview" }],
                 input="What was a positive news story from today?",
+            )
+
+            print(response)
+        - lang: Python
+          label: 文件搜索示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="gpt-4.1",
+                tools=[{
+                    "type": "file_search",
+                    "vector_store_ids": ["vs_1234567890"],
+                    "max_num_results": 20
+                }],
+                input="What are the attributes of an ancient brown dragon?",
             )
 
             print(response)
@@ -271,7 +322,7 @@ paths:
 
             Console.WriteLine(response.GetOutputText());
         - lang: C#
-          label: 工具调用示例
+          label: 网络搜索示例
           source: |
             using System;
             using OpenAI.Responses;
@@ -288,6 +339,33 @@ paths:
                 Tools =
                 {
                     ResponseTool.CreateWebSearchTool()
+                },
+            };
+
+            OpenAIResponse response = client.CreateResponse(userInputText, options);
+
+            Console.WriteLine(response.GetOutputText());
+        - lang: C#
+          label: 文件搜索示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            string userInputText = "What are the attributes of an ancient brown dragon?";
+
+            ResponseCreationOptions options = new()
+            {
+                Tools =
+                {
+                    ResponseTool.CreateFileSearchTool(
+                        vectorStoreIds: ["vs_1234567890"],
+                        maxResultCount: 20
+                    )
                 },
             };
 
@@ -335,6 +413,16 @@ paths:
                   tools:
                     - type: web_search_preview
                   input: What was a positive news story from today?
+              fileSearch:
+                summary: 使用工具进行文件搜索
+                value:
+                  model: gpt-4.1
+                  tools:
+                    - type: file_search
+                      vector_store_ids:
+                        - vs_1234567890
+                      max_num_results: 20
+                  input: What are the attributes of an ancient brown dragon?
       responses:
         '200':
           description: 成功生成包含文本的响应。
@@ -555,6 +643,97 @@ paths:
                       total_tokens: 684
                     user: null
                     metadata: {}
+                fileSearchResponse:
+                  summary: 工具调用文件搜索的响应
+                  value:
+                    id: resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7
+                    object: response
+                    created_at: 1741485253
+                    status: completed
+                    error: null
+                    incomplete_details: null
+                    instructions: null
+                    max_output_tokens: null
+                    model: gpt-4.1-2025-04-14
+                    output:
+                      - type: file_search_call
+                        id: fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7
+                        status: completed
+                        queries:
+                          - attributes of an ancient brown dragon
+                        results: null
+                      - type: message
+                        id: msg_67ccf4c93e5c81909d595b369351a9d309504fb6872380d7
+                        status: completed
+                        role: assistant
+                        content:
+                          - type: output_text
+                            text: 古老棕龙的属性包括...
+                            annotations:
+                              - type: file_citation
+                                index: 320
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 576
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 815
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 815
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 1030
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 1030
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 1156
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                              - type: file_citation
+                                index: 1225
+                                file_id: file-4wDz5b167pAf72nx1h9eiN
+                                filename: dragons.pdf
+                    parallel_tool_calls: true
+                    previous_response_id: null
+                    reasoning:
+                      effort: null
+                      summary: null
+                    store: true
+                    temperature: 1.0
+                    text:
+                      format:
+                        type: text
+                    tool_choice: auto
+                    tools:
+                      - type: file_search
+                        filters: null
+                        max_num_results: 20
+                        ranking_options:
+                          ranker: auto
+                          score_threshold: 0.0
+                        vector_store_ids:
+                          - vs_1234567890
+                    top_p: 1.0
+                    truncation: disabled
+                    usage:
+                      input_tokens: 18307
+                      input_tokens_details:
+                        cached_tokens: 0
+                      output_tokens: 348
+                      output_tokens_details:
+                        reasoning_tokens: 0
+                      total_tokens: 18655
+                    user: null
+                    metadata: {}
 components:
   securitySchemes:
     bearerAuth:
@@ -576,18 +755,21 @@ components:
           oneOf:
             - type: string
               description: 简单的文本输入提示。
-              example: What was a positive news story from today?
+              example: What are the attributes of an ancient brown dragon?
             - type: array
               description: 包含用户消息的数组，支持文本、图像或文件输入。
               items:
                 $ref: '#/components/schemas/InputMessage'
         tools:
           type: array
-          description: 可选的工具列表，例如网络搜索。
+          description: 可选的工具列表，例如网络搜索或文件搜索。
           items:
             $ref: '#/components/schemas/Tool'
           example:
-            - type: web_search_preview
+            - type: file_search
+              vector_store_ids:
+                - vs_1234567890
+              max_num_results: 20
       additionalProperties: false
     InputMessage:
       type: object
@@ -620,7 +802,7 @@ components:
         text:
           type: string
           description: 输入的文本内容。
-          example: What was a positive news story from today?
+          example: What are the attributes of an ancient brown dragon?
       additionalProperties: false
     InputImageContent:
       type: object
@@ -659,21 +841,21 @@ components:
       properties:
         type:
           type: string
-          description: 工具类型，例如 "web_search_preview"。
-          example: web_search_preview
+          description: 工具类型，例如 "web_search_preview" 或 "file_search"。
+          example: file_search
         domains:
           type: array
-          description: 可选的搜索域名限制。
+          description: 可选的搜索域名限制（适用于 web_search_preview）。
           items:
             type: string
           example: []
         search_context_size:
           type: string
-          description: 搜索上下文大小，例如 "medium"。
+          description: 搜索上下文大小，例如 "medium"（适用于 web_search_preview）。
           example: medium
         user_location:
           type: object
-          description: 用户位置信息。
+          description: 用户位置信息（适用于 web_search_preview）。
           properties:
             type:
               type: string
@@ -690,6 +872,33 @@ components:
             timezone:
               type: string
               nullable: true
+        vector_store_ids:
+          type: array
+          description: 用于文件搜索的向量存储 ID 列表（适用于 file_search）。
+          items:
+            type: string
+          example:
+            - vs_1234567890
+        max_num_results:
+          type: integer
+          description: 文件搜索的最大结果数（适用于 file_search）。
+          example: 20
+        filters:
+          type: object
+          description: 文件搜索的过滤条件（适用于 file_search）。
+          nullable: true
+        ranking_options:
+          type: object
+          description: 文件搜索的排名选项（适用于 file_search）。
+          properties:
+            ranker:
+              type: string
+              description: 排名器类型。
+              example: auto
+            score_threshold:
+              type: number
+              description: 分数阈值。
+              example: 0.0
       additionalProperties: false
     Response:
       type: object
@@ -697,7 +906,7 @@ components:
         id:
           type: string
           description: 响应的唯一标识符。
-          example: resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c
+          example: resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7
         object:
           type: string
           description: 对象类型，始终为 "response"。
@@ -705,7 +914,7 @@ components:
         created_at:
           type: integer
           description: 响应创建时的 Unix 时间戳（秒）。
-          example: 1741484430
+          example: 1741485253
         status:
           type: string
           description: 响应的状态。
@@ -745,6 +954,7 @@ components:
             oneOf:
               - $ref: '#/components/schemas/OutputMessage'
               - $ref: '#/components/schemas/WebSearchCall'
+              - $ref: '#/components/schemas/FileSearchCall'
         parallel_tool_calls:
           type: boolean
           description: 是否启用并行工具调用。
@@ -812,7 +1022,7 @@ components:
           properties:
             input_tokens:
               type: integer
-              example: 328
+              example: 18307
             input_tokens_details:
               type: object
               properties:
@@ -821,7 +1031,7 @@ components:
                   example: 0
             output_tokens:
               type: integer
-              example: 356
+              example: 348
             output_tokens_details:
               type: object
               properties:
@@ -830,7 +1040,7 @@ components:
                   example: 0
             total_tokens:
               type: integer
-              example: 684
+              example: 18655
         user:
           type: object
           description: 用户信息（如果提供）。
@@ -845,7 +1055,7 @@ components:
         id:
           type: string
           description: 消息的唯一标识符。
-          example: msg_67ccf190ca3881909d433c50b1f6357e087bb177ab789d5c
+          example: msg_67ccf4c93e5c81909d595b369351a9d309504fb6872380d7
         type:
           type: string
           description: 输出消息的类型。
@@ -871,7 +1081,7 @@ components:
               text:
                 type: string
                 description: 生成的文本内容。
-                example: 截至2025年3月9日，一个值得注意的正面新闻故事是...
+                example: 古老棕龙的属性包括...
               annotations:
                 type: array
                 description: 内容的注解（如果有）。
@@ -880,23 +1090,35 @@ components:
                   properties:
                     type:
                       type: string
-                      description: 注解类型，例如 "url_citation"。
-                      example: url_citation
+                      description: 注解类型，例如 "url_citation" 或 "file_citation"。
+                      example: file_citation
+                    index:
+                      type: integer
+                      description: 注解的索引位置。
+                      example: 320
+                    file_id:
+                      type: string
+                      description: 引用的文件 ID（适用于 file_citation）。
+                      example: file-4wDz5b167pAf72nx1h9eiN
+                    filename:
+                      type: string
+                      description: 引用的文件名（适用于 file_citation）。
+                      example: dragons.pdf
                     start_index:
                       type: integer
-                      description: 注解起始索引。
+                      description: 注解起始索引（适用于 url_citation）。
                       example: 442
                     end_index:
                       type: integer
-                      description: 注解结束索引。
+                      description: 注解结束索引（适用于 url_citation）。
                       example: 557
                     url:
                       type: string
-                      description: 引用的 URL。
+                      description: 引用的 URL（适用于 url_citation）。
                       example: https://.../?utm_source=chatgpt.com
                     title:
                       type: string
-                      description: 引用标题。
+                      description: 引用标题（适用于 url_citation）。
                       example: ...
               logprobs:
                 type: array
@@ -919,6 +1141,32 @@ components:
           type: string
           description: 工具调用的状态。
           example: completed
+    FileSearchCall:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 工具调用的唯一标识符。
+          example: fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7
+        type:
+          type: string
+          description: 工具调用类型，例如 "file_search_call"。
+          example: file_search_call
+        status:
+          type: string
+          description: 工具调用的状态。
+          example: completed
+        queries:
+          type: array
+          description: 文件搜索的查询列表。
+          items:
+            type: string
+          example:
+            - attributes of an ancient brown dragon
+        results:
+          type: object
+          description: 文件搜索结果（如果有）。
+          nullable: true
     ErrorResponse:
       type: object
       properties:
