@@ -14,7 +14,6 @@ paths:
       description: 根据提供的模型和输入提示生成文本响应。需要 API 密钥进行身份验证。
       tags:
         - Responses
-      x-internal: true
       security:
         - bearerAuth: [ ]
       x-codeSamples:
