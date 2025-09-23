@@ -1351,6 +1351,26 @@ paths:
                   }
                 ]
               }'
+        - lang: cURL
+          label: 流式响应示例
+          source: |
+            curl https://api.openai.com/v1/chat/completions \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $OPENAI_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "messages": [
+                  {
+                    "role": "developer",
+                    "content": "You are a helpful assistant."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Hello!"
+                  }
+                ],
+                "stream": true
+              }'
         - lang: Python
           label: 文本输入示例
           source: |
@@ -1366,6 +1386,23 @@ paths:
             )
 
             print(completion.choices[0].message)
+        - lang: Python
+          label: 流式响应示例
+          source: |
+            from openai import OpenAI
+            client = OpenAI()
+
+            completion = client.chat.completions.create(
+              model="gpt-4.1",
+              messages=[
+                {"role": "developer", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Hello!"}
+              ],
+              stream=True
+            )
+
+            for chunk in completion:
+              print(chunk.choices[0].delta)
         - lang: JavaScript
           label: 文本输入示例
           source: |
@@ -1381,6 +1418,29 @@ paths:
               });
 
               console.log(completion.choices[0]);
+            }
+
+            main();
+        - lang: JavaScript
+          label: 流式响应示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            async function main() {
+              const completion = await openai.chat.completions.create({
+                model: "gpt-4.1",
+                messages: [
+                  {"role": "developer", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": "Hello!"}
+                ],
+                stream: true,
+              });
+
+              for await (const chunk of completion) {
+                console.log(chunk.choices[0].delta.content);
+              }
             }
 
             main();
@@ -1406,6 +1466,36 @@ paths:
             ChatCompletion completion = client.CompleteChat(messages);
 
             Console.WriteLine(completion.Content[0].Text);
+        - lang: C#
+          label: 流式响应示例
+          source: |
+            using System;
+            using System.ClientModel;
+            using System.Collections.Generic;
+            using System.Threading.Tasks;
+
+            using OpenAI.Chat;
+
+            ChatClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            List<ChatMessage> messages =
+            [
+                new SystemChatMessage("You are a helpful assistant."),
+                new UserChatMessage("Hello!")
+            ];
+
+            AsyncCollectionResult<StreamingChatCompletionUpdate> completionUpdates = client.CompleteChatStreamingAsync(messages);
+
+            await foreach (StreamingChatCompletionUpdate completionUpdate in completionUpdates)
+            {
+                if (completionUpdate.ContentUpdate.Count > 0)
+                {
+                    Console.Write(completionUpdate.ContentUpdate[0].Text);
+                }
+            }
         - lang: cURL
           label: 图像输入示例
           source: |
@@ -1529,6 +1619,16 @@ paths:
                       content: You are a helpful assistant.
                     - role: user
                       content: Hello!
+              streamingChat:
+                summary: 流式聊天完成
+                value:
+                  model: gpt-4.1
+                  messages:
+                    - role: developer
+                      content: You are a helpful assistant.
+                    - role: user
+                      content: Hello!
+                  stream: true
               imageChat:
                 summary: 图像输入的聊天完成
                 value:
@@ -1608,6 +1708,42 @@ paths:
                         accepted_prediction_tokens: 0
                         rejected_prediction_tokens: 0
                     service_tier: default
+                流式响应:
+                  summary: 流式聊天完成的响应
+                  value:
+                    - id: chatcmpl-123
+                      object: chat.completion.chunk
+                      created: 1694268190
+                      model: gpt-4o-mini
+                      system_fingerprint: fp_44709d6fcb
+                      choices:
+                        - index: 0
+                          delta:
+                            role: assistant
+                            content: ""
+                          logprobs: null
+                          finish_reason: null
+                    - id: chatcmpl-123
+                      object: chat.completion.chunk
+                      created: 1694268190
+                      model: gpt-4o-mini
+                      system_fingerprint: fp_44709d6fcb
+                      choices:
+                        - index: 0
+                          delta:
+                            content: Hello
+                          logprobs: null
+                          finish_reason: null
+                    - id: chatcmpl-123
+                      object: chat.completion.chunk
+                      created: 1694268190
+                      model: gpt-4o-mini
+                      system_fingerprint: fp_44709d6fcb
+                      choices:
+                        - index: 0
+                          delta: {}
+                          logprobs: null
+                          finish_reason: stop
 components:
   securitySchemes:
     bearerAuth:
