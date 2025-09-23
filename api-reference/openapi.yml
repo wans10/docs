@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: OpenAI Responses API
-  description: 使用 OpenAI 的语言模型生成响应的 API，支持文本、图像、文件、网络搜索、文件搜索、流式响应、函数调用和高级推理输入。
+  description: 使用 OpenAI 的语言模型生成响应的 API，支持文本、图像、文件、网络搜索、文件搜索、流式响应、函数调用、高级推理和聊天完成输入。
   version: 1.0.0
 servers:
   - url: https://api.openai.com/v1
@@ -1322,6 +1322,151 @@ paths:
                       total_tokens: 1116
                     user: null
                     metadata: {}
+  /chat/completions:
+    post:
+      operationId: createChatCompletion
+      summary: 创建聊天完成
+      description: 使用消息数组生成聊天响应，支持系统消息（developer 角色）和用户消息。需要 API 密钥进行身份验证。
+      tags:
+        - Chat
+      security:
+        - bearerAuth: []
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl https://api.openai.com/v1/chat/completions \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $OPENAI_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "messages": [
+                  {
+                    "role": "developer",
+                    "content": "You are a helpful assistant."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Hello!"
+                  }
+                ]
+              }'
+        - lang: Python
+          source: |
+            from openai import OpenAI
+            client = OpenAI()
+
+            completion = client.chat.completions.create(
+              model="gpt-4.1",
+              messages=[
+                {"role": "developer", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "Hello!"}
+              ]
+            )
+
+            print(completion.choices[0].message)
+        - lang: JavaScript
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            async function main() {
+              const completion = await openai.chat.completions.create({
+                messages: [{ role: "developer", content: "You are a helpful assistant." }, { role: "user", content: "Hello!" }],
+                model: "gpt-4.1",
+                store: true,
+              });
+
+              console.log(completion.choices[0]);
+            }
+
+            main();
+        - lang: C#
+          source: |
+            using System;
+            using System.Collections.Generic;
+
+            using OpenAI.Chat;
+
+            ChatClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            List<ChatMessage> messages =
+            [
+                new SystemChatMessage("You are a helpful assistant."),
+                new UserChatMessage("Hello!")
+            ];
+
+            ChatCompletion completion = client.CompleteChat(messages);
+
+            Console.WriteLine(completion.Content[0].Text);
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+            examples:
+              simpleChat:
+                summary: 简单的聊天完成
+                value:
+                  model: gpt-4.1
+                  messages:
+                    - role: developer
+                      content: You are a helpful assistant.
+                    - role: user
+                      content: Hello!
+      responses:
+        '200':
+          description: 成功生成聊天完成响应。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+              examples:
+                chatCompletionResponse:
+                  summary: 聊天完成的响应
+                  value:
+                    id: chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT
+                    object: chat.completion
+                    created: 1741569952
+                    model: gpt-4.1-2025-04-14
+                    choices:
+                      - index: 0
+                        message:
+                          role: assistant
+                          content: 你好！今天我能帮您什么？
+                          refusal: null
+                          annotations: []
+                        logprobs: null
+                        finish_reason: stop
+                    usage:
+                      prompt_tokens: 19
+                      completion_tokens: 10
+                      total_tokens: 29
+                      prompt_tokens_details:
+                        cached_tokens: 0
+                        audio_tokens: 0
+                      completion_tokens_details:
+                        reasoning_tokens: 0
+                        audio_tokens: 0
+                        accepted_prediction_tokens: 0
+                        rejected_prediction_tokens: 0
+                    service_tier: default
+        '401':
+          description: 由于无效或缺少 API 密钥导致的未授权请求。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: 超过速率限制。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -2005,6 +2150,145 @@ components:
           type: string
           description: 工具调用的状态。
           example: completed
+    ChatCompletionRequest:
+      type: object
+      required:
+        - model
+        - messages
+      properties:
+        model:
+          type: string
+          description: 用于生成响应的模型 ID（例如 gpt-4.1）。
+          example: gpt-4.1
+        messages:
+          type: array
+          description: 消息数组，支持 developer（系统）、user 和 assistant 角色。
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        store:
+          type: boolean
+          description: 是否存储响应。
+          example: true
+      additionalProperties: false
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+      properties:
+        role:
+          type: string
+          enum: [developer, user, assistant]
+          description: 消息角色，developer 为系统消息。
+          example: developer
+        content:
+          type: string
+          description: 消息内容。
+          example: You are a helpful assistant.
+      additionalProperties: false
+    ChatCompletion:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 聊天完成的唯一标识符。
+          example: chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT
+        object:
+          type: string
+          description: 对象类型，始终为 "chat.completion"。
+          example: chat.completion
+        created:
+          type: integer
+          description: 响应创建时的 Unix 时间戳（秒）。
+          example: 1741569952
+        model:
+          type: string
+          description: 用于生成响应的模型。
+          example: gpt-4.1-2025-04-14
+        choices:
+          type: array
+          description: 生成的选择数组。
+          items:
+            $ref: '#/components/schemas/ChatChoice'
+        usage:
+          type: object
+          description: 令牌使用详情。
+          properties:
+            prompt_tokens:
+              type: integer
+              example: 19
+            completion_tokens:
+              type: integer
+              example: 10
+            total_tokens:
+              type: integer
+              example: 29
+            prompt_tokens_details:
+              type: object
+              properties:
+                cached_tokens:
+                  type: integer
+                  example: 0
+                audio_tokens:
+                  type: integer
+                  example: 0
+            completion_tokens_details:
+              type: object
+              properties:
+                reasoning_tokens:
+                  type: integer
+                  example: 0
+                audio_tokens:
+                  type: integer
+                  example: 0
+                accepted_prediction_tokens:
+                  type: integer
+                  example: 0
+                rejected_prediction_tokens:
+                  type: integer
+                  example: 0
+        service_tier:
+          type: string
+          description: 服务层级。
+          example: default
+    ChatChoice:
+      type: object
+      properties:
+        index:
+          type: integer
+          description: 选择索引。
+          example: 0
+        message:
+          $ref: '#/components/schemas/ChatMessageResponse'
+        logprobs:
+          type: object
+          nullable: true
+        finish_reason:
+          type: string
+          enum: [stop, length, tool_calls]
+          description: 完成原因。
+          example: stop
+    ChatMessageResponse:
+      type: object
+      properties:
+        role:
+          type: string
+          description: 消息角色，固定为 "assistant"。
+          example: assistant
+        content:
+          type: string
+          description: 助手生成的响应内容。
+          example: 你好！今天我能帮您什么？
+        refusal:
+          type: object
+          nullable: true
+          description: ilier to reject the request (if applicable).
+        annotations:
+          type: array
+          description: Annotations for the content (if any).
+          items:
+            type: object
+          example: []
     ErrorResponse:
       type: object
       properties:
