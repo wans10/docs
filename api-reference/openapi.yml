@@ -1,23 +1,32 @@
   openapi: 3.1.0
   info:
-    title: LLMHub API
-    description: API for interacting with the LLMHub service, supporting text, image, file inputs, and various tools for generating responses.
+    title: OpenAI Responses API
     version: 1.0.0
+    description: API for interacting with OpenAI's response generation capabilities, supporting text, image, file inputs, web search, file search, streaming, functions, and reasoning.
   servers:
-    - url: https://api.llmhub.com.cn/v1
-      description: Main LLMHub API server
+    - url: https://api.openai.com
+      description: Main API server
   paths:
-    /responses:
+    /v1/responses:
       post:
-        summary: Create a response
-        description: Generates a response based on the provided input, model, and optional tools. Supports text, image, file inputs, and streaming responses.
-        operationId: createResponse
+        summary: Generate responses based on various input types and tools
+        description: |
+          This endpoint handles multiple types of requests including text input, image analysis, file content analysis, web search, file search, streaming responses, function calls, and reasoning tasks. The request body determines the type of operation performed.
+        operationId: generateResponse
         requestBody:
           required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RequestBody'
+                oneOf:
+                  - $ref: '#/components/schemas/TextInputRequest'
+                  - $ref: '#/components/schemas/ImageInputRequest'
+                  - $ref: '#/components/schemas/FileInputRequest'
+                  - $ref: '#/components/schemas/WebSearchRequest'
+                  - $ref: '#/components/schemas/FileSearchRequest'
+                  - $ref: '#/components/schemas/StreamingRequest'
+                  - $ref: '#/components/schemas/FunctionCallRequest'
+                  - $ref: '#/components/schemas/ReasoningRequest'
         responses:
           '200':
             description: Successful response
@@ -25,309 +34,421 @@
               application/json:
                 schema:
                   $ref: '#/components/schemas/Response'
+          '200+text/event-stream':
+            description: Streaming response for stream-enabled requests
+            content:
               text/event-stream:
                 schema:
-                  $ref: '#/components/schemas/StreamResponse'
-          '401':
-            description: Unauthorized - Invalid or missing API key
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Error'
-        security:
-          - BearerAuth: []
+                  $ref: '#/components/schemas/StreamingResponse'
+        x-codeSamples:
+          - lang: cURL
+            label: Text Input
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "input": "Tell me a three sentence bedtime story about a unicorn."
+                }'
+          - lang: cURL
+            label: Image Input
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "input": [
+                    {
+                      "role": "user",
+                      "content": [
+                        {"type": "input_text", "text": "what is in this image?"},
+                        {
+                          "type": "input_image",
+                          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                        }
+                      ]
+                    }
+                  ]
+                }'
+          - lang: cURL
+            label: File Input
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "input": [
+                    {
+                      "role": "user",
+                      "content": [
+                        {"type": "input_text", "text": "what is in this file?"},
+                        {
+                          "type": "input_file",
+                          "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
+                        }
+                      ]
+                    }
+                  ]
+                }'
+          - lang: cURL
+            label: Web Search
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "tools": [{ "type": "web_search_preview" }],
+                  "input": "What was a positive news story from today?"
+                }'
+          - lang: cURL
+            label: File Search
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "tools": [{
+                    "type": "file_search",
+                    "vector_store_ids": ["vs_1234567890"],
+                    "max_num_results": 20
+                  }],
+                  "input": "What are the attributes of an ancient brown dragon?"
+                }'
+          - lang: cURL
+            label: Streaming
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "instructions": "You are a helpful assistant.",
+                  "input": "Hello!",
+                  "stream": true
+                }'
+          - lang: cURL
+            label: Function Call
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "gpt-4.1",
+                  "input": "What is the weather like in Boston today?",
+                  "tools": [
+                    {
+                      "type": "function",
+                      "name": "get_current_weather",
+                      "description": "Get the current weather in a given location",
+                      "parameters": {
+                        "type": "object",
+                        "properties": {
+                          "location": {
+                            "type": "string",
+                            "description": "The city and state, e.g. San Francisco, CA"
+                          },
+                          "unit": {
+                            "type": "string",
+                            "enum": ["celsius", "fahrenheit"]
+                          }
+                        },
+                        "required": ["location", "unit"]
+                      }
+                    }
+                  ],
+                  "tool_choice": "auto"
+                }'
+          - lang: cURL
+            label: Reasoning
+            source: |
+              curl https://api.openai.com/v1/responses \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $OPENAI_API_KEY" \
+                -d '{
+                  "model": "o3-mini",
+                  "input": "How much wood would a woodchuck chuck?",
+                  "reasoning": {
+                    "effort": "high"
+                  }
+                }'
   components:
-    securitySchemes:
-      BearerAuth:
-        type: http
-        scheme: bearer
-        bearerFormat: JWT
     schemas:
-      RequestBody:
+      TextInputRequest:
         type: object
         properties:
           model:
             type: string
-            description: The model to use for generating the response (e.g., gpt-4.1, o3-mini).
-            example: gpt-4.1
+            example: "gpt-4.1"
           input:
-            oneOf:
-              - type: string
-                description: A string input for text-based queries.
-                example: Tell me a three sentence bedtime story about a unicorn.
-              - type: array
-                items:
-                  $ref: '#/components/schemas/Message'
-                description: An array of messages for conversational or multimodal inputs.
-          instructions:
             type: string
-            nullable: true
-            description: Optional instructions for the assistant.
-            example: You are a helpful assistant.
-          stream:
-            type: boolean
-            description: Whether to stream the response.
-            default: false
-            example: true
+            example: "Tell me a three sentence bedtime story about a unicorn."
+        required:
+          - model
+          - input
+      ImageInputRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          input:
+            type: array
+            items:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: "user"
+                content:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            enum: ["input_text"]
+                          text:
+                            type: string
+                            example: "what is in this image?"
+                        required:
+                          - type
+                          - text
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            enum: ["input_image"]
+                          image_url:
+                            type: string
+                            example: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                        required:
+                          - type
+                          - image_url
+        required:
+          - model
+          - input
+      FileInputRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          input:
+            type: array
+            items:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: "user"
+                content:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            enum: ["input_text"]
+                          text:
+                            type: string
+                            example: "what is in this file?"
+                        required:
+                          - type
+                          - text
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            enum: ["input_file"]
+                          file_url:
+                            type: string
+                            example: "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
+                        required:
+                          - type
+                          - file_url
+        required:
+          - model
+          - input
+      WebSearchRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          input:
+            type: string
+            example: "What was a positive news story from today?"
           tools:
             type: array
             items:
-              $ref: '#/components/schemas/Tool'
-            description: Optional tools to use for processing the input.
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["web_search_preview"]
+        required:
+          - model
+          - input
+          - tools
+      FileSearchRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          input:
+            type: string
+            example: "What are the attributes of an ancient brown dragon?"
+          tools:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["file_search"]
+                vector_store_ids:
+                  type: array
+                  items:
+                    type: string
+                    example: "vs_1234567890"
+                max_num_results:
+                  type: integer
+                  example: 20
+        required:
+          - model
+          - input
+          - tools
+      StreamingRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          instructions:
+            type: string
+            example: "You are a helpful assistant."
+          input:
+            type: string
+            example: "Hello!"
+          stream:
+            type: boolean
+            example: true
+        required:
+          - model
+          - input
+          - stream
+      FunctionCallRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "gpt-4.1"
+          input:
+            type: string
+            example: "What is the weather like in Boston today?"
+          tools:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: ["function"]
+                name:
+                  type: string
+                  example: "get_current_weather"
+                description:
+                  type: string
+                  example: "Get the current weather in a given location"
+                parameters:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: "object"
+                    properties:
+                      type: object
+                      properties:
+                        location:
+                          type: string
+                          description: "The city and state, e.g. San Francisco, CA"
+                        unit:
+                          type: string
+                          enum: ["celsius", "fahrenheit"]
+                    required:
+                      type: array
+                      items:
+                        type: string
+                        example: "location"
+                  required:
+                    - type
+                    - properties
+                    - required
           tool_choice:
             type: string
-            description: How the model should use tools (e.g., auto).
-            default: auto
-            example: auto
+            example: "auto"
+        required:
+          - model
+          - input
+          - tools
+          - tool_choice
+      ReasoningRequest:
+        type: object
+        properties:
+          model:
+            type: string
+            example: "o3-mini"
+          input:
+            type: string
+            example: "How much wood would a woodchuck chuck?"
           reasoning:
             type: object
             properties:
               effort:
                 type: string
-                description: The level of reasoning effort (e.g., high).
-                nullable: true
-                example: high
-            description: Optional reasoning configuration.
+                example: "high"
         required:
           - model
           - input
-      Message:
-        type: object
-        properties:
-          role:
-            type: string
-            description: The role of the message (e.g., user).
-            example: user
-          content:
-            type: array
-            items:
-              oneOf:
-                - $ref: '#/components/schemas/InputText'
-                - $ref: '#/components/schemas/InputImage'
-                - $ref: '#/components/schemas/InputFile'
-            description: The content of the message, which can include text, images, or files.
-        required:
-          - role
-          - content
-      InputText:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [input_text]
-            description: The type of content (text).
-          text:
-            type: string
-            description: The text content.
-            example: what is in this image?
-        required:
-          - type
-          - text
-      InputImage:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [input_image]
-            description: The type of content (image).
-          image_url:
-            type: string
-            description: URL of the image to process.
-            example: https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg
-        required:
-          - type
-          - image_url
-      InputFile:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [input_file]
-            description: The type of content (file).
-          file_url:
-            type: string
-            description: URL of the file to process.
-            example: https://www.berkshirehathaway.com/letters/2024ltr.pdf
-        required:
-          - type
-          - file_url
-      Tool:
-        oneOf:
-          - $ref: '#/components/schemas/WebSearchTool'
-          - $ref: '#/components/schemas/FileSearchTool'
-          - $ref: '#/components/schemas/FunctionTool'
-        description: A tool to assist in processing the input.
-      WebSearchTool:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [web_search_preview]
-            description: The type of tool (web search).
-          domains:
-            type: array
-            items:
-              type: string
-            description: Optional list of domains to restrict the search.
-          search_context_size:
-            type: string
-            description: The size of the search context.
-            example: medium
-          user_location:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type of location (e.g., approximate).
-                example: approximate
-              city:
-                type: string
-                nullable: true
-              country:
-                type: string
-                example: US
-              region:
-                type: string
-                nullable: true
-              timezone:
-                type: string
-                nullable: true
-        required:
-          - type
-      FileSearchTool:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [file_search]
-            description: The type of tool (file search).
-          vector_store_ids:
-            type: array
-            items:
-              type: string
-            description: IDs of vector stores to search.
-            example: ["vs_1234567890"]
-          max_num_results:
-            type: integer
-            description: Maximum number of search results.
-            example: 20
-          ranking_options:
-            type: object
-            properties:
-              ranker:
-                type: string
-                description: The ranking algorithm to use.
-                example: auto
-              score_threshold:
-                type: number
-                description: Minimum score threshold for results.
-                example: 0.0
-        required:
-          - type
-          - vector_store_ids
-      FunctionTool:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [function]
-            description: The type of tool (function).
-          name:
-            type: string
-            description: The name of the function.
-            example: get_current_weather
-          description:
-            type: string
-            description: Description of the function.
-            example: Get the current weather in a given location
-          parameters:
-            type: object
-            description: Parameters for the function.
-            properties:
-              type:
-                type: string
-                enum: [object]
-              properties:
-                type: object
-                description: The properties of the function parameters.
-                additionalProperties:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                      description: The type of the parameter.
-                    description:
-                      type: string
-                      description: Description of the parameter.
-                    enum:
-                      type: array
-                      items:
-                        type: string
-                      description: Allowed values for the parameter.
-              required:
-                type: array
-                items:
-                  type: string
-                description: Required parameter names.
-            example:
-              type: object
-              properties:
-                location:
-                  type: string
-                  description: The city and state, e.g. San Francisco, CA
-                unit:
-                  type: string
-                  enum: [celsius, fahrenheit]
-              required: [location, unit]
-          strict:
-            type: boolean
-            description: Whether the function parameters are strictly enforced.
-            default: true
-        required:
-          - type
-          - name
-          - description
-          - parameters
+          - reasoning
       Response:
         type: object
         properties:
           id:
             type: string
-            description: Unique identifier for the response.
-            example: resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b
+            example: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
           object:
             type: string
-            description: The type of object (always "response").
-            example: response
+            example: "response"
           created_at:
             type: integer
-            description: Unix timestamp of when the response was created.
             example: 1741476542
           status:
             type: string
-            description: Status of the response (e.g., completed, in_progress).
-            example: completed
+            example: "completed"
           error:
             type: object
             nullable: true
-            description: Error details, if any.
           incomplete_details:
             type: object
             nullable: true
-            description: Details about incomplete responses, if any.
           instructions:
             type: string
             nullable: true
-            description: Instructions provided in the request.
-            example: You are a helpful assistant.
           max_output_tokens:
             type: integer
             nullable: true
-            description: Maximum number of output tokens allowed.
           model:
             type: string
-            description: The model used for the response.
-            example: gpt-4.1-2025-04-14
+            example: "gpt-4.1-2025-04-14"
           output:
             type: array
             items:
@@ -336,35 +457,26 @@
                 - $ref: '#/components/schemas/FunctionCallOutput'
                 - $ref: '#/components/schemas/WebSearchCallOutput'
                 - $ref: '#/components/schemas/FileSearchCallOutput'
-            description: The output of the response, which can include messages or tool calls.
           parallel_tool_calls:
             type: boolean
-            description: Whether parallel tool calls are enabled.
             example: true
           previous_response_id:
             type: string
             nullable: true
-            description: ID of the previous response, if any.
           reasoning:
             type: object
             properties:
               effort:
                 type: string
                 nullable: true
-                description: The level of reasoning effort.
-                example: high
               summary:
                 type: string
                 nullable: true
-                description: Summary of the reasoning process.
-            description: Details about the reasoning process.
           store:
             type: boolean
-            description: Whether the response is stored.
             example: true
           temperature:
             type: number
-            description: Temperature setting for the model.
             example: 1.0
           text:
             type: object
@@ -374,64 +486,53 @@
                 properties:
                   type:
                     type: string
-                    description: The format of the text output.
-                    example: text
-            description: Text format configuration.
+                    example: "text"
           tool_choice:
             type: string
-            description: How tools were chosen.
-            example: auto
+            example: "auto"
           tools:
             type: array
             items:
-              $ref: '#/components/schemas/Tool'
-            description: Tools used in the response.
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "web_search_preview"
           top_p:
             type: number
-            description: Top-p sampling parameter.
             example: 1.0
           truncation:
             type: string
-            description: Truncation setting.
-            example: disabled
+            example: "disabled"
           usage:
             type: object
             properties:
               input_tokens:
                 type: integer
-                description: Number of input tokens used.
                 example: 36
               input_tokens_details:
                 type: object
                 properties:
                   cached_tokens:
                     type: integer
-                    description: Number of cached input tokens.
                     example: 0
               output_tokens:
                 type: integer
-                description: Number of output tokens generated.
                 example: 87
               output_tokens_details:
                 type: object
                 properties:
                   reasoning_tokens:
                     type: integer
-                    description: Number of tokens used for reasoning.
                     example: 0
               total_tokens:
                 type: integer
-                description: Total number of tokens used.
                 example: 123
-            description: Token usage details.
           user:
             type: string
             nullable: true
-            description: User identifier, if any.
           metadata:
             type: object
-            description: Additional metadata.
-            example: {}
         required:
           - id
           - object
@@ -439,137 +540,78 @@
           - status
           - model
           - output
+          - parallel_tool_calls
+          - previous_response_id
+          - reasoning
+          - store
+          - temperature
+          - text
+          - tool_choice
+          - tools
+          - top_p
+          - truncation
+          - usage
+          - user
+          - metadata
       MessageOutput:
         type: object
         properties:
           type:
             type: string
-            enum: [message]
-            description: The type of output (message).
+            example: "message"
           id:
             type: string
-            description: Unique identifier for the message.
-            example: msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b
+            example: "msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b"
           status:
             type: string
-            description: Status of the message (e.g., completed, in_progress).
-            example: completed
+            example: "completed"
           role:
             type: string
-            description: Role of the message (e.g., assistant).
-            example: assistant
+            example: "assistant"
           content:
             type: array
             items:
-              $ref: '#/components/schemas/ContentPart'
-            description: Content parts of the message.
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "output_text"
+                text:
+                  type: string
+                  example: "In a peaceful grove beneath a silver moon..."
+                annotations:
+                  type: array
+                  items:
+                    oneOf:
+                      - $ref: '#/components/schemas/UrlCitation'
+                      - $ref: '#/components/schemas/FileCitation'
         required:
           - type
           - id
           - status
           - role
           - content
-      ContentPart:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [output_text]
-            description: The type of content part (text).
-          text:
-            type: string
-            description: The text content of the output.
-            example: In a peaceful grove beneath a silver moon...
-          annotations:
-            type: array
-            items:
-              oneOf:
-                - $ref: '#/components/schemas/UrlCitation'
-                - $ref: '#/components/schemas/FileCitation'
-            description: Annotations for the content, such as citations.
-        required:
-          - type
-          - text
-          - annotations
-      UrlCitation:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [url_citation]
-            description: The type of annotation (URL citation).
-          start_index:
-            type: integer
-            description: Start index of the cited text.
-            example: 442
-          end_index:
-            type: integer
-            description: End index of the cited text.
-            example: 557
-          url:
-            type: string
-            description: The cited URL.
-            example: https://.../?utm_source=chatgpt.com
-          title:
-            type: string
-            description: Title of the cited resource.
-        required:
-          - type
-          - start_index
-          - end_index
-          - url
-          - title
-      FileCitation:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [file_citation]
-            description: The type of annotation (file citation).
-          index:
-            type: integer
-            description: Index of the cited text.
-            example: 320
-          file_id:
-            type: string
-            description: ID of the cited file.
-            example: file-4wDz5b167pAf72nx1h9eiN
-          filename:
-            type: string
-            description: Name of the cited file.
-            example: dragons.pdf
-        required:
-          - type
-          - index
-          - file_id
-          - filename
       FunctionCallOutput:
         type: object
         properties:
           type:
             type: string
-            enum: [function_call]
-            description: The type of output (function call).
+            example: "function_call"
           id:
             type: string
-            description: Unique identifier for the function call.
-            example: fc_67ca09c6bedc8190a7abfec07b1a1332096610f474011cc0
+            example: "fc_67ca09c6bedc8190a7abfec07b1a1332096610f474011cc0"
           call_id:
             type: string
-            description: Identifier for the specific function call.
-            example: call_unLAR8MvFNptuiZK6K6HCy5k
+            example: "call_unLAR8MvFNptuiZK6K6HCy5k"
           name:
             type: string
-            description: Name of the function called.
-            example: get_current_weather
+            example: "get_current_weather"
           arguments:
             type: string
-            description: JSON string of the function arguments.
             example: "{\"location\":\"Boston, MA\",\"unit\":\"celsius\"}"
           status:
             type: string
-            description: Status of the function call.
-            example: completed
+            example: "completed"
         required:
           - type
           - id
@@ -582,16 +624,13 @@
         properties:
           type:
             type: string
-            enum: [web_search_call]
-            description: The type of output (web search call).
+            example: "web_search_call"
           id:
             type: string
-            description: Unique identifier for the web search call.
-            example: ws_67ccf18f64008190a39b619f4c8455ef087bb177ab789d5c
+            example: "ws_67ccf18f64008190a39b619f4c8455ef087bb177ab789d5c"
           status:
             type: string
-            description: Status of the web search call.
-            example: completed
+            example: "completed"
         required:
           - type
           - id
@@ -601,170 +640,112 @@
         properties:
           type:
             type: string
-            enum: [file_search_call]
-            description: The type of output (file search call).
+            example: "file_search_call"
           id:
             type: string
-            description: Unique identifier for the file search call.
-            example: fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7
+            example: "fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7"
           status:
             type: string
-            description: Status of the file search call.
-            example: completed
+            example: "completed"
           queries:
             type: array
             items:
               type: string
-            description: Search queries used.
-            example: ["attributes of an ancient brown dragon"]
+              example: "attributes of an ancient brown dragon"
           results:
             type: object
             nullable: true
-            description: Search results, if any.
         required:
           - type
           - id
           - status
           - queries
-      StreamResponse:
+          - results
+      UrlCitation:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "url_citation"
+          start_index:
+            type: integer
+            example: 442
+          end_index:
+            type: integer
+            example: 557
+          url:
+            type: string
+            example: "https://.../?utm_source=chatgpt.com"
+          title:
+            type: string
+            example: "..."
+        required:
+          - type
+          - start_index
+          - end_index
+          - url
+          - title
+      FileCitation:
+        type: object
+        properties:
+          type:
+            type: string
+            example: "file_citation"
+          index:
+            type: integer
+            example: 320
+          file_id:
+            type: string
+            example: "file-4wDz5b167pAf72nx1h9eiN"
+          filename:
+            type: string
+            example: "dragons.pdf"
+        required:
+          - type
+          - index
+          - file_id
+          - filename
+      StreamingResponse:
         type: object
         properties:
           event:
             type: string
-            description: The type of streaming event.
-            enum:
-              - response.created
-              - response.in_progress
-              - response.output_item.added
-              - response.content_part.added
-              - response.output_text.delta
-              - response.output_text.done
-              - response.content_part.done
-              - response.output_item.done
-              - response.completed
+            example: "response.completed"
           data:
-            oneOf:
-              - $ref: '#/components/schemas/Response'
-              - $ref: '#/components/schemas/OutputItemEvent'
-              - $ref: '#/components/schemas/ContentPartEvent'
-              - $ref: '#/components/schemas/TextDeltaEvent'
-              - $ref: '#/components/schemas/TextDoneEvent'
+            type: object
+            properties:
+              type:
+                type: string
+                example: "response.completed"
+              response:
+                $ref: '#/components/schemas/Response'
+              item_id:
+                type: string
+                example: "msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654"
+              output_index:
+                type: integer
+                example: 0
+              content_index:
+                type: integer
+                example: 0
+              delta:
+                type: string
+                example: "Hi"
+              part:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "output_text"
+                  text:
+                    type: string
+                    example: "Hi there! How can I assist you today?"
+                  annotations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UrlCitation'
+              item:
+                $ref: '#/components/schemas/MessageOutput'
         required:
           - event
           - data
-      OutputItemEvent:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [response.output_item.added, response.output_item.done]
-            description: The type of output item event.
-          output_index:
-            type: integer
-            description: Index of the output item.
-            example: 0
-          item:
-            $ref: '#/components/schemas/MessageOutput'
-            description: The output item details.
-        required:
-          - type
-          - output_index
-          - item
-      ContentPartEvent:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [response.content_part.added, response.content_part.done]
-            description: The type of content part event.
-          item_id:
-            type: string
-            description: ID of the message item.
-            example: msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654
-          output_index:
-            type: integer
-            description: Index of the output item.
-            example: 0
-          content_index:
-            type: integer
-            description: Index of the content part.
-            example: 0
-          part:
-            $ref: '#/components/schemas/ContentPart'
-            description: The content part details.
-        required:
-          - type
-          - item_id
-          - output_index
-          - content_index
-          - part
-      TextDeltaEvent:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [response.output_text.delta]
-            description: The type of text delta event.
-          item_id:
-            type: string
-            description: ID of the message item.
-            example: msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654
-          output_index:
-            type: integer
-            description: Index of the output item.
-            example: 0
-          content_index:
-            type: integer
-            description: Index of the content part.
-            example: 0
-          delta:
-            type: string
-            description: The incremental text output.
-            example: Hi
-        required:
-          - type
-          - item_id
-          - output_index
-          - content_index
-          - delta
-      TextDoneEvent:
-        type: object
-        properties:
-          type:
-            type: string
-            enum: [response.output_text.done]
-            description: The type of text done event.
-          item_id:
-            type: string
-            description: ID of the message item.
-            example: msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654
-          output_index:
-            type: integer
-            description: Index of the output item.
-            example: 0
-          content_index:
-            type: integer
-            description: Index of the content part.
-            example: 0
-          text:
-            type: string
-            description: The complete text output.
-            example: Hi there! How can I assist you today?
-        required:
-          - type
-          - item_id
-          - output_index
-          - content_index
-          - text
-      Error:
-        type: object
-        properties:
-          code:
-            type: string
-            description: Error code.
-          message:
-            type: string
-            description: Error message.
-        required:
-          - code
-          - message
