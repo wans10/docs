@@ -11,7 +11,7 @@ paths:
     post:
       operationId: createResponse
       summary: 创建使用指定模型的响应
-      description: 根据提供的模型和输入（支持文本、消息数组包含文本、图像、文件，或工具调用如网络搜索、文件搜索、函数调用，或流式响应，或高级推理）生成文本响应。需要 API 密钥进行身份验证。
+      description: OpenAI 最先进的模型响应生成接口。支持文本和图像输入以及文本输出。使用先前响应的输出作为输入，与模型创建有状态的交互。使用内置工具扩展模型的功能，用于文件搜索、网页搜索、计算机使用等。允许模型通过函数调用访问外部系统和数据。
       tags:
         - Responses
       security:
@@ -25,7 +25,7 @@ paths:
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
                 "model": "gpt-4.1",
-                "input": "Tell me a three sentence bedtime story about a unicorn."
+                "input": "用三句话给我讲一个关于独角兽睡前故事。"
               }'
         - lang: cURL
           label: 图像输入示例
@@ -39,7 +39,7 @@ paths:
                   {
                     "role": "user",
                     "content": [
-                      {"type": "input_text", "text": "what is in this image?"},
+                      {"type": "input_text", "text": "这张图片描述的是什么？"},
                       {
                         "type": "input_image",
                         "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
@@ -60,7 +60,7 @@ paths:
                   {
                     "role": "user",
                     "content": [
-                      {"type": "input_text", "text": "what is in this file?"},
+                      {"type": "input_text", "text": "这是什么文件？"},
                       {
                         "type": "input_file",
                         "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
@@ -78,7 +78,7 @@ paths:
               -d '{
                 "model": "gpt-4.1",
                 "tools": [{ "type": "web_search_preview" }],
-                "input": "What was a positive news story from today?"
+                "input": "今天有什么积极正面的新闻？"
               }'
         - lang: cURL
           label: 文件搜索示例
@@ -93,7 +93,7 @@ paths:
                   "vector_store_ids": ["vs_1234567890"],
                   "max_num_results": 20
                 }],
-                "input": "What are the attributes of an ancient brown dragon?"
+                "input": "古代棕龙有哪些特性和属性?"
               }'
         - lang: cURL
           label: 流式响应示例
@@ -103,8 +103,8 @@ paths:
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
                 "model": "gpt-4.1",
-                "instructions": "You are a helpful assistant.",
-                "input": "Hello!",
+                "instructions": "你是一位得力的助手。",
+                "input": "你好!",
                 "stream": true
               }'
         - lang: cURL
@@ -115,18 +115,18 @@ paths:
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
                 "model": "gpt-4.1",
-                "input": "What is the weather like in Boston today?",
+                "input": "波士顿今天天气怎么样？",
                 "tools": [
                   {
                     "type": "function",
                     "name": "get_current_weather",
-                    "description": "Get the current weather in a given location",
+                    "description": "获取指定位置的当前天气",
                     "parameters": {
                       "type": "object",
                       "properties": {
                         "location": {
                           "type": "string",
-                          "description": "The city and state, e.g. San Francisco, CA"
+                          "description": "城市和州, 例如 San Francisco, CA"
                         },
                         "unit": {
                           "type": "string",
@@ -161,7 +161,7 @@ paths:
 
             const response = await openai.responses.create({
                 model: "gpt-4.1",
-                input: "Tell me a three sentence bedtime story about a unicorn."
+                input: "用三句话给我讲一个关于独角兽睡前故事。"
             });
 
             console.log(response);
@@ -178,7 +178,7 @@ paths:
                     {
                         role: "user",
                         content: [
-                            { type: "input_text", text: "what is in this image?" },
+                            { type: "input_text", text: "这张图片描述的是什么？" },
                             {
                                 type: "input_image",
                                 image_url:
@@ -203,7 +203,7 @@ paths:
                     {
                         role: "user",
                         content: [
-                            { type: "input_text", text: "what is in this file?" },
+                            { type: "input_text", text: "这是什么文件？" },
                             {
                                 type: "input_file",
                                 file_url: "https://www.berkshirehathaway.com/letters/2024ltr.pdf",
@@ -224,7 +224,7 @@ paths:
             const response = await openai.responses.create({
                 model: "gpt-4.1",
                 tools: [{ type: "web_search_preview" }],
-                input: "What was a positive news story from today?",
+                input: "今天有什么积极正面的新闻？",
             });
 
             console.log(response);
@@ -242,7 +242,7 @@ paths:
                     vector_store_ids: ["vs_1234567890"],
                     max_num_results: 20
                 }],
-                input: "What are the attributes of an ancient brown dragon?",
+                input: "古代棕龙有哪些特性和属性?",
             });
 
             console.log(response);
@@ -255,8 +255,8 @@ paths:
 
             const response = await openai.responses.create({
                 model: "gpt-4.1",
-                instructions: "You are a helpful assistant.",
-                input: "Hello!",
+                instructions: "你是一位得力的助手。",
+                input: "你好!",
                 stream: true,
             });
 
@@ -292,7 +292,7 @@ paths:
             const response = await openai.responses.create({
                 model: "gpt-4.1",
                 tools: tools,
-                input: "What is the weather like in Boston today?",
+                input: "波士顿今天天气怎么样？",
                 tool_choice: "auto",
             });
 
@@ -321,7 +321,7 @@ paths:
 
             response = client.responses.create(
               model="gpt-4.1",
-              input="Tell me a three sentence bedtime story about a unicorn."
+              input="用三句话给我讲一个关于独角兽睡前故事。"
             )
 
             print(response)
@@ -338,7 +338,7 @@ paths:
                     {
                         "role": "user",
                         "content": [
-                            { "type": "input_text", "text": "what is in this image?" },
+                            { "type": "input_text", "text": "这张图片描述的是什么？" },
                             {
                                 "type": "input_image",
                                 "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
@@ -362,7 +362,7 @@ paths:
                     {
                         "role": "user",
                         "content": [
-                            { "type": "input_text", "text": "what is in this file?" },
+                            { "type": "input_text", "text": "这是什么文件？" },
                             {
                                 "type": "input_file",
                                 "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
@@ -383,7 +383,7 @@ paths:
             response = client.responses.create(
                 model="gpt-4.1",
                 tools=[{ "type": "web_search_preview" }],
-                input="What was a positive news story from today?",
+                input="今天有什么积极正面的新闻？",
             )
 
             print(response)
@@ -401,7 +401,7 @@ paths:
                     "vector_store_ids": ["vs_1234567890"],
                     "max_num_results": 20
                 }],
-                input="What are the attributes of an ancient brown dragon?",
+                input="古代棕龙有哪些特性和属性?",
             )
 
             print(response)
@@ -414,8 +414,8 @@ paths:
 
             response = client.responses.create(
               model="gpt-4.1",
-              instructions="You are a helpful assistant.",
-              input="Hello!",
+              instructions="你是一位得力的助手。",
+              input="你好!",
               stream=True
             )
 
@@ -450,7 +450,7 @@ paths:
             response = client.responses.create(
               model="gpt-4.1",
               tools=tools,
-              input="What is the weather like in Boston today?",
+              input="波士顿今天天气怎么样？",
               tool_choice="auto"
             )
 
@@ -481,7 +481,7 @@ paths:
                 apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             );
 
-            OpenAIResponse response = client.CreateResponse("Tell me a three sentence bedtime story about a unicorn.");
+            OpenAIResponse response = client.CreateResponse("用三句话给我讲一个关于独角兽睡前故事。");
 
             Console.WriteLine(response.GetOutputText());
         - lang: C#
@@ -520,7 +520,7 @@ paths:
                 apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             );
 
-            string userInputText = "What was a positive news story from today?";
+            string userInputText = "今天有什么积极正面的新闻？";
 
             ResponseCreationOptions options = new()
             {
@@ -544,7 +544,7 @@ paths:
                 apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             );
 
-            string userInputText = "What are the attributes of an ancient brown dragon?";
+            string userInputText = "古代棕龙有哪些特性和属性?";
 
             ResponseCreationOptions options = new()
             {
@@ -574,11 +574,11 @@ paths:
                 apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
             );
 
-            string userInputText = "Hello!";
+            string userInputText = "你好!";
 
             ResponseCreationOptions options = new()
             {
-                Instructions = "You are a helpful assistant.",
+                Instructions = "你是一位得力的助手。",
             };
 
             AsyncCollectionResult<StreamingResponseUpdate> responseUpdates = client.CreateResponseStreamingAsync(userInputText, options);
@@ -620,7 +620,7 @@ paths:
                 )
             );
 
-            string userInputText = "What is the weather like in Boston today?";
+            string userInputText = "波士顿今天天气怎么样？";
 
             ResponseCreationOptions options = new()
             {
@@ -667,7 +667,7 @@ paths:
                 summary: 生成关于独角兽的睡前故事
                 value:
                   model: gpt-4.1
-                  input: Tell me a three sentence bedtime story about a unicorn.
+                  input: 用三句话给我讲一个关于独角兽睡前故事。
               imageDescription:
                 summary: 描述图像内容
                 value:
@@ -676,7 +676,7 @@ paths:
                     - role: user
                       content:
                         - type: input_text
-                          text: what is in this image?
+                          text: 这张图片描述的是什么？
                         - type: input_image
                           image_url: https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg
               fileDescription:
@@ -687,7 +687,7 @@ paths:
                     - role: user
                       content:
                         - type: input_text
-                          text: what is in this file?
+                          text: 这是什么文件？
                         - type: input_file
                           file_url: https://www.berkshirehathaway.com/letters/2024ltr.pdf
               webSearch:
@@ -696,7 +696,7 @@ paths:
                   model: gpt-4.1
                   tools:
                     - type: web_search_preview
-                  input: What was a positive news story from today?
+                  input: 今天有什么积极正面的新闻？
               fileSearch:
                 summary: 使用工具进行文件搜索
                 value:
@@ -706,19 +706,19 @@ paths:
                       vector_store_ids:
                         - vs_1234567890
                       max_num_results: 20
-                  input: What are the attributes of an ancient brown dragon?
+                  input: 古代棕龙有哪些特性和属性?
               streamingResponse:
                 summary: 生成流式响应
                 value:
                   model: gpt-4.1
-                  instructions: You are a helpful assistant.
-                  input: Hello!
+                  instructions: 你是一位得力的助手。
+                  input: 你好!
                   stream: true
               functionCall:
                 summary: 使用工具进行函数调用
                 value:
                   model: gpt-4.1
-                  input: What is the weather like in Boston today?
+                  input: 波士顿今天天气怎么样？
                   tools:
                     - type: function
                       name: get_current_weather
@@ -1067,7 +1067,7 @@ paths:
                           status: in_progress
                           error: null
                           incomplete_details: null
-                          instructions: You are a helpful assistant.
+                          instructions: 你是一位得力的助手。
                           max_output_tokens: null
                           model: gpt-4.1-2025-04-14
                           output: []
@@ -1098,7 +1098,7 @@ paths:
                           status: in_progress
                           error: null
                           incomplete_details: null
-                          instructions: You are a helpful assistant.
+                          instructions: 你是一位得力的助手。
                           max_output_tokens: null
                           model: gpt-4.1-2025-04-14
                           output: []
@@ -1186,7 +1186,7 @@ paths:
                           status: completed
                           error: null
                           incomplete_details: null
-                          instructions: You are a helpful assistant.
+                          instructions: 你是一位得力的助手。
                           max_output_tokens: null
                           model: gpt-4.1-2025-04-14
                           output:
@@ -1343,11 +1343,11 @@ paths:
                 "messages": [
                   {
                     "role": "developer",
-                    "content": "You are a helpful assistant."
+                    "content": "你是一位得力的助手。"
                   },
                   {
                     "role": "user",
-                    "content": "Hello!"
+                    "content": "你好!"
                   }
                 ]
               }'
@@ -1389,11 +1389,11 @@ paths:
                 "messages": [
                   {
                     "role": "developer",
-                    "content": "You are a helpful assistant."
+                    "content": "你是一位得力的助手。"
                   },
                   {
                     "role": "user",
-                    "content": "Hello!"
+                    "content": "你好!"
                   }
                 ],
                 "stream": true
@@ -1409,7 +1409,7 @@ paths:
                 "messages": [
                   {
                     "role": "user",
-                    "content": "What is the weather like in Boston today?"
+                    "content": "波士顿今天天气怎么样？"
                   }
                 ],
                 "tools": [
@@ -1448,7 +1448,7 @@ paths:
                 "messages": [
                   {
                     "role": "user",
-                    "content": "Hello!"
+                    "content": "你好!"
                   }
                 ],
                 "logprobs": true,
@@ -1463,8 +1463,8 @@ paths:
             completion = client.chat.completions.create(
               model="gpt-4.1",
               messages=[
-                {"role": "developer", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Hello!"}
+                {"role": "developer", "content": "你是一位得力的助手。"},
+                {"role": "user", "content": "你好!"}
               ]
             )
 
@@ -1505,8 +1505,8 @@ paths:
             completion = client.chat.completions.create(
               model="gpt-4.1",
               messages=[
-                {"role": "developer", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Hello!"}
+                {"role": "developer", "content": "你是一位得力的助手。"},
+                {"role": "user", "content": "你好!"}
               ],
               stream=True
             )
@@ -1557,7 +1557,7 @@ paths:
             completion = client.chat.completions.create(
               model="gpt-4.1",
               messages=[
-                {"role": "user", "content": "Hello!"}
+                {"role": "user", "content": "你好!"}
               ],
               logprobs=True,
               top_logprobs=2
@@ -1574,7 +1574,7 @@ paths:
 
             async function main() {
               const completion = await openai.chat.completions.create({
-                messages: [{ role: "developer", content: "You are a helpful assistant." }, { role: "user", content: "Hello!" }],
+                messages: [{ role: "developer", content: "你是一位得力的助手。" }, { role: "user", content: "你好!" }],
                 model: "gpt-4.1",
                 store: true,
               });
@@ -1622,8 +1622,8 @@ paths:
               const completion = await openai.chat.completions.create({
                 model: "gpt-4.1",
                 messages: [
-                  {"role": "developer", "content": "You are a helpful assistant."},
-                  {"role": "user", "content": "Hello!"}
+                  {"role": "developer", "content": "你是一位得力的助手。"},
+                  {"role": "user", "content": "你好!"}
                 ],
                 stream: true,
               });
@@ -1684,7 +1684,7 @@ paths:
 
             async function main() {
               const completion = await openai.chat.completions.create({
-                messages: [{ role: "user", content: "Hello!" }],
+                messages: [{ role: "user", content: "你好!" }],
                 model: "gpt-4.1",
                 logprobs: true,
                 top_logprobs: 2,
@@ -1709,8 +1709,8 @@ paths:
 
             List<ChatMessage> messages =
             [
-                new SystemChatMessage("You are a helpful assistant."),
-                new UserChatMessage("Hello!")
+                new SystemChatMessage("你是一位得力的助手。"),
+                new UserChatMessage("你好!")
             ];
 
             ChatCompletion completion = client.CompleteChat(messages);
@@ -1758,8 +1758,8 @@ paths:
 
             List<ChatMessage> messages =
             [
-                new SystemChatMessage("You are a helpful assistant."),
-                new UserChatMessage("Hello!")
+                new SystemChatMessage("你是一位得力的助手。"),
+                new UserChatMessage("你好!")
             ];
 
             AsyncCollectionResult<StreamingChatCompletionUpdate> completionUpdates = client.CompleteChatStreamingAsync(messages);
@@ -1835,7 +1835,7 @@ paths:
 
             List<ChatMessage> messages =
             [
-                new UserChatMessage("Hello!")
+                new UserChatMessage("你好!")
             ];
 
             ChatCompletionOptions options = new()
@@ -1860,18 +1860,18 @@ paths:
                   model: gpt-4.1
                   messages:
                     - role: developer
-                      content: You are a helpful assistant.
+                      content: 你是一位得力的助手。
                     - role: user
-                      content: Hello!
+                      content: 你好!
               streamingChat:
                 summary: 流式聊天完成
                 value:
                   model: gpt-4.1
                   messages:
                     - role: developer
-                      content: You are a helpful assistant.
+                      content: 你是一位得力的助手。
                     - role: user
-                      content: Hello!
+                      content: 你好!
                   stream: true
               imageChat:
                 summary: 图像输入的聊天完成
@@ -1892,7 +1892,7 @@ paths:
                   model: gpt-4.1
                   messages:
                     - role: user
-                      content: What is the weather like in Boston today?
+                      content: 波士顿今天天气怎么样？
                   tools:
                     - type: function
                       function:
@@ -1915,7 +1915,7 @@ paths:
                   model: gpt-4.1
                   messages:
                     - role: user
-                      content: Hello!
+                      content: 你好!
                   logprobs: true
                   top_logprobs: 2
       responses:
@@ -2061,7 +2061,7 @@ paths:
                       - index: 0
                         message:
                           role: assistant
-                          content: Hello! How can I assist you today?
+                          content: 你好! How can I assist you today?
                         logprobs:
                           content:
                             - token: Hello
@@ -2193,7 +2193,7 @@ components:
         instructions:
           type: string
           description: 系统指令，定义模型的行为。
-          example: You are a helpful assistant.
+          example: 你是一位得力的助手。
         stream:
           type: boolean
           description: 是否启用流式响应。
@@ -2420,7 +2420,7 @@ components:
         instructions:
           type: string
           description: 系统指令，定义模型的行为。
-          example: You are a helpful assistant.
+          example: 你是一位得力的助手。
         max_output_tokens:
           type: integer
           description: 最大输出令牌数（如果指定）。
@@ -2881,7 +2881,7 @@ components:
         content:
           type: string
           description: 消息内容。
-          example: You are a helpful assistant.
+          example: 你是一位得力的助手。
       additionalProperties: false
     ChatCompletion:
       type: object
