@@ -4,7 +4,7 @@ info:
   description: 使用 OpenAI 的语言模型生成响应的 API，支持文本、图像、文件、网络搜索、文件搜索、流式响应、函数调用、高级推理和聊天完成输入。
   version: 1.0.0
 servers:
-  - url: https://api.openai.com/v1
+  - url: https://api.llmhub.com.cn/v1
     description: OpenAI API 生产服务器
 paths:
   /responses:
@@ -20,7 +20,7 @@ paths:
         - lang: cURL
           label: 文本输入示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -30,7 +30,7 @@ paths:
         - lang: cURL
           label: 图像输入示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -51,7 +51,7 @@ paths:
         - lang: cURL
           label: 文件输入示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -72,7 +72,7 @@ paths:
         - lang: cURL
           label: 网络搜索示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -83,7 +83,7 @@ paths:
         - lang: cURL
           label: 文件搜索示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -98,7 +98,7 @@ paths:
         - lang: cURL
           label: 流式响应示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -110,7 +110,7 @@ paths:
         - lang: cURL
           label: 函数调用示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -142,7 +142,7 @@ paths:
         - lang: cURL
           label: 高级推理示例
           source: |
-            curl https://api.openai.com/v1/responses \
+            curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -1335,7 +1335,7 @@ paths:
         - lang: cURL
           label: 文本输入示例
           source: |
-            curl https://api.openai.com/v1/chat/completions \
+            curl https://api.llmhub.com.cn/v1/chat/completions \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -1354,7 +1354,7 @@ paths:
         - lang: cURL
           label: 图像输入示例
           source: |
-            curl https://api.openai.com/v1/chat/completions \
+            curl https://api.llmhub.com.cn/v1/chat/completions \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -1381,7 +1381,7 @@ paths:
         - lang: cURL
           label: 流式响应示例
           source: |
-            curl https://api.openai.com/v1/chat/completions \
+            curl https://api.llmhub.com.cn/v1/chat/completions \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -1401,7 +1401,7 @@ paths:
         - lang: cURL
           label: 函数调用示例
           source: |
-            curl https://api.openai.com/v1/chat/completions \
+            curl https://api.llmhub.com.cn/v1/chat/completions \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
@@ -1440,7 +1440,7 @@ paths:
         - lang: cURL
           label: 对数概率示例
           source: |
-            curl https://api.openai.com/v1/chat/completions \
+            curl https://api.llmhub.com.cn/v1/chat/completions \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $OPENAI_API_KEY" \
               -d '{
