@@ -178,13 +178,11 @@ paths:
                   stream: true
       responses:
         '200':
-          description: 成功。对于非流式请求，返回完整的消息对象。对于流式请求，返回一系列事件。
+          description: 成功。对于非流式请求，返回完整的消息对象。对于流式请求，返回一系列 Server-Sent Events (SSE)。
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/MessageResponse'
-                  - $ref: '#/components/schemas/MessageStreamEvent'
+                $ref: '#/components/schemas/MessageResponse'
               examples:
                 text_response:
                   summary: 文本响应
@@ -240,37 +238,30 @@ paths:
               examples:
                 stream_response:
                   summary: 流式响应事件序列
-                  value: >
-                    event: message_start
-                    data: {"type": "message_start", "message": {"id": "msg_013Zva2CMHLNnXjNJKqJ2EF", "type": "message", "role": "assistant", "model": "claude-3-5-sonnet-20241022", "stop_sequence": null, "usage": {"input_tokens": 2045, "output_tokens": 1}, "content": [], "stop_reason": null}}
+                  value: |
+                    type: message_start
+                    data: {"type":"message_start","message":{"id":"msg_013Zva2CMHLNnXjNJKqJ2EF","model":"claude-3-5-sonnet-20241022","role":"assistant","type":"message"}}
 
+                    type: content_block_start
+                    data: {"type":"content_block_start","index":0,"content_block":{"type":"text"}}
 
-                    event: content_block_start
-                    data: {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}}
+                    type: content_block_delta
+                    data: {"type":"content_block_delta","index":0,"delta":{"text":"从前"}}
 
+                    type: content_block_delta
+                    data: {"type":"content_block_delta","index":0,"delta":{"text":"有一只"}}
 
-                    event: content_block_delta
-                    data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "从前"}}
+                    type: content_block_delta
+                    data: {"type":"content_block_delta","index":0,"delta":{"text":"小兔子..."}}
 
+                    type: content_block_stop
+                    data: {"type":"content_block_stop","index":0}
 
-                    event: content_block_delta
-                    data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "有一只"}}
+                    type: message_delta
+                    data: {"type":"message_delta","delta":{"stop_reason":"end_turn","usage":{"input_tokens":2045,"output_tokens":628}}}
 
-
-                    event: content_block_delta
-                    data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "小兔子..."}}
-
-
-                    event: content_block_stop
-                    data: {"type": "content_block_stop", "index": 0}
-
-
-                    event: message_delta
-                    data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence": null},"usage": {"output_tokens": 628}}
-
-
-                    event: message_stop
-                    data: {"type": "message_stop"}
+                    type: message_stop
+                    data: {"type":"message_stop"}
   /responses:
     post:
       operationId: createResponse
@@ -2517,7 +2508,7 @@ components:
       properties:
         type:
           type: string
-          description: 내용 유형.
+          description: 内容类型.
           enum: [image]
           example: image
         source:
@@ -2598,6 +2589,7 @@ components:
               - $ref: '#/components/schemas/ResponseToolUseContent'
         stop_reason:
           type: string
+          nullable: true
           enum: [end_turn, tool_use, max_tokens, stop_sequence]
           description: 模型停止生成内容的原因。
           example: tool_use
@@ -2650,6 +2642,7 @@ components:
           example: 503
     MessageStreamEvent:
       type: object
+      description: 代表流式响应中的单个 Server-Sent Event (SSE)。
       discriminator:
         propertyName: type
         mapping:
@@ -2668,6 +2661,7 @@ components:
         - $ref: '#/components/schemas/MessageStopEvent'
     MessageStartEvent:
       type: object
+      description: 当消息开始生成时发送。
       required: [type, message]
       properties:
         type:
@@ -2677,6 +2671,7 @@ components:
           $ref: '#/components/schemas/MessageResponse'
     ContentBlockStartEvent:
       type: object
+      description: 当新的内容块开始时发送。
       required: [type, index, content_block]
       properties:
         type:
@@ -2689,6 +2684,7 @@ components:
           $ref: '#/components/schemas/ResponseTextContent'
     ContentBlockDeltaEvent:
       type: object
+      description: 文本内容块的增量更新。
       required: [type, index, delta]
       properties:
         type:
@@ -2696,18 +2692,19 @@ components:
           enum: [content_block_delta]
         index:
           type: integer
-          description: 'The index of the content block.'
+          description: 内容块的索引。
         delta:
           type: object
           properties:
             type:
               type: string
-              enum: [text_delta, text]
+              enum: [text_delta]
             text:
               type: string
               description: 文本增量。
     ContentBlockStopEvent:
       type: object
+      description: 当内容块完成时发送。
       required: [type, index]
       properties:
         type:
@@ -2715,10 +2712,11 @@ components:
           enum: [content_block_stop]
         index:
           type: integer
-          description: 'The index of the content block.'
+          description: 内容块的索引。
     MessageDeltaEvent:
       type: object
-      required: [type, delta]
+      description: 消息元数据的增量更新。
+      required: [type, delta, usage]
       properties:
         type:
           type: string
@@ -2728,10 +2726,7 @@ components:
           properties:
             stop_reason:
               type: string
-              enum: [end_turn, tool_use, max_tokens, stop_sequence]
-            stop_sequence:
-              type: string
-              nullable: true
+              enum: [end_turn, max_tokens, stop_sequence, tool_use]
         usage:
           type: object
           properties:
@@ -2739,6 +2734,7 @@ components:
               type: integer
     MessageStopEvent:
       type: object
+      description: 当消息完成生成时发送。
       required: [type]
       properties:
         type:
