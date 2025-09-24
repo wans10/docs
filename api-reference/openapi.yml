@@ -152,6 +152,595 @@ paths:
                   "effort": "high"
                 }
               }'
+        - lang: JavaScript
+          label: 文本输入示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                input: "用三句话给我讲一个关于独角兽睡前故事。"
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 图像输入示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                input: [
+                    {
+                        role: "user",
+                        content: [
+                            { type: "input_text", text: "这张图片描述的是什么？" },
+                            {
+                                type: "input_image",
+                                image_url:
+                                    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg",
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 文件输入示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                input: [
+                    {
+                        role: "user",
+                        content: [
+                            { type: "input_text", text: "这是什么文件？" },
+                            {
+                                type: "input_file",
+                                file_url: "https://www.berkshirehathaway.com/letters/2024ltr.pdf",
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 网络搜索示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                tools: [{ type: "web_search_preview" }],
+                input: "今天有什么积极正面的新闻？",
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 文件搜索示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                tools: [{
+                    type: "file_search",
+                    vector_store_ids: ["vs_1234567890"],
+                    max_num_results: 20
+                }],
+                input: "古代棕龙有哪些特性和属性?",
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 流式响应示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                instructions: "你是一位得力的助手。",
+                input: "你好!",
+                stream: true,
+            });
+
+            for await (const event of response) {
+                console.log(event);
+            }
+        - lang: JavaScript
+          label: 函数调用示例
+          source: |
+            import OpenAI from "openai";
+
+            const openai = new OpenAI();
+
+            const tools = [
+                {
+                    type: "function",
+                    name: "get_current_weather",
+                    description: "Get the current weather in a given location",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            location: {
+                                type: "string",
+                                description: "The city and state, e.g. San Francisco, CA",
+                            },
+                            unit: { type: "string", enum: ["celsius", "fahrenheit"] },
+                        },
+                        required: ["location", "unit"],
+                    },
+                },
+            ];
+
+            const response = await openai.responses.create({
+                model: "gpt-4.1",
+                tools: tools,
+                input: "波士顿今天天气怎么样？",
+                tool_choice: "auto",
+            });
+
+            console.log(response);
+        - lang: JavaScript
+          label: 高级推理示例
+          source: |
+            import OpenAI from "openai";
+            const openai = new OpenAI();
+
+            const response = await openai.responses.create({
+                model: "o3-mini",
+                input: "How much wood would a woodchuck chuck?",
+                reasoning: {
+                  effort: "high"
+                }
+            });
+
+            console.log(response);
+        - lang: Python
+          label: 文本输入示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+              model="gpt-4.1",
+              input="用三句话给我讲一个关于独角兽睡前故事。"
+            )
+
+            print(response)
+        - lang: Python
+          label: 图像输入示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="gpt-4.1",
+                input=[
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "input_text", "text": "这张图片描述的是什么？" },
+                            {
+                                "type": "input_image",
+                                "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                            }
+                        ]
+                    }
+                ]
+            )
+
+            print(response)
+        - lang: Python
+          label: 文件输入示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="gpt-4.1",
+                input=[
+                    {
+                        "role": "user",
+                        "content": [
+                            { "type": "input_text", "text": "这是什么文件？" },
+                            {
+                                "type": "input_file",
+                                "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
+                            }
+                        ]
+                    }
+                ]
+            )
+
+            print(response)
+        - lang: Python
+          label: 网络搜索示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="gpt-4.1",
+                tools=[{ "type": "web_search_preview" }],
+                input="今天有什么积极正面的新闻？",
+            )
+
+            print(response)
+        - lang: Python
+          label: 文件搜索示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="gpt-4.1",
+                tools=[{
+                    "type": "file_search",
+                    "vector_store_ids": ["vs_1234567890"],
+                    "max_num_results": 20
+                }],
+                input="古代棕龙有哪些特性和属性?",
+            )
+
+            print(response)
+        - lang: Python
+          label: 流式响应示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            response = client.responses.create(
+              model="gpt-4.1",
+              instructions="你是一位得力的助手。",
+              input="你好!",
+              stream=True
+            )
+
+            for event in response:
+              print(event)
+        - lang: Python
+          label: 函数调用示例
+          source: |
+            from openai import OpenAI
+
+            client = OpenAI()
+
+            tools = [
+                {
+                    "type": "function",
+                    "name": "get_current_weather",
+                    "description": "Get the current weather in a given location",
+                    "parameters": {
+                      "type": "object",
+                      "properties": {
+                          "location": {
+                              "type": "string",
+                              "description": "The city and state, e.g. San Francisco, CA",
+                          },
+                          "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                      },
+                      "required": ["location", "unit"],
+                    }
+                }
+            ]
+
+            response = client.responses.create(
+              model="gpt-4.1",
+              tools=tools,
+              input="波士顿今天天气怎么样？",
+              tool_choice="auto"
+            )
+
+            print(response)
+        - lang: Python
+          label: 高级推理示例
+          source: |
+            from openai import OpenAI
+            client = OpenAI()
+
+            response = client.responses.create(
+                model="o3-mini",
+                input="How much wood would a woodchuck chuck?",
+                reasoning={
+                    "effort": "high"
+                }
+            )
+
+            print(response)
+        - lang: C#
+          label: 文本输入示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            OpenAIResponse response = client.CreateResponse("用三句话给我讲一个关于独角兽睡前故事。");
+
+            Console.WriteLine(response.GetOutputText());
+        - lang: C#
+          label: 图像输入示例
+          source: |
+            using System;
+            using System.Collections.Generic;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            List<ResponseItem> inputItems =
+            [
+                ResponseItem.CreateUserMessageItem(
+                    [
+                        ResponseContentPart.CreateInputTextPart("What is in this image?"),
+                        ResponseContentPart.CreateInputImagePart(new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"))
+                    ]
+                )
+            ];
+
+            OpenAIResponse response = client.CreateResponse(inputItems);
+
+            Console.WriteLine(response.GetOutputText());
+        - lang: C#
+          label: 网络搜索示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            string userInputText = "今天有什么积极正面的新闻？";
+
+            ResponseCreationOptions options = new()
+            {
+                Tools =
+                {
+                    ResponseTool.CreateWebSearchTool()
+                },
+            };
+
+            OpenAIResponse response = client.CreateResponse(userInputText, options);
+
+            Console.WriteLine(response.GetOutputText());
+        - lang: C#
+          label: 文件搜索示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            string userInputText = "古代棕龙有哪些特性和属性?";
+
+            ResponseCreationOptions options = new()
+            {
+                Tools =
+                {
+                    ResponseTool.CreateFileSearchTool(
+                        vectorStoreIds: ["vs_1234567890"],
+                        maxResultCount: 20
+                    )
+                },
+            };
+
+            OpenAIResponse response = client.CreateResponse(userInputText, options);
+
+            Console.WriteLine(response.GetOutputText());
+        - lang: C#
+          label: 流式响应示例
+          source: |
+            using System;
+            using System.ClientModel;
+            using System.Threading.Tasks;
+
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            string userInputText = "你好!";
+
+            ResponseCreationOptions options = new()
+            {
+                Instructions = "你是一位得力的助手。",
+            };
+
+            AsyncCollectionResult<StreamingResponseUpdate> responseUpdates = client.CreateResponseStreamingAsync(userInputText, options);
+
+            await foreach (StreamingResponseUpdate responseUpdate in responseUpdates)
+            {
+                if (responseUpdate is StreamingResponseOutputTextDeltaUpdate outputTextDeltaUpdate)
+                {
+                    Console.Write(outputTextDeltaUpdate.Delta);
+                }
+            }
+        - lang: C#
+          label: 函数调用示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "gpt-4.1",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            ResponseTool getCurrentWeatherFunctionTool = ResponseTool.CreateFunctionTool(
+                functionName: "get_current_weather",
+                functionDescription: "Get the current weather in a given location",
+                functionParameters: BinaryData.FromString("""
+                    {
+                        "type": "object",
+                        "properties": {
+                            "location": {
+                                "type": "string",
+                                "description": "The city and state, e.g. San Francisco, CA"
+                            },
+                            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]}
+                        },
+                        "required": ["location", "unit"]
+                    }
+                    """
+                )
+            );
+
+            string userInputText = "波士顿今天天气怎么样？";
+
+            ResponseCreationOptions options = new()
+            {
+                Tools =
+                {
+                    getCurrentWeatherFunctionTool
+                },
+                ToolChoice = ResponseToolChoice.CreateAutoChoice(),
+            };
+
+            OpenAIResponse response = client.CreateResponse(userInputText, options);
+        - lang: C#
+          label: 高级推理示例
+          source: |
+            using System;
+            using OpenAI.Responses;
+
+            OpenAIResponseClient client = new(
+                model: "o3-mini",
+                apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY")
+            );
+
+            string userInputText = "How much wood would a woodchuck chuck?";
+
+            ResponseCreationOptions options = new()
+            {
+                ReasoningOptions = new()
+                {
+                    ReasoningEffortLevel = ResponseReasoningEffortLevel.High,
+                },
+            };
+
+            OpenAIResponse response = client.CreateResponse(userInputText, options);
+
+            Console.WriteLine(response.GetOutputText());
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResponseRequest'
+            examples:
+              bedtimeStory:
+                summary: 生成关于独角兽的睡前故事
+                value:
+                  model: gpt-4.1
+                  input: 用三句话给我讲一个关于独角兽睡前故事。
+              imageDescription:
+                summary: 描述图像内容
+                value:
+                  model: gpt-4.1
+                  input:
+                    - role: user
+                      content:
+                        - type: input_text
+                          text: 这张图片描述的是什么？
+                        - type: input_image
+                          image_url: https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg
+              fileDescription:
+                summary: 描述文件内容
+                value:
+                  model: gpt-4.1
+                  input:
+                    - role: user
+                      content:
+                        - type: input_text
+                          text: 这是什么文件？
+                        - type: input_file
+                          file_url: https://www.berkshirehathaway.com/letters/2024ltr.pdf
+              webSearch:
+                summary: 使用工具进行网络搜索
+                value:
+                  model: gpt-4.1
+                  tools:
+                    - type: web_search_preview
+                  input: 今天有什么积极正面的新闻？
+              fileSearch:
+                summary: 使用工具进行文件搜索
+                value:
+                  model: gpt-4.1
+                  tools:
+                    - type: file_search
+                      vector_store_ids:
+                        - vs_1234567890
+                      max_num_results: 20
+                  input: 古代棕龙有哪些特性和属性?
+              streamingResponse:
+                summary: 生成流式响应
+                value:
+                  model: gpt-4.1
+                  instructions: 你是一位得力的助手。
+                  input: 你好!
+                  stream: true
+              functionCall:
+                summary: 使用工具进行函数调用
+                value:
+                  model: gpt-4.1
+                  input: 波士顿今天天气怎么样？
+                  tools:
+                    - type: function
+                      name: get_current_weather
+                      description: Get the current weather in a given location
+                      parameters:
+                        type: object
+                        properties:
+                          location:
+                            type: string
+                            description: The city and state, e.g. San Francisco, CA
+                          unit:
+                            type: string
+                            enum: ["celsius", "fahrenheit"]
+                        required: ["location", "unit"]
+                  tool_choice: auto
+              highReasoning:
+                summary: 使用高级推理处理文本输入
+                value:
+                  model: o3-mini
+                  input: How much wood would a woodchuck chuck?
+                  reasoning:
+                    effort: high
       responses:
         '200':
           description: 成功生成包含文本的响应（非流式）或流式事件（流式模式）。
