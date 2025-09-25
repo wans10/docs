@@ -7,7 +7,8 @@ info:
   version: '1.0.0'
   description: |
     这是根据提供的 openai.yaml 文件片段生成的完整 OpenAPI 3.1.0 规范。
-    它专门为 Mintlify 文档进行了优化，使用了 `x-codeSamples` 扩展来展示代码示例。
+    它专门为 Mintlify 文档进行了优化，使用了 `x-codeSamples` 扩展来展示代码示例，
+    并实现了请求与响应示例的同步联动。
 
 # API 服务器信息
 servers:
@@ -49,8 +50,6 @@ paths:
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
-      # Mintlify x-codeSamples 扩展
-      # 将 x-oaiMeta.examples 转换成了 Mintlify 兼容的格式
       x-codeSamples:
         - lang: cURL
           label: '默认请求'
@@ -99,95 +98,42 @@ paths:
                 anyOf:
                   - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
                   - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
-              # OpenAPI 标准的响应示例
-              # Mintlify 会自动根据 label 在不同示例间切换
               examples:
-                Default:
+                '默认请求':
                   summary: '默认响应'
                   value:
                     text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
-                    usage:
-                      type: "tokens"
-                      input_tokens: 14
-                      input_token_details:
-                        text_tokens: 0
-                        audio_tokens: 14
-                      output_tokens: 45
-                      total_tokens: 59
-                Logprobs:
+                '带 Logprobs 的请求':
                   summary: '带 Logprobs 的响应'
                   value:
                     text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
                     logprobs:
                       - token: "Hey"
                         logprob: -1.0415299
-                        bytes: [72, 101, 121]
-                      - token: ","
-                        logprob: -0.00009805982
-                        bytes: [44]
-                      - token: " my"
-                        logprob: -0.00229799
-                        bytes: [32, 109, 121]
-                      # ... 更多 logprobs 内容
-                    usage:
-                      type: "tokens"
-                      input_tokens: 14
-                      input_token_details:
-                        text_tokens: 0
-                        audio_tokens: 14
-                      output_tokens: 45
-                      total_tokens: 59
-                "Word timestamps":
+                '带词语时间戳的请求':
                   summary: '带词语时间戳的响应'
                   value:
-                    task: "transcribe"
-                    language: "english"
-                    duration: 8.47
-                    text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
                     words:
                       - word: "The"
                         start: 0.0
                         end: 0.24
-                      # ... 更多 words 内容
-                    usage:
-                      type: "duration"
-                      seconds: 9
-                "Segment timestamps":
+                '带分段时间戳的请求':
                   summary: '带分段时间戳的响应'
                   value:
-                    task: "transcribe"
-                    language: "english"
-                    duration: 8.47
-                    text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
                     segments:
                       - id: 0
-                        seek: 0
                         start: 0.0
                         end: 3.32
                         text: " The beach was a popular spot on a hot summer day."
-                        tokens: [50364, 440, 7534, 390, 257, 3743, 4008, 322, 257, 2368, 4266, 786, 13, 50530]
-                        temperature: 0.0
-                        avg_logprob: -0.2860786020755768
-                        compression_ratio: 1.2363636493682861
-                        no_speech_prob: 0.00985979475080967
-                      # ... 更多 segments 内容
-                    usage:
-                      type: "duration"
-                      seconds: 9
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
-                    data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
-
-                    data: {"type":"transcript.text.delta","delta":" see","logprobs":[{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}]}
-
-                    data: {"type":"transcript.text.delta","delta":" skies","logprobs":[{"token":" skies","logprob":-2.3392786e-6,"bytes":[32,115,107,105,101,115]}]}
-
-                    data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white...","logprobs":[...],"usage":{...}}
+                    data: {"type":"transcript.text.delta","delta":"I"}
+                    data: {"type":"transcript.text.done","text":"I see skies of blue..."}
       x-codeSamples:
         - lang: cURL
           label: '默认请求'
@@ -260,7 +206,7 @@ paths:
                   - $ref: '#/components/schemas/CreateTranslationResponseJson'
                   - $ref: '#/components/schemas/CreateTranslationResponseVerboseJson'
               examples:
-                default:
+                '默认请求':
                   summary: '默认响应'
                   value:
                     text: "Hello, my name is Wolfgang and I come from Germany. Where are you heading today?"
@@ -299,14 +245,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImageEditStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
                     event: image_edit.partial_image
                     data: {"type":"image_edit.partial_image","b64_json":"...","partial_image_index":0}
-
                     event: image_edit.completed
-                    data: {"type":"image_edit.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
+                    data: {"type":"image_edit.completed","b64_json":"..."}
       x-codeSamples:
         - lang: cURL
           label: '编辑图像'
@@ -356,31 +301,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImagesResponse'
               examples:
-                "Generate image":
+                '生成图像':
                   summary: '生成图像响应'
                   value:
                     created: 1713833628
                     data:
                       - b64_json: "..."
-                    usage:
-                      total_tokens: 100
-                      input_tokens: 50
-                      output_tokens: 50
-                      input_tokens_details:
-                        text_tokens: 10
-                        image_tokens: 40
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/ImageGenStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
                     event: image_generation.partial_image
-                    data: {"type":"image_generation.partial_image","b64_json":"...","partial_image_index":0}
-                    
+                    data: {"type":"image_generation.partial_image","b64_json":"..."}
                     event: image_generation.completed
-                    data: {"type":"image_generation.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
+                    data: {"type":"image_generation.completed","b64_json":"..."}
       x-codeSamples:
         - lang: cURL
           label: '生成图像'
@@ -430,7 +367,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImagesResponse'
               examples:
-                default:
+                '默认请求':
                   summary: '默认响应'
                   value:
                     created: 1589478378
@@ -454,14 +391,7 @@ paths:
         - Responses
       summary: 创建模型响应
       description: |
-        创建模型响应。提供 [文本](https://platform.openai.com/docs/guides/text) 或
-        [图像](https://platform.openai.com/docs/guides/images) 输入以生成
-        [文本](https://platform.openai.com/docs/guides/text) 或
-        [JSON](https://platform.openai.com/docs/guides/structured-outputs) 输出。让模型调用
-        您自己的 [自定义代码](https://platform.openai.com/docs/guides/function-calling) 或使用内置
-        [工具](https://platform.openai.com/docs/guides/tools) 如 [网页搜索](https://platform.openai.com/docs/guides/tools-web-search)
-        或 [文件搜索](https://platform.openai.com/docs/guides/tools-file-search) 来使用您自己的数据
-        作为模型响应的输入。
+        OpenAI 最先进的模型响应生成接口。支持文本和图像输入以及文本输出。使用先前响应的输出作为输入，与模型创建有状态的交互。使用内置工具扩展模型的功能，用于文件搜索、网页搜索、计算机使用等。允许模型通过函数调用访问外部系统和数据。
       requestBody:
         required: true
         content:
@@ -476,68 +406,86 @@ paths:
               schema:
                 $ref: '#/components/schemas/Response'
               examples:
-                "Text input":
+                '文本输入':
                   summary: '文本输入响应'
                   value:
                     id: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
                     object: "response"
-                    # ... 省略了冗长的响应内容
-                "Image input":
+                    created_at: 1741476542
+                    status: "completed"
+                    error: null
+                    incomplete_details: null
+                    instructions: null
+                    max_output_tokens: null
+                    model: "gpt-4.1-2025-04-14"
+                    output:
+                      - type: "message"
+                        id: "msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b"
+                        status: "completed"
+                        role: "assistant"
+                        content:
+                          - type: "output_text"
+                            text: "In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust."
+                            annotations: [ ]
+                    parallel_tool_calls: true
+                    previous_response_id: null
+                    reasoning:
+                      effort: null
+                      summary: null
+                    store: true
+                    temperature: 1.0
+                    text:
+                      format:
+                        type: "text"
+                    tool_choice: "auto"
+                    tools: [ ]
+                    top_p: 1.0
+                    truncation: "disabled"
+                    usage:
+                      input_tokens: 36
+                      input_tokens_details:
+                        cached_tokens: 0
+                      output_tokens: 87
+                      output_tokens_details:
+                        reasoning_tokens: 0
+                      total_tokens: 123
+                    user: null
+                    metadata: { }
+                '图像输入':
                   summary: '图像输入响应'
                   value:
                     id: "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
-                "File input":
+                '文件输入':
                   summary: '文件输入响应'
                   value:
                     id: "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
-                "Web search":
+                '网页搜索':
                   summary: '网页搜索响应'
                   value:
                     id: "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
-                "File search":
+                '文件搜索':
                   summary: '文件搜索响应'
                   value:
                     id: "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
-                "Functions":
+                '函数调用':
                   summary: '函数调用响应'
                   value:
                     id: "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
-                "Reasoning":
+                '带推理的请求':
                   summary: '带推理的响应'
                   value:
                     id: "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808"
-                    object: "response"
-                    # ... 省略了冗长的响应内容
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/ResponseStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
                     event: response.created
-                    data: {"type":"response.created","response":{...}}
-
-                    event: response.in_progress
-                    data: {"type":"response.in_progress","response":{...}}
-
-                    event: response.output_item.added
-                    data: {"type":"response.output_item.added","output_index":0,"item":{...}}
-
-                    ...
-
+                    data: {"type":"response.created","response":{}}
                     event: response.completed
-                    data: {"type":"response.completed","response":{...}}
+                    data: {"type":"response.completed","response":{}}
       x-codeSamples:
         - lang: cURL
           label: '文本输入'
@@ -686,60 +634,22 @@ components:
       description: '在请求头中输入 Bearer {token}。'
 
   # Schema 定义 (占位符)
-  # 为了确保文件有效，为所有引用的 schema 提供了基础定义。
   schemas:
-    CreateSpeechRequest:
-      type: object
-      properties: {}
-    CreateSpeechResponseStreamEvent:
-      type: object
-      properties: {}
-    CreateTranscriptionRequest:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseJson:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseVerboseJson:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseStreamEvent:
-      type: object
-      properties: {}
-    CreateTranslationRequest:
-      type: object
-      properties: {}
-    CreateTranslationResponseJson:
-      type: object
-      properties: {}
-    CreateTranslationResponseVerboseJson:
-      type: object
-      properties: {}
-    CreateImageEditRequest:
-      type: object
-      properties: {}
-    ImagesResponse:
-      type: object
-      properties: {}
-    ImageEditStreamEvent:
-      type: object
-      properties: {}
-    CreateImageRequest:
-      type: object
-      properties: {}
-    ImageGenStreamEvent:
-      type: object
-      properties: {}
-    CreateImageVariationRequest:
-      type: object
-      properties: {}
-    CreateResponse:
-      type: object
-      properties: {}
-    Response:
-      type: object
-      properties: {}
-    ResponseStreamEvent:
-      type: object
-      properties: {}
-
+    CreateSpeechRequest: { type: object }
+    CreateSpeechResponseStreamEvent: { type: object }
+    CreateTranscriptionRequest: { type: object }
+    CreateTranscriptionResponseJson: { type: object }
+    CreateTranscriptionResponseVerboseJson: { type: object }
+    CreateTranscriptionResponseStreamEvent: { type: object }
+    CreateTranslationRequest: { type: object }
+    CreateTranslationResponseJson: { type: object }
+    CreateTranslationResponseVerboseJson: { type: object }
+    CreateImageEditRequest: { type: object }
+    ImagesResponse: { type: object }
+    ImageEditStreamEvent: { type: object }
+    CreateImageRequest: { type: object }
+    ImageGenStreamEvent: { type: object }
+    CreateImageVariationRequest: { type: object }
+    CreateResponse: { type: object }
+    Response: { type: object }
+    ResponseStreamEvent: { type: object }
