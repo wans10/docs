@@ -7,7 +7,8 @@ info:
   version: '1.0.0'
   description: |
     这是根据提供的 openai.yaml 文件片段生成的完整 OpenAPI 3.1.0 规范。
-    它专门为 Mintlify 文档进行了优化，使用了 `x-codeSamples` 扩展来展示代码示例。
+    它专门为 Mintlify 文档进行了优化，使用了 `x-codeSamples` 扩展来展示代码示例，
+    并实现了请求与响应示例的同步联动。
 
 # API 服务器信息
 servers:
@@ -49,8 +50,6 @@ paths:
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
-      # Mintlify x-codeSamples 扩展
-      # 将 x-oaiMeta.examples 转换成了 Mintlify 兼容的格式
       x-codeSamples:
         - lang: cURL
           label: '默认请求'
@@ -76,7 +75,7 @@ paths:
                 "voice": "alloy",
                 "stream_format": "sse"
               }'
-  
+
   /audio/transcriptions:
     post:
       operationId: createTranscription
@@ -99,10 +98,8 @@ paths:
                 anyOf:
                   - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
                   - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
-              # OpenAPI 标准的响应示例
-              # Mintlify 会自动根据 label 在不同示例间切换
               examples:
-                Default:
+                default:
                   summary: '默认响应'
                   value:
                     text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
@@ -114,7 +111,7 @@ paths:
                         audio_tokens: 14
                       output_tokens: 45
                       total_tokens: 59
-                Logprobs:
+                logprobs:
                   summary: '带 Logprobs 的响应'
                   value:
                     text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
@@ -137,7 +134,7 @@ paths:
                         audio_tokens: 14
                       output_tokens: 45
                       total_tokens: 59
-                "Word timestamps":
+                word-timestamps:
                   summary: '带词语时间戳的响应'
                   value:
                     task: "transcribe"
@@ -152,7 +149,7 @@ paths:
                     usage:
                       type: "duration"
                       seconds: 9
-                "Segment timestamps":
+                segment-timestamps:
                   summary: '带分段时间戳的响应'
                   value:
                     task: "transcribe"
@@ -178,7 +175,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
               examples:
-                Streaming:
+                streaming:
                   summary: '流式响应'
                   value: |
                     data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
@@ -189,7 +186,8 @@ paths:
 
                     data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white...","logprobs":[...],"usage":{...}}
       x-codeSamples:
-        - lang: cURL
+        - name: default
+          lang: cURL
           label: '默认请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/transcriptions \
@@ -197,7 +195,8 @@ paths:
               -H "Content-Type: multipart/form-data" \
               -F file="@/path/to/file/audio.mp3" \
               -F model="gpt-4o-transcribe"
-        - lang: cURL
+        - name: streaming
+          lang: cURL
           label: '流式请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/transcriptions \
@@ -206,7 +205,8 @@ paths:
               -F file="@/path/to/file/audio.mp3" \
               -F model="gpt-4o-mini-transcribe" \
               -F stream=true
-        - lang: cURL
+        - name: logprobs
+          lang: cURL
           label: '带 Logprobs 的请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/transcriptions \
@@ -216,7 +216,8 @@ paths:
               -F "include[]=logprobs" \
               -F model="gpt-4o-transcribe" \
               -F response_format="json"
-        - lang: cURL
+        - name: word-timestamps
+          lang: cURL
           label: '带词语时间戳的请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/transcriptions \
@@ -226,7 +227,8 @@ paths:
               -F "timestamp_granularities[]=word" \
               -F model="whisper-1" \
               -F response_format="verbose_json"
-        - lang: cURL
+        - name: segment-timestamps
+          lang: cURL
           label: '带分段时间戳的请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/transcriptions \
@@ -265,7 +267,8 @@ paths:
                   value:
                     text: "Hello, my name is Wolfgang and I come from Germany. Where are you heading today?"
       x-codeSamples:
-        - lang: cURL
+        - name: default
+          lang: cURL
           label: '默认请求'
           source: |
             curl https://api.llmhub.com.cn/v1/audio/translations \
@@ -299,7 +302,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImageEditStreamEvent'
               examples:
-                Streaming:
+                streaming:
                   summary: '流式响应'
                   value: |
                     event: image_edit.partial_image
@@ -308,7 +311,8 @@ paths:
                     event: image_edit.completed
                     data: {"type":"image_edit.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
       x-codeSamples:
-        - lang: cURL
+        - name: default
+          lang: cURL
           label: '编辑图像'
           source: |
             curl -s -D >(grep -i x-request-id >&2) \
@@ -321,7 +325,8 @@ paths:
               -F "image[]=@incense-kit.png" \
               -F "image[]=@soap.png" \
               -F 'prompt=Create a lovely gift basket with these four items in it'
-        - lang: cURL
+        - name: streaming
+          lang: cURL
           label: '流式请求'
           source: |
             curl -s -N -X POST "https://api.llmhub.com.cn/v1/images/edits" \
@@ -356,7 +361,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImagesResponse'
               examples:
-                "Generate image":
+                default:
                   summary: '生成图像响应'
                   value:
                     created: 1713833628
@@ -373,7 +378,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImageGenStreamEvent'
               examples:
-                Streaming:
+                streaming:
                   summary: '流式响应'
                   value: |
                     event: image_generation.partial_image
@@ -382,7 +387,8 @@ paths:
                     event: image_generation.completed
                     data: {"type":"image_generation.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
       x-codeSamples:
-        - lang: cURL
+        - name: default
+          lang: cURL
           label: '生成图像'
           source: |
             curl https://api.llmhub.com.cn/v1/images/generations \
@@ -394,7 +400,8 @@ paths:
                 "n": 1,
                 "size": "1024x1024"
               }'
-        - lang: cURL
+        - name: streaming
+          lang: cURL
           label: '流式请求'
           source: |
             curl https://api.llmhub.com.cn/v1/images/generations \
@@ -438,7 +445,8 @@ paths:
                       - url: "https://..."
                       - url: "https://..."
       x-codeSamples:
-        - lang: cURL
+        - name: default
+          lang: cURL
           label: '默认请求'
           source: |
             curl https://api.llmhub.com.cn/v1/images/variations \
@@ -475,44 +483,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response'
+              # 这里的键 (如 text-input) 与 x-codeSamples 中的 name 严格对应
               examples:
-                "Text input":
+                text-input:
                   summary: '文本输入响应'
                   value:
                     id: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
                     object: "response"
-                    # ... 省略了冗长的响应内容
-                "Image input":
+                    # ... 省略了冗长的响应内容，以保持文件简洁
+                image-input:
                   summary: '图像输入响应'
                   value:
                     id: "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41"
                     object: "response"
                     # ... 省略了冗长的响应内容
-                "File input":
+                file-input:
                   summary: '文件输入响应'
                   value:
                     id: "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86"
                     object: "response"
                     # ... 省略了冗长的响应内容
-                "Web search":
+                web-search:
                   summary: '网页搜索响应'
                   value:
                     id: "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c"
                     object: "response"
                     # ... 省略了冗长的响应内容
-                "File search":
+                file-search:
                   summary: '文件搜索响应'
                   value:
                     id: "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7"
                     object: "response"
                     # ... 省略了冗长的响应内容
-                "Functions":
+                functions:
                   summary: '函数调用响应'
                   value:
                     id: "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0"
                     object: "response"
                     # ... 省略了冗长的响应内容
-                "Reasoning":
+                reasoning:
                   summary: '带推理的响应'
                   value:
                     id: "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808"
@@ -522,7 +531,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseStreamEvent'
               examples:
-                Streaming:
+                streaming: # <-- 对应 'Streaming' 请求
                   summary: '流式响应'
                   value: |
                     event: response.created
@@ -531,15 +540,13 @@ paths:
                     event: response.in_progress
                     data: {"type":"response.in_progress","response":{...}}
 
-                    event: response.output_item.added
-                    data: {"type":"response.output_item.added","output_index":0,"item":{...}}
-
                     ...
 
                     event: response.completed
                     data: {"type":"response.completed","response":{...}}
       x-codeSamples:
-        - lang: cURL
+        - name: text-input
+          lang: cURL
           label: '文本输入'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -549,7 +556,8 @@ paths:
                 "model": "gpt-4.1",
                 "input": "Tell me a three sentence bedtime story about a unicorn."
               }'
-        - lang: cURL
+        - name: image-input
+          lang: cURL
           label: '图像输入'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -570,7 +578,8 @@ paths:
                   }
                 ]
               }'
-        - lang: cURL
+        - name: file-input
+          lang: cURL
           label: '文件输入'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -591,7 +600,8 @@ paths:
                   }
                 ]
               }'
-        - lang: cURL
+        - name: web-search
+          lang: cURL
           label: '网页搜索'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -602,7 +612,8 @@ paths:
                 "tools": [{ "type": "web_search_preview" }],
                 "input": "What was a positive news story from today?"
               }'
-        - lang: cURL
+        - name: file-search
+          lang: cURL
           label: '文件搜索'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -617,7 +628,8 @@ paths:
                 }],
                 "input": "What are the attributes of an ancient brown dragon?"
               }'
-        - lang: cURL
+        - name: streaming
+          lang: cURL
           label: '流式请求'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -629,7 +641,8 @@ paths:
                 "input": "Hello!",
                 "stream": true
               }'
-        - lang: cURL
+        - name: functions
+          lang: cURL
           label: '函数调用'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -661,7 +674,8 @@ paths:
                 ],
                 "tool_choice": "auto"
               }'
-        - lang: cURL
+        - name: reasoning
+          lang: cURL
           label: '带推理的请求'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
@@ -684,7 +698,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: '在请求头中输入 Bearer {token}。'
-  
+
   # Schema 定义 (占位符)
   # 为了确保文件有效，为所有引用的 schema 提供了基础定义。
   schemas:
@@ -742,4 +756,3 @@ components:
     ResponseStreamEvent:
       type: object
       properties: {}
-
