@@ -132,6 +132,11 @@
       "value": "example_cookie_value"
     }
   },
+  "api": {
+    "playground": {
+      "display": "interactive"
+    }
+  },
   "errors": {
     "404": {
       "redirect": false,
