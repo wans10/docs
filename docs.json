@@ -134,7 +134,7 @@
   },
   "api": {
     "playground": {
-      "display": "none"
+      "display": "simple"
     }
   },
   "errors": {
