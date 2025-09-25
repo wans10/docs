@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-  title: LLMHub API
-  description: API文档，用于演示如何使用x-codeSamples和label字段来匹配请求和响应，以实现Mintlify中的交互式示例。
+  title: LLMHub API - 完整版
+  description: API文档的完整版本，包含所有端点。本文档演示了如何使用 x-codeSamples 和 x-examples 并通过 label 字段匹配请求和响应，以在 Mintlify 中实现交互式示例。
   version: 1.0.0
 servers:
   - url: https://api.llmhub.com.cn/v1
@@ -22,6 +22,31 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateSpeechRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Default
+          source: |
+            curl https://api.llmhub.com.cn/v1/audio/speech \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "model": "gpt-4o-mini-tts",
+                "input": "The quick brown fox jumped over the lazy dog.",
+                "voice": "alloy"
+              }' \
+              --output speech.mp3
+        - lang: curl
+          label: SSE Stream Format
+          source: |
+            curl https://api.llmhub.com.cn/v1/audio/speech \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "model": "gpt-4o-mini-tts",
+                "input": "The quick brown fox jumped over the lazy dog.",
+                "voice": "alloy",
+                "stream_format": "sse"
+              }'
       responses:
         '200':
           description: OK
@@ -38,41 +63,16 @@ paths:
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
-          x-examples: # 关键点：使用x-examples并与请求的label匹配
+          x-examples:
             Default:
-              label: Default # 这个label与x-codeSamples中的label="Default"匹配
-              value: 'Binary audio file content (e.g., speech.mp3)'
+              label: Default
+              value: 'Binary audio file content (e.g., speech.mp3). The command saves this to speech.mp3.'
             SSE Stream Format:
-              label: SSE Stream Format # 这个label与x-codeSamples中的label="SSE Stream Format"匹配
+              label: SSE Stream Format
               value: |
                 data: {"type": "audio.chunk", "chunk": "..."}
-
+                
                 data: [DONE]
-      x-codeSamples: # 关键点：使用x-codeSamples来组织请求示例
-        - lang: curl
-          label: Default # 关键点：使用label来唯一标识此请求示例
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/speech \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy"
-              }' \
-              --output speech.mp3
-        - lang: curl
-          label: SSE Stream Format # 关键点：这个label将用于匹配对应的响应示例
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/speech \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy",
-                "stream_format": "sse"
-              }'
   /audio/transcriptions:
     post:
       operationId: createTranscription
@@ -86,94 +86,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/CreateTranscriptionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
-            text/event-stream:
-              schema:
-                $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
-          x-examples:
-            Default:
-              label: Default
-              value:
-                text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
-                usage:
-                  type: "tokens"
-                  input_tokens: 14
-                  input_token_details:
-                    text_tokens: 0
-                    audio_tokens: 14
-                  output_tokens: 45
-                  total_tokens: 59
-            Streaming:
-              label: Streaming
-              value: |
-                data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
-
-                data: {"type":"transcript.text.delta","delta":" see","logprobs":[{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}]}
-
-                ...
-
-                data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white, the bright blessed days, the dark sacred nights, and I think to myself, what a wonderful world.","logprobs":[...],"usage":{"input_tokens":14,"output_tokens":45,"total_tokens":59}}
-            Logprobs:
-              label: Logprobs
-              value:
-                text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
-                logprobs:
-                  - token: "Hey"
-                    logprob: -1.0415299
-                    bytes: [72, 101, 121]
-                  - token: ","
-                    logprob: -0.00009805982
-                    bytes: [44]
-                usage:
-                  type: "tokens"
-                  input_tokens: 14
-                  output_tokens: 45
-                  total_tokens: 59
-            Word timestamps:
-              label: Word timestamps
-              value:
-                task: "transcribe"
-                language: "english"
-                duration: 8.47
-                text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
-                words:
-                  - word: "The"
-                    start: 0
-                    end: 0.24
-                  - word: "..."
-                usage:
-                  type: "duration"
-                  seconds: 9
-            Segment timestamps:
-              label: Segment timestamps
-              value:
-                task: "transcribe"
-                language: "english"
-                duration: 8.47
-                text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
-                segments:
-                  - id: 0
-                    seek: 0
-                    start: 0
-                    end: 3.32
-                    text: " The beach was a popular spot on a hot summer day."
-                    tokens: [50364, 440, 7534]
-                    temperature: 0
-                    avg_logprob: -0.286
-                    compression_ratio: 1.236
-                    no_speech_prob: 0.0098
-                  - text: "..."
-                usage:
-                  type: "duration"
-                  seconds: 9
       x-codeSamples:
         - lang: curl
           label: Default
@@ -222,6 +134,99 @@ paths:
               -F "timestamp_granularities[]=segment" \
               -F model="whisper-1" \
               -F response_format="verbose_json"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
+                  - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
+          x-examples:
+            Default:
+              label: Default
+              value:
+                text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
+                usage:
+                  type: "tokens"
+                  input_tokens: 14
+                  input_token_details:
+                    text_tokens: 0
+                    audio_tokens: 14
+                  output_tokens: 45
+                  total_tokens: 59
+            Streaming:
+              label: Streaming
+              value: |
+                data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
+
+                data: {"type":"transcript.text.delta","delta":" see","logprobs":[{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}]}
+
+                ...
+
+                data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white, the bright blessed days, the dark sacred nights, and I think to myself, what a wonderful world.","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]},{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}],"usage":{"input_tokens":14,"input_token_details":{"text_tokens":0,"audio_tokens":14},"output_tokens":45,"total_tokens":59}}
+            Logprobs:
+              label: Logprobs
+              value:
+                text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
+                logprobs:
+                  - { "token": "Hey", "logprob": -1.0415299, "bytes": [72, 101, 121] }
+                  - { "token": ",", "logprob": -9.805982e-5, "bytes": [44] }
+                  - { "token": " my", "logprob": -0.00229799, "bytes": [32, 109, 121] }
+                  - { "token": " knee", "logprob": -4.7159858e-5, "bytes": [32, 107, 110, 101, 101] }
+                  - { "token": "...", "logprob": "...", "bytes": "..." }
+                usage:
+                  type: "tokens"
+                  input_tokens: 14
+                  input_token_details:
+                    text_tokens: 0
+                    audio_tokens: 14
+                  output_tokens: 45
+                  total_tokens: 59
+            Word timestamps:
+              label: Word timestamps
+              value:
+                task: "transcribe"
+                language: "english"
+                duration: 8.470000267028809
+                text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
+                words:
+                  - word: "The"
+                    start: 0.0
+                    end: 0.23999999463558197
+                  - "..."
+                  - word: "volleyball"
+                    start: 7.400000095367432
+                    end: 7.900000095367432
+                usage:
+                  type: "duration"
+                  seconds: 9
+            Segment timestamps:
+              label: Segment timestamps
+              value:
+                task: "transcribe"
+                language: "english"
+                duration: 8.470000267028809
+                text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
+                segments:
+                  - id: 0
+                    seek: 0
+                    start: 0.0
+                    end: 3.319999933242798
+                    text: " The beach was a popular spot on a hot summer day."
+                    tokens: [50364, 440, 7534, 390, 257, 3743, 4008, 322, 257, 2368, 4266, 786, 13, 50530]
+                    temperature: 0.0
+                    avg_logprob": -0.2860786020755768
+                    compression_ratio: 1.2363636493682861
+                    no_speech_prob: 0.00985979475080967
+                  - "..."
+                usage:
+                  type: "duration"
+                  seconds: 9
   /audio/translations:
     post:
       operationId: createTranslation
@@ -235,6 +240,15 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/CreateTranslationRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Default
+          source: |
+            curl https://api.llmhub.com.cn/v1/audio/translations \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Content-Type: multipart/form-data" \
+              -F file="@/path/to/file/german.m4a" \
+              -F model="whisper-1"
       responses:
         '200':
           description: OK
@@ -245,19 +259,10 @@ paths:
                   - $ref: '#/components/schemas/CreateTranslationResponseJson'
                   - $ref: '#/components/schemas/CreateTranslationResponseVerboseJson'
           x-examples:
-            Default: # 单个示例可以不指定label，但为了清晰和一致性，建议加上
+            Default:
               label: Default
               value:
                 text: "Hello, my name is Wolfgang and I come from Germany. Where are you heading today?"
-      x-codeSamples:
-        - lang: curl
-          label: Default
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/translations \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/german.m4a" \
-              -F model="whisper-1"
   /chat/completions:
     get:
       operationId: listChatCompletions
@@ -307,6 +312,13 @@ paths:
               - asc
               - desc
             default: asc
+      x-codeSamples:
+        - lang: curl
+          label: Default
+          source: |
+            curl https://api.llmhub.com.cn/v1/chat/completions \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Content-Type: application/json"
       responses:
         '200':
           description: A list of Chat Completions
@@ -333,135 +345,25 @@ paths:
                         message:
                           content: "Mind of circuits hum,  \nLearning patterns in silence—  \nFuture's quiet spark."
                           role: "assistant"
-                        finish_reason: "stop"
+                        finish_reason": "stop"
                 first_id: "chatcmpl-AyPNinnUqUDYo9SAdA52NobMflmj2"
                 last_id: "chatcmpl-AyPNinnUqUDYo9SAdA52NobMflmj2"
                 has_more: false
-      x-codeSamples:
-        - lang: curl
-          label: Default
-          source: |
-            curl https://api.llmhub.com.cn/v1/chat/completions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: application/json"
     post:
       operationId: createChatCompletion
       tags:
         - Chat
       summary: Create chat completion
-      description: |
+      description: >
         **Starting a new project?** We recommend trying
-        Responses to take advantage of the latest OpenAI platform features.
+        Responses 
+        to take advantage of the latest OpenAI platform features.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateChatCompletionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CreateChatCompletionResponse'
-            text/event-stream:
-              schema:
-                $ref: '#/components/schemas/CreateChatCompletionStreamResponse'
-          x-examples:
-            Default:
-              label: Default
-              value:
-                id: "chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT"
-                object: "chat.completion"
-                created: 1741569952
-                model: "gpt-4.1-2025-04-14"
-                choices:
-                  - index: 0
-                    message:
-                      role: "assistant"
-                      content: "Hello! How can I assist you today?"
-                    finish_reason: "stop"
-                usage:
-                  prompt_tokens: 19
-                  completion_tokens: 10
-                  total_tokens: 29
-            Image input:
-              label: Image input
-              value:
-                id: "chatcmpl-B9MHDbslfkBeAs8l4bebGdFOJ6PeG"
-                object: "chat.completion"
-                created: 1741570283
-                model: "gpt-4.1-2025-04-14"
-                choices:
-                  - index: 0
-                    message:
-                      role: "assistant"
-                      content: "The image shows a wooden boardwalk path running through a lush green field or meadow. The sky is bright blue with some scattered clouds, giving the scene a serene and peaceful atmosphere. Trees and shrubs are visible in the background."
-                    finish_reason: "stop"
-                usage:
-                  prompt_tokens: 1117
-                  completion_tokens: 46
-                  total_tokens: 1163
-            Streaming:
-              label: Streaming
-              value: |
-                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini", "choices":[{"index":0,"delta":{"role":"assistant","content":""}}]}
-
-                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini", "choices":[{"index":0,"delta":{"content":"Hello"}}]}
-
-                ...
-
-                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini", "choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
-            Functions:
-              label: Functions
-              value:
-                id: "chatcmpl-abc123"
-                object: "chat.completion"
-                created: 1699896916
-                model: "gpt-4o-mini"
-                choices:
-                  - index: 0
-                    message:
-                      role: "assistant"
-                      content: null
-                      tool_calls:
-                        - id: "call_abc123"
-                          type: "function"
-                          function:
-                            name: "get_current_weather"
-                            arguments: "{\n\"location\": \"Boston, MA\"\n}"
-                    finish_reason: "tool_calls"
-                usage:
-                  prompt_tokens: 82
-                  completion_tokens: 17
-                  total_tokens: 99
-            Logprobs:
-              label: Logprobs
-              value:
-                id: "chatcmpl-123"
-                object: "chat.completion"
-                created: 1702685778
-                model: "gpt-4o-mini"
-                choices:
-                  - index: 0
-                    message:
-                      role: "assistant"
-                      content: "Hello! How can I assist you today?"
-                    logprobs:
-                      content:
-                        - token: "Hello"
-                          logprob: -0.31725305
-                          top_logprobs:
-                            - token: "Hello"
-                              logprob: -0.31725305
-                            - token: "Hi"
-                              logprob: -1.3190403
-                    finish_reason: "stop"
-                usage:
-                  prompt_tokens: 9
-                  completion_tokens: 9
-                  total_tokens: 18
       x-codeSamples:
         - lang: curl
           label: Default
@@ -585,10 +487,649 @@ paths:
                 "logprobs": true,
                 "top_logprobs": 2
               }'
-  # ... 其他API端点 (如 /embeddings, /images, /responses) 的定义也遵循以上格式 ...
-  # 为了保持答案的简洁性，此处省略了剩余端点的转换，但它们都将遵循完全相同的模式。
-  # 完整的转换会包含所有提供的端点。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateChatCompletionResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/CreateChatCompletionStreamResponse'
+          x-examples:
+            Default:
+              label: Default
+              value:
+                id: "chatcmpl-B9MBs8CjcvOU2jLn4n570S5qMJKcT"
+                object: "chat.completion"
+                created: 1741569952
+                model: "gpt-4.1-2025-04-14"
+                choices:
+                  - index: 0
+                    message:
+                      role: "assistant"
+                      content: "Hello! How can I assist you today?"
+                    finish_reason": "stop"
+                usage:
+                  prompt_tokens: 19
+                  completion_tokens: 10
+                  total_tokens: 29
+            Image input:
+              label: Image input
+              value:
+                id: "chatcmpl-B9MHDbslfkBeAs8l4bebGdFOJ6PeG"
+                object: "chat.completion"
+                created: 1741570283
+                model: "gpt-4.1-2025-04-14"
+                choices:
+                  - index: 0
+                    message:
+                      role: "assistant"
+                      content: "The image shows a wooden boardwalk path running through a lush green field or meadow. The sky is bright blue with some scattered clouds, giving the scene a serene and peaceful atmosphere. Trees and shrubs are visible in the background."
+                    finish_reason": "stop"
+                usage:
+                  prompt_tokens: 1117
+                  completion_tokens: 46
+                  total_tokens: 1163
+            Streaming:
+              label: Streaming
+              value: |
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint": "fp_44709d6fcb","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}]}
 
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint": "fp_44709d6fcb","choices":[{"index":0,"delta":{"content":"Hello"},"logprobs":null,"finish_reason":null}]}
+                
+                ....
+
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint": "fp_44709d6fcb","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}]}
+            Functions:
+              label: Functions
+              value:
+                id: "chatcmpl-abc123"
+                object: "chat.completion"
+                created": 1699896916
+                model: "gpt-4o-mini"
+                choices:
+                  - index: 0
+                    message:
+                      role: "assistant"
+                      content": null
+                      tool_calls:
+                        - id: "call_abc123"
+                          type: "function"
+                          function:
+                            name: "get_current_weather"
+                            arguments: "{\n\"location\": \"Boston, MA\"\n}"
+                    finish_reason": "tool_calls"
+                usage:
+                  prompt_tokens: 82
+                  completion_tokens: 17
+                  total_tokens: 99
+            Logprobs:
+              label: Logprobs
+              value:
+                id: "chatcmpl-123"
+                object: "chat.completion"
+                created: 1702685778
+                model: "gpt-4o-mini"
+                choices:
+                  - index: 0
+                    message:
+                      role: "assistant"
+                      content: "Hello! How can I assist you today?"
+                    logprobs:
+                      content":
+                        - token: "Hello"
+                          logprob": -0.31725305
+                          bytes: [72, 101, 108, 108, 111]
+                          top_logprobs:
+                            - token: "Hello"
+                              logprob": -0.31725305
+                              bytes: [72, 101, 108, 108, 111]
+                            - token: "Hi"
+                              logprob": -1.3190403
+                              bytes: [72, 105]
+                        - "..."
+                    finish_reason": "stop"
+                usage:
+                  prompt_tokens: 9
+                  completion_tokens: 9
+                  total_tokens: 18
+  /embeddings:
+    post:
+      operationId: createEmbedding
+      tags:
+        - Embeddings
+      summary: Create embeddings
+      description: Creates an embedding vector representing the input text.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmbeddingRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Default
+          source: |
+            curl https://api.llmhub.com.cn/v1/embeddings \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "input": "The food was delicious and the waiter...",
+                "model": "text-embedding-ada-002",
+                "encoding_format": "float"
+              }'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEmbeddingResponse'
+          x-examples:
+            Default:
+              label: Default
+              value:
+                object: "list"
+                data:
+                  - object: "embedding"
+                    embedding: [0.0023064255, -0.009327292, -0.0028842222]
+                    index": 0
+                model: "text-embedding-ada-002"
+                usage:
+                  prompt_tokens: 8
+                  total_tokens: 8
+  /images/edits:
+    post:
+      operationId: createImageEdit
+      tags:
+        - Images
+      summary: Create image edit
+      description: >-
+        Creates an edited or extended image given one or more source images and a prompt. This endpoint only
+        supports `gpt-image-1` and `dall-e-2`.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateImageEditRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Edit image
+          source: |
+            curl -s -D >(grep -i x-request-id >&2) \
+              -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \
+              -X POST "https://api.llmhub.com.cn/v1/images/edits" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -F "model=gpt-image-1" \
+              -F "image[]=@body-lotion.png" \
+              -F "image[]=@bath-bomb.png" \
+              -F "image[]=@incense-kit.png" \
+              -F "image[]=@soap.png" \
+              -F 'prompt=Create a lovely gift basket with these four items in it'
+        - lang: curl
+          label: Streaming
+          source: |
+            curl -s -N -X POST "https://api.llmhub.com.cn/v1/images/edits" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -F "model=gpt-image-1" \
+              -F "image[]=@body-lotion.png" \
+              -F "image[]=@bath-bomb.png" \
+              -F "image[]=@incense-kit.png" \
+              -F "image[]=@soap.png" \
+              -F 'prompt=Create a lovely gift basket with these four items in it' \
+              -F "stream=true"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/ImageEditStreamEvent'
+          x-examples:
+            Edit image:
+              label: Edit image
+              value:
+                created: 1713833628 # Placeholder timestamp
+                data:
+                  - b64_json": "..."
+                usage:
+                  total_tokens: 100
+                  input_tokens: 50
+                  output_tokens: 50
+            Streaming:
+              label: Streaming
+              value: |
+                event: image_edit.partial_image
+                data: {"type":"image_edit.partial_image","b64_json":"...","partial_image_index":0}
+
+                event: image_edit.completed
+                data: {"type":"image_edit.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
+  /images/generations:
+    post:
+      operationId: createImage
+      tags:
+        - Images
+      summary: Create image
+      description: |
+        Creates an image given a prompt. Learn more.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImageRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Generate image
+          source: |
+            curl https://api.llmhub.com.cn/v1/images/generations \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-image-1",
+                "prompt": "A cute baby sea otter",
+                "n": 1,
+                "size": "1024x1024"
+              }'
+        - lang: curl
+          label: Streaming
+          source: |
+            curl https://api.llmhub.com.cn/v1/images/generations \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-image-1",
+                "prompt": "A cute baby sea otter",
+                "n": 1,
+                "size": "1024x1024",
+                "stream": true
+              }' \
+              --no-buffer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/ImageGenStreamEvent'
+          x-examples:
+            Generate image:
+              label: Generate image
+              value:
+                created: 1713833628
+                data:
+                  - b64_json: "..."
+                usage:
+                  total_tokens: 100
+                  input_tokens: 50
+                  output_tokens: 50
+                  input_tokens_details:
+                    text_tokens: 10
+                    image_tokens: 40
+            Streaming:
+              label: Streaming
+              value: |
+                event: image_generation.partial_image
+                data: {"type":"image_generation.partial_image","b64_json":"...","partial_image_index":0}
+
+                event: image_generation.completed
+                data: {"type":"image_generation.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
+  /images/variations:
+    post:
+      operationId: createImageVariation
+      tags:
+        - Images
+      summary: Create image variation
+      description: Creates a variation of a given image. This endpoint only supports `dall-e-2`.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateImageVariationRequest'
+      x-codeSamples:
+        - lang: curl
+          label: Default
+          source: |
+            curl https://api.llmhub.com.cn/v1/images/variations \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -F image="@otter.png" \
+              -F n=2 \
+              -F size="1024x1024"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesResponse'
+          x-examples:
+            Default:
+              label: Default
+              value:
+                created: 1589478378
+                data:
+                  - url: "https://..."
+                  - url: "https://..."
+  /responses:
+    post:
+      operationId: createResponse
+      tags:
+        - Responses
+      summary: Create a model response
+      description: >
+        Creates a model response. Provide text or
+        image inputs to generate text
+        or JSON outputs. Have the model call
+        your own custom code or use built-in
+        tools like web search
+        or file search to use your own data
+        as input for the model's response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResponse'
+      x-codeSamples:
+        - lang: curl
+          label: Text input
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "input": "Tell me a three sentence bedtime story about a unicorn."
+              }'
+        - lang: curl
+          label: Image input
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "input": [
+                  {
+                    "role": "user",
+                    "content": [
+                      {"type": "input_text", "text": "what is in this image?"},
+                      {
+                        "type": "input_image",
+                        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+                      }
+                    ]
+                  }
+                ]
+              }'
+        - lang: curl
+          label: File input
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "input": [
+                  {
+                    "role": "user",
+                    "content": [
+                      {"type": "input_text", "text": "what is in this file?"},
+                      {
+                        "type": "input_file",
+                        "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
+                      }
+                    ]
+                  }
+                ]
+              }'
+        - lang: curl
+          label: Web search
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "tools": [{ "type": "web_search_preview" }],
+                "input": "What was a positive news story from today?"
+              }'
+        - lang: curl
+          label: File search
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "tools": [{
+                  "type": "file_search",
+                  "vector_store_ids": ["vs_1234567890"],
+                  "max_num_results": 20
+                }],
+                "input": "What are the attributes of an ancient brown dragon?"
+              }'
+        - lang: curl
+          label: Streaming
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "instructions": "You are a helpful assistant.",
+                "input": "Hello!",
+                "stream": true
+              }'
+        - lang: curl
+          label: Functions
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "gpt-4.1",
+                "input": "What is the weather like in Boston today?",
+                "tools": [
+                  {
+                    "type": "function",
+                    "name": "get_current_weather",
+                    "description": "Get the current weather in a given location",
+                    "parameters": {
+                      "type": "object",
+                      "properties": {
+                        "location": {
+                          "type": "string",
+                          "description": "The city and state, e.g. San Francisco, CA"
+                        },
+                        "unit": {
+                          "type": "string",
+                          "enum": ["celsius", "fahrenheit"]
+                        }
+                      },
+                      "required": ["location", "unit"]
+                    }
+                  }
+                ],
+                "tool_choice": "auto"
+              }'
+        - lang: curl
+          label: Reasoning
+          source: |
+            curl https://api.llmhub.com.cn/v1/responses \
+              -H "Content-Type: application/json" \
+              -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -d '{
+                "model": "o3-mini",
+                "input": "How much wood would a woodchuck chuck?",
+                "reasoning": {
+                  "effort": "high"
+                }
+              }'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/ResponseStreamEvent'
+          examples:
+            Text input:
+              label: Text input
+              value:
+                id: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
+                object: "response"
+                created_at: 1741476542
+                status: "completed"
+                model: "gpt-4.1-2025-04-14"
+                output:
+                  - type: "message"
+                    id: "msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b"
+                    status: "completed"
+                    role: "assistant"
+                    content:
+                      - type: "output_text"
+                        text: "In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust."
+                usage:
+                  input_tokens: 36
+                  output_tokens: 87
+                  total_tokens: 123
+            Image input:
+              label: Image input
+              value:
+                id: "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41"
+                object: "response"
+                created_at: 1741476777
+                model: "gpt-4.1-2025-04-14"
+                output:
+                  - type: "message"
+                    id: "msg_67ccd3acc8d48190a77525dc6de64b4104becb25c45c1d41"
+                    content":
+                      - type: "output_text"
+                        text: "The image depicts a scenic landscape with a wooden boardwalk or pathway leading through lush, green grass under a blue sky with some clouds. The setting suggests a peaceful natural area, possibly a park or nature reserve. There are trees and shrubs in the background."
+                usage:
+                  input_tokens: 328
+                  output_tokens: 52
+                  total_tokens: 380
+            File input:
+              label: File input
+              value:
+                id: "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86"
+                object: "response"
+                created_at: 1752100704
+                model: "gpt-4.1-2025-04-14"
+                output:
+                  - id: "msg_686eef60d3e081a29283bdcbc4322fd90e34c516d176ff86"
+                    type: "message"
+                    content:
+                      - type: "output_text"
+                        text: "The file seems to contain excerpts from a letter to the shareholders of Berkshire Hathaway Inc., likely written by Warren Buffett. It covers several topics..."
+                usage:
+                  input_tokens": 8438
+                  output_tokens": 398
+                  total_tokens": 8836
+            Web search:
+              label: Web search
+              value:
+                id: "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c"
+                object: "response"
+                created_at: 1741484430
+                output:
+                  - type: "web_search_call"
+                    id: "ws_67ccf18f64008190a39b619f4c8455ef087bb177ab789d5c"
+                    status": "completed"
+                  - type: "message"
+                    id: "msg_67ccf190ca3881909d433c50b1f6357e087bb177ab789d5c"
+                    content:
+                      - type: "output_text"
+                        text: "As of today, March 9, 2025, one notable positive news story..."
+                        annotations:
+                          - type: "url_citation"
+                            url: "https://.../?utm_source=chatgpt.com"
+                            title: "..."
+            File search:
+              label: File search
+              value:
+                id: "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7"
+                object: "response"
+                created_at: 1741485253
+                output:
+                  - type: "file_search_call"
+                    id: "fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7"
+                    queries: ["attributes of an ancient brown dragon"]
+                  - type: "message"
+                    id: "msg_67ccf4c93e5c81909d595b369351a9d309504fb6872380d7"
+                    content:
+                      - type: "output_text"
+                        text: "The attributes of an ancient brown dragon include..."
+                        annotations:
+                          - type: "file_citation"
+                            file_id: "file-4wDz5b167pAf72nx1h9eiN"
+                            filename: "dragons.pdf"
+            Streaming:
+              label: Streaming
+              value: |
+                event: response.created
+                data: {"type":"response.created","response":{"id":"resp_...","status":"in_progress"}}
+                
+                event: response.output_item.added
+                data: {"type":"response.output_item.added","item":{"id":"msg_...","type":"message","status":"in_progress"}}
+                
+                event: response.output_text.delta
+                data: {"type":"response.output_text.delta","delta":"Hi"}
+                
+                ...
+                
+                event: response.completed
+                data: {"type":"response.completed","response":{"id":"resp_...","status":"completed","usage":{"input_tokens":37,"output_tokens":11,"total_tokens":48}}}
+            Functions:
+              label: Functions
+              value:
+                id: "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0"
+                object: "response"
+                created_at": 1741294021
+                output:
+                  - type: "function_call"
+                    id: "fc_67ca09c6bedc8190a7abfec07b1a1332096610f474011cc0"
+                    name: "get_current_weather"
+                    arguments": "{\"location\":\"Boston, MA\",\"unit\":\"celsius\"}"
+                usage:
+                  input_tokens: 291
+                  output_tokens: 23
+                  total_tokens: 314
+            Reasoning:
+              label: Reasoning
+              value:
+                id: "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808"
+                object: "response"
+                created_at: 1741477868
+                model: "o1-2024-12-17"
+                output:
+                  - type: "message"
+                    content:
+                      - type: "output_text"
+                        text: "The classic tongue twister..."
+                reasoning:
+                  effort: "high"
+                usage:
+                  input_tokens: 81
+                  output_tokens": 1035
+                  output_tokens_details":
+                    reasoning_tokens: 832
+                  total_tokens": 1116
 components:
   securitySchemes:
     bearerAuth:
@@ -597,87 +1138,31 @@ components:
       description: API Key provided in the Authorization header as a Bearer token.
   schemas:
     # 请求体 schemas (占位符)
-    CreateSpeechRequest:
-      type: object
-      properties:
-        model:
-          type: string
-        input:
-          type: string
-        voice:
-          type: string
-        stream_format:
-          type: string
-    CreateTranscriptionRequest:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        model:
-          type: string
-        stream:
-          type: boolean
-    CreateTranslationRequest:
-      type: object
-      properties:
-        file:
-          type: string
-          format: binary
-        model:
-          type: string
-    CreateChatCompletionRequest:
-      type: object
-      properties:
-        model:
-          type: string
-        messages:
-          type: array
-          items:
-            type: object
-    CreateEmbeddingRequest:
-      type: object
-    CreateImageEditRequest:
-      type: object
-    CreateImageRequest:
-      type: object
-    CreateImageVariationRequest:
-      type: object
-    CreateResponse:
-      type: object
+    CreateSpeechRequest: { type: object }
+    CreateTranscriptionRequest: { type: object }
+    CreateTranslationRequest: { type: object }
+    CreateChatCompletionRequest: { type: object }
+    CreateEmbeddingRequest: { type: object }
+    CreateImageEditRequest: { type: object }
+    CreateImageRequest: { type: object }
+    CreateImageVariationRequest: { type: object }
+    CreateResponse: { type: object }
     Metadata:
       type: object
-      additionalProperties:
-        type: string
-
+      additionalProperties: { type: string }
     # 响应体 schemas (占位符)
-    CreateSpeechResponseStreamEvent:
-      type: object
-    CreateTranscriptionResponseJson:
-      type: object
-    CreateTranscriptionResponseVerboseJson:
-      type: object
-    CreateTranscriptionResponseStreamEvent:
-      type: object
-    CreateTranslationResponseJson:
-      type: object
-    CreateTranslationResponseVerboseJson:
-      type: object
-    ChatCompletionList:
-      type: object
-    CreateChatCompletionResponse:
-      type: object
-    CreateChatCompletionStreamResponse:
-      type: object
-    CreateEmbeddingResponse:
-      type: object
-    ImagesResponse:
-      type: object
-    ImageEditStreamEvent:
-      type: object
-    ImageGenStreamEvent:
-      type: object
-    Response:
-      type: object
-    ResponseStreamEvent:
-      type: object
+    CreateSpeechResponseStreamEvent: { type: object }
+    CreateTranscriptionResponseJson: { type: object }
+    CreateTranscriptionResponseVerboseJson: { type: object }
+    CreateTranscriptionResponseStreamEvent: { type: object }
+    CreateTranslationResponseJson: { type: object }
+    CreateTranslationResponseVerboseJson: { type: object }
+    ChatCompletionList: { type: object }
+    CreateChatCompletionResponse: { type: object }
+    CreateChatCompletionStreamResponse: { type: object }
+    CreateEmbeddingResponse: { type: object }
+    ImagesResponse: { type: object }
+    ImageEditStreamEvent: { type: object }
+    ImageGenStreamEvent: { type: object }
+    Response: { type: object }
+    ResponseStreamEvent: { type: object }
