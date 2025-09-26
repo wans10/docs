@@ -956,12 +956,11 @@ paths:
                     user: null
                     metadata: {}
             text/event-stream:
-              x-mintlify-streaming: true   # --- 关键点 1: 确保此行存在且缩进正确 ---
+              x-mintlify-streaming: true
               schema:
                 $ref: '#/components/schemas/ResponseStreamEvent'
-              # --- 关键点 2: 为 text/event-stream 单独定义 examples ---
               examples:
-                '流式请求':  # --- 关键点 3: 这个名字现在是唯一的，因为它在不同的 content type 下 ---
+                StreamingResponseExample:
                   summary: '流式响应'
                   value: |
                     event: response.created
@@ -1073,6 +1072,7 @@ paths:
               }'
         - lang: cURL
           label: '流式请求'
+          x-mintlify-name: 'StreamingResponseExample'
           source: |
             curl https://api.llmhub.com.cn/v1/responses \
               -H "Content-Type: application/json" \
