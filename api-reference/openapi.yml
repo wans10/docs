@@ -958,6 +958,7 @@ paths:
                     user: null
                     metadata: {}
             text/event-stream:
+              x-mintlify-streaming: true  # <--- 添加此行
               schema:
                 $ref: '#/components/schemas/ResponseStreamEvent'
               examples:
