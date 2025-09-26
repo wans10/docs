@@ -82,11 +82,7 @@
               "usercases/chathub",
               "usercases/chatbox",
               "usercases/cherry-studio",
-              "uusercases/nextchat",
-              "usercases/grok",
-              "usercases/cline",
-              "usercases/kilo",
-              "usercases/roo"
+              "uusercases/nextchat"
             ]
           }
         ],
