@@ -47,6 +47,14 @@
                   "api-reference/openai-audio-transcriptions",
                   "api-reference/openai-audio-translations"
                 ]
+              },
+              {
+                "group": "Images",
+                "pages": [
+                  "api-reference/openai-images-generations",
+                  "api-reference/openai-images-edits",
+                  "api-reference/openai-images-variations"
+                ]
               }
             ]
           },
