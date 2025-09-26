@@ -35,7 +35,15 @@
               "api-reference/anthropic-messages",
               "api-reference/google-generate",
               "api-reference/deepseek-reasoner",
-              "api-reference/openai-audio"
+              "api-reference/openai-audio",
+              {
+                "group": "Audio",
+                "pages": [
+                  "api-reference/openai-audio-speech",
+                  "api-reference/openai-audio-transcriptions",
+                  "api-reference/openai-audio-translations"
+                ]
+              }
             ]
           },
           {
