@@ -59,17 +59,16 @@
             ]
           },
           {
-            "group": "Billing",
+            "group": "隐私和条款",
             "pages": [
-              "billing/overview",
-              "billing/payments",
-              "billing/subscriptions"
+              "terms-and-privacy/terms",
+              "terms-and-privacy/privacy"
             ]
           }
         ]
       },
       {
-        "tab": "开发工具",
+        "tab": "场景示例",
         "pages": [
           "changelog"
         ]
