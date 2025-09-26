@@ -2,73 +2,48 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
   "name": "Example Co.",
-  "description": "Example Co. is a company that provides example content and placeholder text.",
+  "description": "Example Co. 是一家提供示例内容和占位符文本的公司。",
   "colors": {
     "primary": "#3B82F6",
     "light": "#F8FAFC",
     "dark": "#0F172A"
   },
-  "favicon": "/favicon.svg",
-  "appearance": {
-    "default": "light",
-    "strict": true
-  },
   "navigation": {
-    "tabs": [
+    "dropdowns": [
       {
-        "tab": "用户指南",
+        "dropdown": "文档",
+        "icon": "book",
+        "description": "如何使用 Example Co. 产品",
         "groups": [
           {
-            "group": "概述",
+            "group": "快速开始",
             "pages": [
-              "quickstart",
-              "faq",
-              "principles",
-              "models"
+              "index",
+              "quickstart"
             ]
           },
           {
-            "group": "API 参考",
+            "group": "自定义配置",
             "pages": [
-              {
-                "group": "Chat",
-                "pages": [
-                  "api-reference/openai-responses",
-                  "api-reference/openai-chat-completions",
-                  "api-reference/anthropic-messages",
-                  "api-reference/google-generate",
-                  "api-reference/deepseek-reasoning"
-                ]
-              },
-              {
-                "group": "Audio",
-                "pages": [
-                  "api-reference/openai-audio-speech",
-                  "api-reference/openai-audio-transcriptions",
-                  "api-reference/openai-audio-translations"
-                ]
-              },
-              {
-                "group": "Images",
-                "pages": [
-                  "api-reference/openai-images-generations",
-                  "api-reference/openai-images-edits",
-                  "api-reference/openai-images-variations"
-                ]
-              }
+              "settings",
+              "users",
+              "features"
             ]
           },
           {
-            "group": "隐私和条款",
+            "group": "计费管理",
             "pages": [
-              "terms-and-privacy/terms",
-              "terms-and-privacy/privacy"
+              "billing/overview",
+              "billing/payments",
+              "billing/subscriptions"
             ]
           }
         ]
       },
       {
-        "tab": "场景示例",
+        "dropdown": "更新日志",
+        "icon": "history",
+        "description": "产品更新和变更记录",
         "pages": [
           "changelog"
         ]
@@ -83,13 +58,13 @@
   "navbar": {
     "links": [
       {
-        "label": "Community",
+        "label": "社区",
         "href": "https://example.com/community"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Get Started",
+      "label": "立即开始",
       "href": "https://example.com/start"
     }
   },
@@ -102,35 +77,35 @@
     },
     "links": [
       {
-        "header": "Resources",
+        "header": "资源",
         "items": [
           {
-            "label": "Customers",
+            "label": "客户案例",
             "href": "https://example.com/customers"
           },
           {
-            "label": "Enterprise",
+            "label": "企业版",
             "href": "https://example.com/enterprise"
           },
           {
-            "label": "Request Preview",
+            "label": "申请试用",
             "href": "https://example.com/preview"
           }
         ]
       },
       {
-        "header": "Company",
+        "header": "公司",
         "items": [
           {
-            "label": "Careers",
+            "label": "招聘信息",
             "href": "https://example.com/careers"
           },
           {
-            "label": "Blog",
+            "label": "博客",
             "href": "https://example.com/blog"
           },
           {
-            "label": "Privacy Policy",
+            "label": "隐私政策",
             "href": "https://example.com/legal/privacy"
           }
         ]
@@ -152,16 +127,19 @@
       "value": "example_cookie_value"
     }
   },
-  "api": {
-    "playground": {
-      "display": "simple"
-    }
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "errors": {
     "404": {
       "redirect": false,
-      "title": "I can't be found",
-      "description": "What ever **happened** to this _page_?"
+      "title": "页面未找到",
+      "description": "这个_页面_到底**怎么了**？"
     }
   }
 }
