@@ -33,11 +33,11 @@
               {
                 "group": "Chat",
                 "pages": [
-                  "api-reference/openai-responses.mdx",
-                  "api-reference/openai-chat-completions.mdx",
-                  "api-reference/anthropic-messages.mdx",
-                  "api-reference/google-generate.mdx",
-                  "api-reference/deepseek-reasoning.mdx"
+                  "api-reference/openai-responses",
+                  "api-reference/openai-chat-completions",
+                  "api-reference/anthropic-messages",
+                  "api-reference/google-generate",
+                  "api-reference/deepseek-reasoning"
                 ]
               },
               {
