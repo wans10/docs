@@ -69,10 +69,22 @@
             "group": "开发工具",
             "pages": [
               "develop/claude",
+              "develop/gemini",
+              "develop/grok",
               "develop/cline",
-              "scenarios/developer-tools/code-translations",
-              "scenarios/developer-tools/code-summaries",
-              "scenarios/developer-tools/code-tests"
+              "develop/kilo",
+              "develop/roo"
+            ]
+          },
+          {
+            "group": "对话助手",
+            "pages": [
+              "usercases/chathub",
+              "usercases/gemini",
+              "usercases/grok",
+              "usercases/cline",
+              "usercases/kilo",
+              "usercases/roo"
             ]
           }
         ],
