@@ -64,6 +64,18 @@
       },
       {
         "tab": "场景示例",
+        "groups": [
+          {
+            "group": "开发工具",
+            "pages": [
+              "develop/claude",
+              "develop/cline",
+              "scenarios/developer-tools/code-translations",
+              "scenarios/developer-tools/code-summaries",
+              "scenarios/developer-tools/code-tests"
+            ]
+          }
+        ],
         "pages": [
           "changelog"
         ]
