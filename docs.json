@@ -1,145 +1,108 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
-  "name": "Example Co.",
-  "description": "Example Co. 是一家提供示例内容和占位符文本的公司。",
+  "theme": "mint",
+  "name": "Mint Starter Kit",
   "colors": {
-    "primary": "#3B82F6",
-    "light": "#F8FAFC",
-    "dark": "#0F172A"
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "light",
+    "strict": true
   },
   "navigation": {
-    "dropdowns": [
+    "tabs": [
       {
-        "dropdown": "文档",
-        "icon": "book",
-        "description": "如何使用 Example Co. 产品",
+        "tab": "用户指南",
         "groups": [
           {
-            "group": "快速开始",
+            "group": "概述",
             "pages": [
-              "index",
-              "quickstart"
+              "quickstart",
+              "faq",
+              "principles",
+              "models"
             ]
           },
           {
-            "group": "自定义配置",
+            "group": "API 参考",
             "pages": [
-              "settings",
-              "users",
-              "features"
+              {
+                "group": "Chat",
+                "pages": [
+                  "api-reference/openai-responses",
+                  "api-reference/openai-chat-completions",
+                  "api-reference/anthropic-messages",
+                  "api-reference/google-generate",
+                  "api-reference/deepseek-reasoning"
+                ]
+              },
+              {
+                "group": "Audio",
+                "pages": [
+                  "api-reference/openai-audio-speech",
+                  "api-reference/openai-audio-transcriptions",
+                  "api-reference/openai-audio-translations"
+                ]
+              },
+              {
+                "group": "Images",
+                "pages": [
+                  "api-reference/openai-images-generations",
+                  "api-reference/openai-images-edits",
+                  "api-reference/openai-images-variations"
+                ]
+              }
             ]
           },
           {
-            "group": "计费管理",
+            "group": "隐私和条款",
             "pages": [
-              "billing/overview",
-              "billing/payments",
-              "billing/subscriptions"
+              "terms-and-privacy/terms",
+              "terms-and-privacy/privacy"
             ]
           }
         ]
       },
       {
-        "dropdown": "更新日志",
-        "icon": "history",
-        "description": "产品更新和变更记录",
+        "tab": "场景示例",
+        "groups": [
+          {
+            "group": "开发工具",
+            "pages": [
+              "develop/claude",
+              "develop/gemini",
+              "develop/grok",
+              "develop/cline",
+              "develop/kilo",
+              "develop/roo"
+            ]
+          },
+          {
+            "group": "对话助手",
+            "pages": [
+              "usercases/chathub",
+              "usercases/chatbox",
+              "usercases/cherry-studio",
+              "uusercases/nextchat"
+            ]
+          }
+        ],
         "pages": [
           "changelog"
         ]
       }
     ]
   },
+  "api": {
+    "playground": {
+      "display": "simple"
+    }
+  },
   "logo": {
-    "light": "/logo-light.svg",
-    "dark": "/logo-dark.svg",
-    "href": "https://example.com"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "社区",
-        "href": "https://example.com/community"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "立即开始",
-      "href": "https://example.com/start"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/example",
-      "linkedin": "https://www.linkedin.com/company/example",
-      "github": "https://github.com/example",
-      "slack": "https://example.com/community"
-    },
-    "links": [
-      {
-        "header": "资源",
-        "items": [
-          {
-            "label": "客户案例",
-            "href": "https://example.com/customers"
-          },
-          {
-            "label": "企业版",
-            "href": "https://example.com/enterprise"
-          },
-          {
-            "label": "申请试用",
-            "href": "https://example.com/preview"
-          }
-        ]
-      },
-      {
-        "header": "公司",
-        "items": [
-          {
-            "label": "招聘信息",
-            "href": "https://example.com/careers"
-          },
-          {
-            "label": "博客",
-            "href": "https://example.com/blog"
-          },
-          {
-            "label": "隐私政策",
-            "href": "https://example.com/legal/privacy"
-          }
-        ]
-      }
-    ]
-  },
-  "integrations": {
-    "ga4": {
-      "measurementId": "G-XXXXXXXXXX"
-    },
-    "koala": {
-      "publicApiKey": "pk_example_key_123"
-    },
-    "telemetry": {
-      "enabled": true
-    },
-    "cookies": {
-      "key": "example_cookie_key",
-      "value": "example_cookie_value"
-    }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
-  },
-  "errors": {
-    "404": {
-      "redirect": false,
-      "title": "页面未找到",
-      "description": "这个_页面_到底**怎么了**？"
-    }
+    "light": "/favicon.svg",
+    "dark": "/favicon.svg"
   }
 }
