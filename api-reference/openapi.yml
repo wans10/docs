@@ -419,7 +419,7 @@ paths:
         - Images
       summary: 创建图像
       description: |
-        根据提示创建图像。 [了解更多](https://platform.openai.com/docs/guides/images)。
+        根据提示创建图像。
       requestBody:
         required: true
         content:
