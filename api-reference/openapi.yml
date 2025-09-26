@@ -83,7 +83,7 @@ paths:
                   - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
                   - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
               examples:
-                Default:
+                '默认请求':
                   summary: '默认响应'
                   value:
                     text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
@@ -95,7 +95,7 @@ paths:
                         audio_tokens: 14
                       output_tokens: 45
                       total_tokens: 59
-                Logprobs:
+                '带 Logprobs 的请求':
                   summary: '带 Logprobs 的响应'
                   value:
                     text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
@@ -156,7 +156,7 @@ paths:
                         audio_tokens: 14
                       output_tokens: 45
                       total_tokens: 59
-                "Word timestamps":
+                '带词语时间戳的请求':
                   summary: '带词语时间戳的响应'
                   value:
                     task: "transcribe"
@@ -174,7 +174,7 @@ paths:
                     usage:
                       type: "duration"
                       seconds: 9
-                "Segment timestamps":
+                '带分段时间戳的请求':
                   summary: '带分段时间戳的响应'
                   value:
                     task: "transcribe"
@@ -200,7 +200,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
                     data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
