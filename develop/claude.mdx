@@ -23,7 +23,7 @@
 在你的终端或 IDE 中运行以下命令，下载一个帮你自动配置环境变量的 shell 脚本，运行即可
 
 ```bash
-curl -O "http://bigmodel-us3-prod-marketplace.cn-wlcb.ufileos.com/1753683727739-0b3a4f6e84284f1b9afa951ab7873c29.sh?ufileattname=claude_code_prod.sh"
+npm install -g @anthropic-ai/claude-code
 ```
 
 **方式二：手动配置**
@@ -31,9 +31,9 @@ curl -O "http://bigmodel-us3-prod-marketplace.cn-wlcb.ufileos.com/1753683727739-
 若之前有配置过 Claude code 的环境变量，可按以下方式手动配置
 
 ```bash
-export ANTHROPIC_BASE_URL=https://open.bigmodel.cn/api/anthropic
+export ANTHROPIC_BASE_URL=https://api.llmhub.com.cn
 
-export ANTHROPIC_AUTH_TOKEN=YOUR_API_KEY
+export ANTHROPIC_AUTH_TOKEN=LLMHub_API_KEY
 ```
 
 ## 3. 快速开始使用 Claude Code
