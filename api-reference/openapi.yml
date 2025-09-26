@@ -9,10 +9,6 @@ servers:
   - url: https://api.llmhub.com.cn/v1
     description: LLMHub 生产服务器
 
-# 1. 安全方案定义
-# 我们首先在 'components' 中定义 API 所使用的认证方式。
-# 根据 curl 命令中的 -H "Authorization: Bearer $LLMHub_API_KEY"，
-# 我们可以确定认证方式是 HTTP Bearer Token。
 components:
   securitySchemes:
     LLMHubAuth:
@@ -23,11 +19,7 @@ components:
         使用您的 LLMHub API 密钥进行认证。
         您需要在 HTTP 请求头中提供一个 `Authorization` 字段，其值为 `Bearer YOUR_API_KEY`。
 
-  # 2. 组件化Schema定义
-  # 为了保持规范的整洁和可维护性，我们将所有的数据模型（schemas）集中定义在 'components' 中。
-  # 这样做可以方便地在多个地方复用这些模型。
   schemas:
-    # 请求体 Schema
     CreateResponseRequest:
       type: object
       title: Create Response Request
@@ -56,15 +48,6 @@ components:
         - model
         - input
 
-    # -----------------------------------------------------
-    # 响应体与事件的 Schema
-    # 核心在于如何描述一个 SSE 流。OpenAPI 标准的做法是：
-    # 1. 将响应的 Content-Type 设置为 `text/event-stream`。
-    # 2. 定义一个 schema 来描述流中 `data` 字段可能出现的各种JSON对象结构。
-    # 3. 使用 `oneOf` 和 `discriminator` 来清晰地定义不同类型的事件。
-    #    'discriminator' 会根据 'type' 字段的值来确定具体是哪一个事件模型。
-    # -----------------------------------------------------
-
     StreamEvent:
       title: Stream Event
       description: SSE 流中的一个事件数据对象。
@@ -91,10 +74,6 @@ components:
           response.output_item.done: '#/components/schemas/ResponseOutputItemDoneEvent'
           response.completed: '#/components/schemas/ResponseCompletedEvent'
 
-    # 为每个事件类型定义详细的 Schema
-    # 我们从提供的 SSE 流中提取每个事件的 `data` 部分，并为其创建精确的 Schema。
-
-    # 通用响应对象，被多个事件引用
     ResponseObject:
       type: object
       properties:
@@ -112,12 +91,10 @@ components:
         status:
           type: string
           enum: [in_progress, completed, failed, cancelled]
-        # ... 这里可以根据API的完整文档补充其他字段，如 error, instructions, model 等。
-        # 为了简洁，此处仅列出示例中出现的关键字段。
         output:
           type: array
           items:
-            type: object # 详细结构可以在 ResponseCompletedEvent 中看到
+            type: object
         usage:
           type: object
           nullable: true
@@ -152,24 +129,9 @@ components:
     ResponseOutputItemAddedEvent:
       type: object
       properties:
-        type:
-          type: string
-          enum: [response.output_item.added]
-        output_index:
-          type: integer
-        item:
-          type: object
-          properties:
-            id:
-              type: string
-            type:
-              type: string
-            status:
-              type: string
-            role:
-              type: string
-            content:
-              type: array
+        type: { type: string, enum: [response.output_item.added] }
+        output_index: { type: integer }
+        item: { type: object }
 
     ResponseContentPartAddedEvent:
       type: object
@@ -222,7 +184,6 @@ components:
           type: string
           enum: [response.completed]
         response:
-          # 这是最终的、完整的 Response 对象，其 schema 会比中间状态更详细。
           allOf:
             - $ref: '#/components/schemas/ResponseObject'
             - type: object
@@ -246,13 +207,10 @@ components:
                             type: { enum: [output_text] }
                             text: { type: string }
                 usage:
-                  # 保证 usage 字段在完成时不为 null
                   type: object
                   nullable: false
                   required: [input_tokens, output_tokens, total_tokens]
 
-# 3. 路径和操作定义
-# 这是 API 的核心部分，我们在这里定义 `/responses` 路径下的 POST 操作。
 paths:
   /responses:
     post:
@@ -264,8 +222,6 @@ paths:
       operationId: createResponse
       tags:
         - Responses
-      # 4. 引用安全方案
-      # 这里我们引用之前定义的 LLMHubAuth，表示此端点需要 Bearer Token 认证。
       security:
         - LLMHubAuth: []
       requestBody:
@@ -276,11 +232,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateResponseRequest'
       responses:
-        # 5. 响应定义
-        # 这里是关键，我们定义了 HTTP 200 成功响应。
-        # Content-Type 被明确指定为 'text/event-stream'。
-        # 其 schema 指向我们定义的 StreamEvent，它通过 `oneOf` 和 `discriminator`
-        # 描述了流中可能出现的每一种事件结构。
         '200':
           description: 成功。以 Server-Sent Events (SSE) 流的形式返回响应。
           content:
@@ -289,19 +240,33 @@ paths:
                 $ref: '#/components/schemas/StreamEvent'
               example: |
                 event: response.created
-                data: {"type":"response.created","response":{...}}
+                data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
 
                 event: response.in_progress
-                data: {"type":"response.in_progress","response":{...}}
+                data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+                event: response.output_item.added
+                data: {"type":"response.output_item.added","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"in_progress","role":"assistant","content":[]}}
+
+                event: response.content_part.added
+                data: {"type":"response.content_part.added","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]}}
 
                 event: response.output_text.delta
-                data: {"type":"response.output_text.delta", "delta":"Hello"}
+                data: {"type":"response.output_text.delta","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"delta":"Hi"}
 
                 ...
 
-                event: response.completed
-                data: {"type":"response.completed","response":{...}}
+                event: response.output_text.done
+                data: {"type":"response.output_text.done","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"text":"Hi there! How can I assist you today?"}
 
+                event: response.content_part.done
+                data: {"type":"response.content_part.done","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"part":{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}}
+
+                event: response.output_item.done
+                data: {"type":"response.output_item.done","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}}
+
+                event: response.completed
+                data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
         '400':
           description: 错误的请求（例如，无效的参数）。
         '401':
