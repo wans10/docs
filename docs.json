@@ -81,7 +81,8 @@
             "pages": [
               "usercases/chathub",
               "usercases/chatbox",
-              "usercases/gemini",
+              "usercases/cherry-studio",
+              "uusercases/nextchat",
               "usercases/grok",
               "usercases/cline",
               "usercases/kilo",
