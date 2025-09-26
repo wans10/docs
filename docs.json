@@ -1,18 +1,13 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
-  "name": "Example Co.",
-  "description": "Example Co. is a company that provides example content and placeholder text.",
+  "theme": "mint",
+  "name": "Mint Starter Kit",
   "colors": {
-    "primary": "#3B82F6",
-    "light": "#F8FAFC",
-    "dark": "#0F172A"
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
-  "appearance": {
-    "default": "light",
-    "strict": true
-  },
   "navigation": {
     "tabs": [
       {
@@ -76,92 +71,14 @@
     ]
   },
   "logo": {
-    "light": "/logo-light.svg",
-    "dark": "/logo-dark.svg",
-    "href": "https://example.com"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Community",
-        "href": "https://example.com/community"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Get Started",
-      "href": "https://example.com/start"
-    }
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/example",
-      "linkedin": "https://www.linkedin.com/company/example",
-      "github": "https://github.com/example",
-      "slack": "https://example.com/community"
-    },
-    "links": [
-      {
-        "header": "Resources",
-        "items": [
-          {
-            "label": "Customers",
-            "href": "https://example.com/customers"
-          },
-          {
-            "label": "Enterprise",
-            "href": "https://example.com/enterprise"
-          },
-          {
-            "label": "Request Preview",
-            "href": "https://example.com/preview"
-          }
-        ]
-      },
-      {
-        "header": "Company",
-        "items": [
-          {
-            "label": "Careers",
-            "href": "https://example.com/careers"
-          },
-          {
-            "label": "Blog",
-            "href": "https://example.com/blog"
-          },
-          {
-            "label": "Privacy Policy",
-            "href": "https://example.com/legal/privacy"
-          }
-        ]
-      }
-    ]
-  },
-  "integrations": {
-    "ga4": {
-      "measurementId": "G-XXXXXXXXXX"
-    },
-    "koala": {
-      "publicApiKey": "pk_example_key_123"
-    },
-    "telemetry": {
-      "enabled": true
-    },
-    "cookies": {
-      "key": "example_cookie_key",
-      "value": "example_cookie_value"
-    }
-  },
-  "api": {
-    "playground": {
-      "display": "simple"
-    }
-  },
-  "errors": {
-    "404": {
-      "redirect": false,
-      "title": "I can't be found",
-      "description": "What ever **happened** to this _page_?"
+      "x": "https://x.com/mintlify",
+      "github": "https://github.com/mintlify",
+      "linkedin": "https://linkedin.com/company/mintlify"
     }
   }
 }
