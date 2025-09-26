@@ -197,6 +197,7 @@ paths:
                       type: "duration"
                       seconds: 9
             text/event-stream:
+              x-mintlify-streaming: true
               schema:
                 $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
               examples:
@@ -374,6 +375,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ImagesResponse'
             text/event-stream:
+              x-mintlify-streaming: true
               schema:
                 $ref: '#/components/schemas/ImageEditStreamEvent'
               examples:
@@ -448,6 +450,7 @@ paths:
                         text_tokens: 10
                         image_tokens: 40
             text/event-stream:
+              x-mintlify-streaming: true  # <--- 添加此行
               schema:
                 $ref: '#/components/schemas/ImageGenStreamEvent'
               examples:

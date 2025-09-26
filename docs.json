@@ -70,6 +70,11 @@
       }
     ]
   },
+  "api": {
+    "playground": {
+      "display": "simple"
+    }
+  },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
