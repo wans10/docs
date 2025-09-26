@@ -1,1196 +1,308 @@
-# OpenAPI 规范版本
 openapi: 3.1.0
-
-# API 的元数据信息
 info:
-  title: OpenAI API (Mintlify-Compatible)
-  version: '1.0.0'
+  title: LLMHub API
   description: |
-    这是根据提供的 openai.yaml 文件片段生成的完整 OpenAPI 3.1.0 规范。
-    它专门为 Mintlify 文档进行了优化，使用了 `x-codeSamples` 扩展来展示代码示例。
-
-# API 服务器信息
+    LLMHub API 允许您与先进的语言模型进行交互，以生成文本、执行指令等。
+    此文档详细描述了用于创建流式响应的端点。
+  version: v1
 servers:
   - url: https://api.llmhub.com.cn/v1
-    description: 主 API 服务器
+    description: LLMHub 生产服务器
 
-# 全局安全要求，适用于所有 API 端点
-security:
-  - bearerAuth: []
+# 1. 安全方案定义
+# 我们首先在 'components' 中定义 API 所使用的认证方式。
+# 根据 curl 命令中的 -H "Authorization: Bearer $LLMHub_API_KEY"，
+# 我们可以确定认证方式是 HTTP Bearer Token。
+components:
+  securitySchemes:
+    LLMHubAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API-KEY
+      description: |
+        使用您的 LLMHub API 密钥进行认证。
+        您需要在 HTTP 请求头中提供一个 `Authorization` 字段，其值为 `Bearer YOUR_API_KEY`。
 
-# API 端点（路径）定义
+  # 2. 组件化Schema定义
+  # 为了保持规范的整洁和可维护性，我们将所有的数据模型（schemas）集中定义在 'components' 中。
+  # 这样做可以方便地在多个地方复用这些模型。
+  schemas:
+    # 请求体 Schema
+    CreateResponseRequest:
+      type: object
+      title: Create Response Request
+      description: 创建一个新响应的请求体。
+      properties:
+        model:
+          type: string
+          description: 用于生成响应的模型ID。
+          example: "gpt-4.1"
+        instructions:
+          type: string
+          description: 对模型的系统级指令，用于指导其行为。
+          example: "You are a helpful assistant."
+        input:
+          type: string
+          description: 提供给模型的主要输入内容。
+          example: "Hello!"
+        stream:
+          type: boolean
+          description: |
+            如果设置为 `true`，API将以 Server-Sent Events (SSE) 的形式流式返回响应。
+            如果为 `false` 或未提供，API将在响应完全生成后一次性返回。
+          default: false
+          example: true
+      required:
+        - model
+        - input
+
+    # -----------------------------------------------------
+    # 响应体与事件的 Schema
+    # 核心在于如何描述一个 SSE 流。OpenAPI 标准的做法是：
+    # 1. 将响应的 Content-Type 设置为 `text/event-stream`。
+    # 2. 定义一个 schema 来描述流中 `data` 字段可能出现的各种JSON对象结构。
+    # 3. 使用 `oneOf` 和 `discriminator` 来清晰地定义不同类型的事件。
+    #    'discriminator' 会根据 'type' 字段的值来确定具体是哪一个事件模型。
+    # -----------------------------------------------------
+
+    StreamEvent:
+      title: Stream Event
+      description: SSE 流中的一个事件数据对象。
+      oneOf:
+        - $ref: '#/components/schemas/ResponseCreatedEvent'
+        - $ref: '#/components/schemas/ResponseInProgressEvent'
+        - $ref: '#/components/schemas/ResponseOutputItemAddedEvent'
+        - $ref: '#/components/schemas/ResponseContentPartAddedEvent'
+        - $ref: '#/components/schemas/ResponseOutputTextDeltaEvent'
+        - $ref: '#/components/schemas/ResponseOutputTextDoneEvent'
+        - $ref: '#/components/schemas/ResponseContentPartDoneEvent'
+        - $ref: '#/components/schemas/ResponseOutputItemDoneEvent'
+        - $ref: '#/components/schemas/ResponseCompletedEvent'
+      discriminator:
+        propertyName: type
+        mapping:
+          response.created: '#/components/schemas/ResponseCreatedEvent'
+          response.in_progress: '#/components/schemas/ResponseInProgressEvent'
+          response.output_item.added: '#/components/schemas/ResponseOutputItemAddedEvent'
+          response.content_part.added: '#/components/schemas/ResponseContentPartAddedEvent'
+          response.output_text.delta: '#/components/schemas/ResponseOutputTextDeltaEvent'
+          response.output_text.done: '#/components/schemas/ResponseOutputTextDoneEvent'
+          response.content_part.done: '#/components/schemas/ResponseContentPartDoneEvent'
+          response.output_item.done: '#/components/schemas/ResponseOutputItemDoneEvent'
+          response.completed: '#/components/schemas/ResponseCompletedEvent'
+
+    # 为每个事件类型定义详细的 Schema
+    # 我们从提供的 SSE 流中提取每个事件的 `data` 部分，并为其创建精确的 Schema。
+
+    # 通用响应对象，被多个事件引用
+    ResponseObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654"
+        object:
+          type: string
+          enum: [response]
+        created_at:
+          type: integer
+          format: int64
+          description: 响应创建的Unix时间戳。
+          example: 1741290958
+        status:
+          type: string
+          enum: [in_progress, completed, failed, cancelled]
+        # ... 这里可以根据API的完整文档补充其他字段，如 error, instructions, model 等。
+        # 为了简洁，此处仅列出示例中出现的关键字段。
+        output:
+          type: array
+          items:
+            type: object # 详细结构可以在 ResponseCompletedEvent 中看到
+        usage:
+          type: object
+          nullable: true
+          properties:
+            input_tokens:
+              type: integer
+            output_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+
+    ResponseCreatedEvent:
+      type: object
+      required: [type, response]
+      properties:
+        type:
+          type: string
+          enum: [response.created]
+        response:
+          $ref: '#/components/schemas/ResponseObject'
+
+    ResponseInProgressEvent:
+      type: object
+      required: [type, response]
+      properties:
+        type:
+          type: string
+          enum: [response.in_progress]
+        response:
+          $ref: '#/components/schemas/ResponseObject'
+
+    ResponseOutputItemAddedEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [response.output_item.added]
+        output_index:
+          type: integer
+        item:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+            status:
+              type: string
+            role:
+              type: string
+            content:
+              type: array
+
+    ResponseContentPartAddedEvent:
+      type: object
+      properties:
+        type: { type: string, enum: [response.content_part.added] }
+        item_id: { type: string }
+        output_index: { type: integer }
+        content_index: { type: integer }
+        part: { type: object }
+
+    ResponseOutputTextDeltaEvent:
+      type: object
+      properties:
+        type: { type: string, enum: [response.output_text.delta] }
+        item_id: { type: string }
+        output_index: { type: integer }
+        content_index: { type: integer }
+        delta: { type: string, description: "本次增量传输的文本内容。" }
+
+    ResponseOutputTextDoneEvent:
+      type: object
+      properties:
+        type: { type: string, enum: [response.output_text.done] }
+        item_id: { type: string }
+        output_index: { type: integer }
+        content_index: { type: integer }
+        text: { type: string, description: "完整的文本块内容。" }
+
+    ResponseContentPartDoneEvent:
+      type: object
+      properties:
+        type: { type: string, enum: [response.content_part.done] }
+        item_id: { type: string }
+        output_index: { type: integer }
+        content_index: { type: integer }
+        part: { type: object }
+
+    ResponseOutputItemDoneEvent:
+      type: object
+      properties:
+        type: { type: string, enum: [response.output_item.done] }
+        output_index: { type: integer }
+        item: { type: object }
+
+    ResponseCompletedEvent:
+      type: object
+      required: [type, response]
+      properties:
+        type:
+          type: string
+          enum: [response.completed]
+        response:
+          # 这是最终的、完整的 Response 对象，其 schema 会比中间状态更详细。
+          allOf:
+            - $ref: '#/components/schemas/ResponseObject'
+            - type: object
+              properties:
+                status:
+                  enum: [completed]
+                output:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      type: { type: string }
+                      status: { enum: [completed] }
+                      role: { enum: [assistant] }
+                      content:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type: { enum: [output_text] }
+                            text: { type: string }
+                usage:
+                  # 保证 usage 字段在完成时不为 null
+                  type: object
+                  nullable: false
+                  required: [input_tokens, output_tokens, total_tokens]
+
+# 3. 路径和操作定义
+# 这是 API 的核心部分，我们在这里定义 `/responses` 路径下的 POST 操作。
 paths:
-  /audio/speech:
-    post:
-      operationId: createSpeech
-      tags:
-        - Audio
-      summary: 创建语音
-      description: 根据输入的文本生成音频。
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateSpeechRequest'
-      # Mintlify x-codeSamples 扩展
-      x-codeSamples:
-        - lang: cURL
-          label: '默认请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/speech \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy"
-              }' \
-              --output speech.mp3
-        - lang: cURL
-          label: 'SSE 流格式'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/speech \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy",
-                "stream_format": "sse"
-              }'
-
-  /audio/transcriptions:
-    post:
-      operationId: createTranscription
-      tags:
-        - Audio
-      summary: 创建转录
-      description: 将音频转录为输入语言的文本。
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CreateTranscriptionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
-              examples:
-                '默认请求':
-                  summary: '默认响应'
-                  value:
-                    text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
-                    usage:
-                      type: "tokens"
-                      input_tokens: 14
-                      input_token_details:
-                        text_tokens: 0
-                        audio_tokens: 14
-                      output_tokens: 45
-                      total_tokens: 59
-                '带 Logprobs 的请求':
-                  summary: '带 Logprobs 的响应'
-                  value:
-                    text: "Hey, my knee is hurting and I want to see the doctor tomorrow ideally."
-                    logprobs:
-                      - token: "Hey"
-                        logprob: -1.0415299
-                        bytes: [72, 101, 121]
-                      - token: ","
-                        logprob: -0.00009805982
-                        bytes: [44]
-                      - token: " my"
-                        logprob: -0.00229799
-                        bytes: [32, 109, 121]
-                      - token: " knee"
-                        logprob: -0.000047159858
-                        bytes: [32, 107, 110, 101, 101]
-                      - token: " is"
-                        logprob: -0.043909557
-                        bytes: [32, 105, 115]
-                      - token: " hurting"
-                        logprob: -0.000011041146
-                        bytes: [32, 104, 117, 114, 116, 105, 110, 103]
-                      - token: " and"
-                        logprob: -0.011076359
-                        bytes: [32, 97, 110, 100]
-                      - token: " I"
-                        logprob: -0.0000053193703
-                        bytes: [32, 73]
-                      - token: " want"
-                        logprob: -0.0017156356
-                        bytes: [32, 119, 97, 110, 116]
-                      - token: " to"
-                        logprob: -0.000000789631
-                        bytes: [32, 116, 111]
-                      - token: " see"
-                        logprob: -0.00000055122365
-                        bytes: [32, 115, 101, 101]
-                      - token: " the"
-                        logprob: -0.0040786397
-                        bytes: [32, 116, 104, 101]
-                      - token: " doctor"
-                        logprob: -0.0000023392786
-                        bytes: [32, 100, 111, 99, 116, 111, 114]
-                      - token: " tomorrow"
-                        logprob: -0.000000789631
-                        bytes: [32, 116, 111, 109, 111, 114, 114, 111, 119]
-                      - token: " ideally"
-                        logprob: -0.5800861
-                        bytes: [32, 105, 100, 101, 97, 108, 108, 121]
-                      - token: "."
-                        logprob: -0.00011093382
-                        bytes: [46]
-                    usage:
-                      type: "tokens"
-                      input_tokens: 14
-                      input_token_details:
-                        text_tokens: 0
-                        audio_tokens: 14
-                      output_tokens: 45
-                      total_tokens: 59
-                '带词语时间戳的请求':
-                  summary: '带词语时间戳的响应'
-                  value:
-                    task: "transcribe"
-                    language: "english"
-                    duration: 8.470000267028809
-                    text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
-                    words:
-                      - word: "The"
-                        start: 0.0
-                        end: 0.23999999463558197
-                      # ...
-                      - word: "volleyball"
-                        start: 7.400000095367432
-                        end: 7.900000095367432
-                    usage:
-                      type: "duration"
-                      seconds: 9
-                '带分段时间戳的请求':
-                  summary: '带分段时间戳的响应'
-                  value:
-                    task: "transcribe"
-                    language: "english"
-                    duration: 8.470000267028809
-                    text: "The beach was a popular spot on a hot summer day. People were swimming in the ocean, building sandcastles, and playing beach volleyball."
-                    segments:
-                      - id: 0
-                        seek: 0
-                        start: 0.0
-                        end: 3.319999933242798
-                        text: " The beach was a popular spot on a hot summer day."
-                        tokens: [50364, 440, 7534, 390, 257, 3743, 4008, 322, 257, 2368, 4266, 786, 13, 50530]
-                        temperature: 0.0
-                        avg_logprob: -0.2860786020755768
-                        compression_ratio: 1.2363636493682861
-                        no_speech_prob: 0.00985979475080967
-                      # ...
-                    usage:
-                      type: "duration"
-                      seconds: 9
-            text/event-stream:
-              x-mintlify-streaming: true
-              schema:
-                $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
-              examples:
-                '流式请求':
-                  summary: '流式响应'
-                  value: |
-                    data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
-
-                    data: {"type":"transcript.text.delta","delta":" see","logprobs":[{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" skies","logprobs":[{"token":" skies","logprob":-2.3392786e-6,"bytes":[32,115,107,105,101,115]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" of","logprobs":[{"token":" of","logprob":-3.1281633e-7,"bytes":[32,111,102]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" blue","logprobs":[{"token":" blue","logprob":-1.0280384e-6,"bytes":[32,98,108,117,101]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" and","logprobs":[{"token":" and","logprob":-0.0005108566,"bytes":[32,97,110,100]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" clouds","logprobs":[{"token":" clouds","logprob":-1.9361265e-7,"bytes":[32,99,108,111,117,100,115]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" of","logprobs":[{"token":" of","logprob":-1.9361265e-7,"bytes":[32,111,102]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" white","logprobs":[{"token":" white","logprob":-7.89631e-7,"bytes":[32,119,104,105,116,101]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":",","logprobs":[{"token":",","logprob":-0.0014890312,"bytes":[44]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" the","logprobs":[{"token":" the","logprob":-0.0110956915,"bytes":[32,116,104,101]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" bright","logprobs":[{"token":" bright","logprob":0.0,"bytes":[32,98,114,105,103,104,116]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" blessed","logprobs":[{"token":" blessed","logprob":-0.000045848617,"bytes":[32,98,108,101,115,115,101,100]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" days","logprobs":[{"token":" days","logprob":-0.000010802739,"bytes":[32,100,97,121,115]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":",","logprobs":[{"token":",","logprob":-0.00001700133,"bytes":[44]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" the","logprobs":[{"token":" the","logprob":-0.0000118755715,"bytes":[32,116,104,101]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" dark","logprobs":[{"token":" dark","logprob":-5.5122365e-7,"bytes":[32,100,97,114,107]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" sacred","logprobs":[{"token":" sacred","logprob":-5.4385737e-6,"bytes":[32,115,97,99,114,101,100]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" nights","logprobs":[{"token":" nights","logprob":-4.00813e-6,"bytes":[32,110,105,103,104,116,115]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":",","logprobs":[{"token":",","logprob":-0.0036910512,"bytes":[44]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" and","logprobs":[{"token":" and","logprob":-0.0031903093,"bytes":[32,97,110,100]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" I","logprobs":[{"token":" I","logprob":-1.504853e-6,"bytes":[32,73]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" think","logprobs":[{"token":" think","logprob":-4.3202e-7,"bytes":[32,116,104,105,110,107]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" to","logprobs":[{"token":" to","logprob":-1.9361265e-7,"bytes":[32,116,111]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" myself","logprobs":[{"token":" myself","logprob":-1.7432603e-6,"bytes":[32,109,121,115,101,108,102]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":",","logprobs":[{"token":",","logprob":-0.29254505,"bytes":[44]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" what","logprobs":[{"token":" what","logprob":-0.016815351,"bytes":[32,119,104,97,116]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" a","logprobs":[{"token":" a","logprob":-3.1281633e-7,"bytes":[32,97]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" wonderful","logprobs":[{"token":" wonderful","logprob":-2.1008714e-6,"bytes":[32,119,111,110,100,101,114,102,117,108]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":" world","logprobs":[{"token":" world","logprob":-8.180258e-6,"bytes":[32,119,111,114,108,100]}]}
-                    
-                    data: {"type":"transcript.text.delta","delta":".","logprobs":[{"token":".","logprob":-0.014231676,"bytes":[46]}]}
-                    
-                    data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white, the bright blessed days, the dark sacred nights, and I think to myself, what a wonderful world.","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]},{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]},{"token":" skies","logprob":-2.3392786e-6,"bytes":[32,115,107,105,101,115]},{"token":" of","logprob":-3.1281633e-7,"bytes":[32,111,102]},{"token":" blue","logprob":-1.0280384e-6,"bytes":[32,98,108,117,101]},{"token":" and","logprob":-0.0005108566,"bytes":[32,97,110,100]},{"token":" clouds","logprob":-1.9361265e-7,"bytes":[32,99,108,111,117,100,115]},{"token":" of","logprob":-1.9361265e-7,"bytes":[32,111,102]},{"token":" white","logprob":-7.89631e-7,"bytes":[32,119,104,105,116,101]},{"token":",","logprob":-0.0014890312,"bytes":[44]},{"token":" the","logprob":-0.0110956915,"bytes":[32,116,104,101]},{"token":" bright","logprob":0.0,"bytes":[32,98,114,105,103,104,116]},{"token":" blessed","logprob":-0.000045848617,"bytes":[32,98,108,101,115,115,101,100]},{"token":" days","logprob":-0.000010802739,"bytes":[32,100,97,121,115]},{"token":",","logprob":-0.00001700133,"bytes":[44]},{"token":" the","logprob":-0.0000118755715,"bytes":[32,116,104,101]},{"token":" dark","logprob":-5.5122365e-7,"bytes":[32,100,97,114,107]},{"token":" sacred","logprob":-5.4385737e-6,"bytes":[32,115,97,99,114,101,100]},{"token":" nights","logprob":-4.00813e-6,"bytes":[32,110,105,103,104,116,115]},{"token":",","logprob":-0.0036910512,"bytes":[44]},{"token":" and","logprob":-0.0031903093,"bytes":[32,97,110,100]},{"token":" I","logprob":-1.504853e-6,"bytes":[32,73]},{"token":" think","logprob":-4.3202e-7,"bytes":[32,116,104,105,110,107]},{"token":" to","logprob":-1.9361265e-7,"bytes":[32,116,111]},{"token":" myself","logprob":-1.7432603e-6,"bytes":[32,109,121,115,101,108,102]},{"token":",","logprob":-0.29254505,"bytes":[44]},{"token":" what","logprob":-0.016815351,"bytes":[32,119,104,97,116]},{"token":" a","logprob":-3.1281633e-7,"bytes":[32,97]},{"token":" wonderful","logprob":-2.1008714e-6,"bytes":[32,119,111,110,100,101,114,102,117,108]},{"token":" world","logprob":-8.180258e-6,"bytes":[32,119,111,114,108,100]},{"token":".","logprob":-0.014231676,"bytes":[46]}],"usage":{"input_tokens":14,"input_token_details":{"text_tokens":0,"audio_tokens":14},"output_tokens":45,"total_tokens":59}}
-      x-codeSamples:
-        - lang: cURL
-          label: '默认请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F model="gpt-4o-transcribe"
-        - lang: cURL
-          label: '流式请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F model="gpt-4o-mini-transcribe" \
-              -F stream=true
-        - lang: cURL
-          label: '带 Logprobs 的请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "include[]=logprobs" \
-              -F model="gpt-4o-transcribe" \
-              -F response_format="json"
-        - lang: cURL
-          label: '带词语时间戳的请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "timestamp_granularities[]=word" \
-              -F model="whisper-1" \
-              -F response_format="verbose_json"
-        - lang: cURL
-          label: '带分段时间戳的请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "timestamp_granularities[]=segment" \
-              -F model="whisper-1" \
-              -F response_format="verbose_json"
-
-  /audio/translations:
-    post:
-      operationId: createTranslation
-      tags:
-        - Audio
-      summary: 创建翻译
-      description: 将音频翻译成英语。
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CreateTranslationRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/CreateTranslationResponseJson'
-                  - $ref: '#/components/schemas/CreateTranslationResponseVerboseJson'
-              examples:
-                default:
-                  summary: '默认响应'
-                  value:
-                    text: "Hello, my name is Wolfgang and I come from Germany. Where are you heading today?"
-      x-codeSamples:
-        - lang: cURL
-          label: '默认请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/translations \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/german.m4a" \
-              -F model="whisper-1"
-
-  /images/edits:
-    post:
-      operationId: createImageEdit
-      tags:
-        - Images
-      summary: 创建图像编辑
-      description: |
-        根据一个或多个源图像和提示创建编辑或扩展后的图像。此端点仅支持 `gpt-image-1` 和 `dall-e-2`。
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CreateImageEditRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImagesResponse'
-            text/event-stream:
-              x-mintlify-streaming: true
-              schema:
-                $ref: '#/components/schemas/ImageEditStreamEvent'
-              examples:
-                Streaming:
-                  summary: '流式响应'
-                  value: |
-                    event: image_edit.partial_image
-                    data: {"type":"image_edit.partial_image","b64_json":"...","partial_image_index":0}
-
-                    event: image_edit.completed
-                    data: {"type":"image_edit.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
-      x-codeSamples:
-        - lang: cURL
-          label: '编辑图像'
-          source: |
-            curl -s -D >(grep -i x-request-id >&2) \
-              -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \
-              -X POST "https://api.llmhub.com.cn/v1/images/edits" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -F "model=gpt-image-1" \
-              -F "image[]=@body-lotion.png" \
-              -F "image[]=@bath-bomb.png" \
-              -F "image[]=@incense-kit.png" \
-              -F "image[]=@soap.png" \
-              -F 'prompt=Create a lovely gift basket with these four items in it'
-        - lang: cURL
-          label: '流式请求'
-          source: |
-            curl -s -N -X POST "https://api.llmhub.com.cn/v1/images/edits" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -F "model=gpt-image-1" \
-              -F "image[]=@body-lotion.png" \
-              -F "image[]=@bath-bomb.png" \
-              -F "image[]=@incense-kit.png" \
-              -F "image[]=@soap.png" \
-              -F 'prompt=Create a lovely gift basket with these four items in it' \
-              -F "stream=true"
-
-  /images/generations:
-    post:
-      operationId: createImage
-      tags:
-        - Images
-      summary: 创建图像
-      description: |
-        根据提示创建图像。
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateImageRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImagesResponse'
-              examples:
-                "Generate image":
-                  summary: '生成图像响应'
-                  value:
-                    created: 1713833628
-                    data:
-                      - b64_json: "..."
-                    usage:
-                      total_tokens: 100
-                      input_tokens: 50
-                      output_tokens: 50
-                      input_tokens_details:
-                        text_tokens: 10
-                        image_tokens: 40
-            text/event-stream:
-              x-mintlify-streaming: true  # <--- 添加此行
-              schema:
-                $ref: '#/components/schemas/ImageGenStreamEvent'
-              examples:
-                Streaming:
-                  summary: '流式响应'
-                  value: |
-                    event: image_generation.partial_image
-                    data: {"type":"image_generation.partial_image","b64_json":"...","partial_image_index":0}
-                    
-                    event: image_generation.completed
-                    data: {"type":"image_generation.completed","b64_json":"...","usage":{"total_tokens":100,"input_tokens":50,"output_tokens":50,"input_tokens_details":{"text_tokens":10,"image_tokens":40}}}
-      x-codeSamples:
-        - lang: cURL
-          label: '生成图像'
-          source: |
-            curl https://api.llmhub.com.cn/v1/images/generations \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-image-1",
-                "prompt": "A cute baby sea otter",
-                "n": 1,
-                "size": "1024x1024"
-              }'
-        - lang: cURL
-          label: '流式请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/images/generations \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-image-1",
-                "prompt": "A cute baby sea otter",
-                "n": 1,
-                "size": "1024x1024",
-                "stream": true
-              }' \
-              --no-buffer
-
-  /images/variations:
-    post:
-      operationId: createImageVariation
-      tags:
-        - Images
-      summary: 创建图像变体
-      description: 创建给定图像的变体。此端点仅支持 `dall-e-2`。
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CreateImageVariationRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImagesResponse'
-              examples:
-                default:
-                  summary: '默认响应'
-                  value:
-                    created: 1589478378
-                    data:
-                      - url: "https://..."
-                      - url: "https://..."
-      x-codeSamples:
-        - lang: cURL
-          label: '默认请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/images/variations \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -F image="@otter.png" \
-              -F n=2 \
-              -F size="1024x1024"
-
   /responses:
     post:
+      summary: 创建一个响应
+      description: |
+        向指定的模型发送输入，以生成一个响应。
+        通过设置 `stream: true`，可以接收一个 Server-Sent Events (SSE) 流，
+        实时获取响应的生成过程。
       operationId: createResponse
       tags:
         - Responses
-      summary: 创建模型响应
-      description: |
-        创建模型响应。提供文本或图像输入以生成文本或 JSON 输出。让模型调用
-        您自己的自定义代码或使用内置工具如网页搜索或文件搜索来使用您自己的数据
-        作为模型响应的输入。
+      # 4. 引用安全方案
+      # 这里我们引用之前定义的 LLMHubAuth，表示此端点需要 Bearer Token 认证。
+      security:
+        - LLMHubAuth: []
       requestBody:
+        description: 请求参数
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateResponse'
+              $ref: '#/components/schemas/CreateResponseRequest'
       responses:
+        # 5. 响应定义
+        # 这里是关键，我们定义了 HTTP 200 成功响应。
+        # Content-Type 被明确指定为 'text/event-stream'。
+        # 其 schema 指向我们定义的 StreamEvent，它通过 `oneOf` 和 `discriminator`
+        # 描述了流中可能出现的每一种事件结构。
         '200':
-          description: OK
+          description: 成功。以 Server-Sent Events (SSE) 流的形式返回响应。
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response'
-              examples:
-                '文本输入':
-                  summary: '文本输入响应'
-                  value:
-                    id: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
-                    object: "response"
-                    created_at: 1741476542
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - type: "message"
-                        id: "msg_67ccd2bf17f0819081ff3bb2cf6508e60bb6a6b452d3795b"
-                        status: "completed"
-                        role: "assistant"
-                        content:
-                          - type: "output_text"
-                            text: "In a peaceful grove beneath a silver moon, a unicorn named Lumina discovered a hidden pool that reflected the stars. As she dipped her horn into the water, the pool began to shimmer, revealing a pathway to a magical realm of endless night skies. Filled with wonder, Lumina whispered a wish for all who dream to find their own hidden magic, and as she glanced back, her hoofprints sparkled like stardust."
-                            annotations: []
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools: []
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 36
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 87
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 123
-                    user: null
-                    metadata: {}
-                '图像输入':
-                  summary: '图像输入响应'
-                  value:
-                    id: "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41"
-                    object: "response"
-                    created_at: 1741476777
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - type: "message"
-                        id: "msg_67ccd3acc8d48190a77525dc6de64b4104becb25c45c1d41"
-                        status: "completed"
-                        role: "assistant"
-                        content:
-                          - type: "output_text"
-                            text: "The image depicts a scenic landscape with a wooden boardwalk or pathway leading through lush, green grass under a blue sky with some clouds. The setting suggests a peaceful natural area, possibly a park or nature reserve. There are trees and shrubs in the background."
-                            annotations: []
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools: []
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 328
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 52
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 380
-                    user: null
-                    metadata: {}
-                '文件输入':
-                  summary: '文件输入响应'
-                  value:
-                    id: "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86"
-                    object: "response"
-                    created_at: 1752100704
-                    status: "completed"
-                    background: false
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    max_tool_calls: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - id: "msg_686eef60d3e081a29283bdcbc4322fd90e34c516d176ff86"
-                        type: "message"
-                        status: "completed"
-                        content:
-                          - type: "output_text"
-                            annotations: []
-                            logprobs: []
-                            text: "The file seems to contain excerpts from a letter to the shareholders of Berkshire Hathaway Inc., likely written by Warren Buffett. It covers several topics:\n\n1. **Communication Philosophy**: Buffett emphasizes the importance of transparency and candidness in reporting mistakes and successes to shareholders.\n\n2. **Mistakes and Learnings**: The letter acknowledges past mistakes in business assessments and management hires, highlighting the importance of correcting errors promptly.\n\n3. **CEO Succession**: Mention of Greg Abel stepping in as the new CEO and continuing the tradition of honest communication.\n\n4. **Pete Liegl Story**: A detailed account of acquiring Forest River and the relationship with its founder, highlighting trust and effective business decisions.\n\n5. **2024 Performance**: Overview of business performance, particularly in insurance and investment activities, with a focus on GEICO's improvement.\n\n6. **Tax Contributions**: Discussion of significant tax payments to the U.S. Treasury, credited to shareholders' reinvestments.\n\n7. **Investment Strategy**: A breakdown of Berkshire’s investments in both controlled subsidiaries and marketable equities, along with a focus on long-term holding strategies.\n\n8. **American Capitalism**: Reflections on America’s economic development and Berkshire’s role within it.\n\n9. **Property-Casualty Insurance**: Insights into the P/C insurance business model and its challenges and benefits.\n\n10. **Japanese Investments**: Information about Berkshire’s investments in Japanese companies and future plans.\n\n11. **Annual Meeting**: Details about the upcoming annual gathering in Omaha, including schedule changes and new book releases.\n\n12. **Personal Anecdotes**: Light-hearted stories about family and interactions, conveying Buffett's personable approach.\n\n13. **Financial Performance Data**: Tables comparing Berkshire’s annual performance to the S&P 500, showing impressive long-term gains.\n\nOverall, the letter reinforces Berkshire Hathaway's commitment to transparency, investment in both its businesses and the wider economy, and emphasizes strong leadership and prudent financial management."
-                        role: "assistant"
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    service_tier: "default"
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools: []
-                    top_logprobs: 0
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 8438
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 398
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 8836
-                    user: null
-                    metadata: {}
-                '网页搜索':
-                  summary: '网页搜索响应'
-                  value:
-                    id: "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c"
-                    object: "response"
-                    created_at: 1741484430
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - type: "web_search_call"
-                        id: "ws_67ccf18f64008190a39b619f4c8455ef087bb177ab789d5c"
-                        status: "completed"
-                      - type: "message"
-                        id: "msg_67ccf190ca3881909d433c50b1f6357e087bb177ab789d5c"
-                        status: "completed"
-                        role: "assistant"
-                        content:
-                          - type: "output_text"
-                            text: "As of today, March 9, 2025, one notable positive news story..."
-                            annotations:
-                              - type: "url_citation"
-                                start_index: 442
-                                end_index: 557
-                                url: "https://.../?utm_source=chatgpt.com"
-                                title: "..."
-                              - type: "url_citation"
-                                start_index: 962
-                                end_index: 1077
-                                url: "https://.../?utm_source=chatgpt.com"
-                                title: "..."
-                              - type: "url_citation"
-                                start_index: 1336
-                                end_index: 1451
-                                url: "https://.../?utm_source=chatgpt.com"
-                                title: "..."
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools:
-                      - type: "web_search_preview"
-                        domains: []
-                        search_context_size: "medium"
-                        user_location:
-                          type: "approximate"
-                          city: null
-                          country: "US"
-                          region: null
-                          timezone: null
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 328
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 356
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 684
-                    user: null
-                    metadata: {}
-                '文件搜索':
-                  summary: '文件搜索响应'
-                  value:
-                    id: "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7"
-                    object: "response"
-                    created_at: 1741485253
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - type: "file_search_call"
-                        id: "fs_67ccf4c63cd08190887ef6464ba5681609504fb6872380d7"
-                        status: "completed"
-                        queries:
-                          - "attributes of an ancient brown dragon"
-                        results: null
-                      - type: "message"
-                        id: "msg_67ccf4c93e5c81909d595b369351a9d309504fb6872380d7"
-                        status: "completed"
-                        role: "assistant"
-                        content:
-                          - type: "output_text"
-                            text: "The attributes of an ancient brown dragon include..."
-                            annotations:
-                              - type: "file_citation"
-                                index: 320
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 576
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 815
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 815
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 1030
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 1030
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 1156
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                              - type: "file_citation"
-                                index: 1225
-                                file_id: "file-4wDz5b167pAf72nx1h9eiN"
-                                filename: "dragons.pdf"
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools:
-                      - type: "file_search"
-                        filters: null
-                        max_num_results: 20
-                        ranking_options:
-                          ranker: "auto"
-                          score_threshold: 0.0
-                        vector_store_ids:
-                          - "vs_1234567890"
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 18307
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 348
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 18655
-                    user: null
-                    metadata: {}
-                '函数调用':
-                  summary: '函数调用响应'
-                  value:
-                    id: "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0"
-                    object: "response"
-                    created_at: 1741294021
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "gpt-4.1-2025-04-14"
-                    output:
-                      - type: "function_call"
-                        id: "fc_67ca09c6bedc8190a7abfec07b1a1332096610f474011cc0"
-                        call_id: "call_unLAR8MvFNptuiZK6K6HCy5k"
-                        name: "get_current_weather"
-                        arguments: "{\"location\":\"Boston, MA\",\"unit\":\"celsius\"}"
-                        status: "completed"
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: null
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools:
-                      - type: "function"
-                        description: "Get the current weather in a given location"
-                        name: "get_current_weather"
-                        parameters:
-                          type: "object"
-                          properties:
-                            location:
-                              type: "string"
-                              description: "The city and state, e.g. San Francisco, CA"
-                            unit:
-                              type: "string"
-                              enum: ["celsius", "fahrenheit"]
-                          required: ["location", "unit"]
-                        strict: true
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 291
-                      output_tokens: 23
-                      output_tokens_details:
-                        reasoning_tokens: 0
-                      total_tokens: 314
-                    user: null
-                    metadata: {}
-                '带推理的请求':
-                  summary: '带推理的响应'
-                  value:
-                    id: "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808"
-                    object: "response"
-                    created_at: 1741477868
-                    status: "completed"
-                    error: null
-                    incomplete_details: null
-                    instructions: null
-                    max_output_tokens: null
-                    model: "o1-2024-12-17"
-                    output:
-                      - type: "message"
-                        id: "msg_67ccd7f7b5848190a6f3e95d809f6b44072912b2993db808"
-                        status: "completed"
-                        role: "assistant"
-                        content:
-                          - type: "output_text"
-                            text: "The classic tongue twister..."
-                            annotations: []
-                    parallel_tool_calls: true
-                    previous_response_id: null
-                    reasoning:
-                      effort: "high"
-                      summary: null
-                    store: true
-                    temperature: 1.0
-                    text:
-                      format:
-                        type: "text"
-                    tool_choice: "auto"
-                    tools: []
-                    top_p: 1.0
-                    truncation: "disabled"
-                    usage:
-                      input_tokens: 81
-                      input_tokens_details:
-                        cached_tokens: 0
-                      output_tokens: 1035
-                      output_tokens_details:
-                        reasoning_tokens: 832
-                      total_tokens: 1116
-                    user: null
-                    metadata: {}
             text/event-stream:
-              x-mintlify-streaming: true
               schema:
-                $ref: '#/components/schemas/ResponseStreamEvent'
-              examples:
-                Streaming:
-                  summary: '流式响应'
-                  value: |
-                    event: response.created
-                    data: {"type":"response.created","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+                $ref: '#/components/schemas/StreamEvent'
+              example: |
+                event: response.created
+                data: {"type":"response.created","response":{...}}
 
-                    event: response.in_progress
-                    data: {"type":"response.in_progress","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"in_progress","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+                event: response.in_progress
+                data: {"type":"response.in_progress","response":{...}}
 
-                    event: response.output_item.added
-                    data: {"type":"response.output_item.added","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"in_progress","role":"assistant","content":[]}}
+                event: response.output_text.delta
+                data: {"type":"response.output_text.delta", "delta":"Hello"}
 
-                    event: response.content_part.added
-                    data: {"type":"response.content_part.added","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"part":{"type":"output_text","text":"","annotations":[]}}
+                ...
 
-                    event: response.output_text.delta
-                    data: {"type":"response.output_text.delta","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"delta":"Hi"}
+                event: response.completed
+                data: {"type":"response.completed","response":{...}}
 
-                    ...
-
-                    event: response.output_text.done
-                    data: {"type":"response.output_text.done","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"text":"Hi there! How can I assist you today?"}
-
-                    event: response.content_part.done
-                    data: {"type":"response.content_part.done","item_id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","output_index":0,"content_index":0,"part":{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}}
-
-                    event: response.output_item.done
-                    data: {"type":"response.output_item.done","output_index":0,"item":{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}}
-
-                    event: response.completed
-                    data: {"type":"response.completed","response":{"id":"resp_67c9fdcecf488190bdd9a0409de3a1ec07b8b0ad4e5eb654","object":"response","created_at":1741290958,"status":"completed","error":null,"incomplete_details":null,"instructions":"You are a helpful assistant.","max_output_tokens":null,"model":"gpt-4.1-2025-04-14","output":[{"id":"msg_67c9fdcf37fc8190ba82116e33fb28c507b8b0ad4e5eb654","type":"message","status":"completed","role":"assistant","content":[{"type":"output_text","text":"Hi there! How can I assist you today?","annotations":[]}]}],"parallel_tool_calls":true,"previous_response_id":null,"reasoning":{"effort":null,"summary":null},"store":true,"temperature":1.0,"text":{"format":{"type":"text"}},"tool_choice":"auto","tools":[],"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":37,"output_tokens":11,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":48},"user":null,"metadata":{}}}
-      x-codeSamples:
-        - lang: cURL
-          label: '文本输入'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "input": "Tell me a three sentence bedtime story about a unicorn."
-              }'
-        - lang: cURL
-          label: '图像输入'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "input": [
-                  {
-                    "role": "user",
-                    "content": [
-                      {"type": "input_text", "text": "what is in this image?"},
-                      {
-                        "type": "input_image",
-                        "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-                      }
-                    ]
-                  }
-                ]
-              }'
-        - lang: cURL
-          label: '文件输入'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "input": [
-                  {
-                    "role": "user",
-                    "content": [
-                      {"type": "input_text", "text": "what is in this file?"},
-                      {
-                        "type": "input_file",
-                        "file_url": "https://www.berkshirehathaway.com/letters/2024ltr.pdf"
-                      }
-                    ]
-                  }
-                ]
-              }'
-        - lang: cURL
-          label: '网页搜索'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "tools": [{ "type": "web_search_preview" }],
-                "input": "What was a positive news story from today?"
-              }'
-        - lang: cURL
-          label: '文件搜索'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "tools": [{
-                  "type": "file_search",
-                  "vector_store_ids": ["vs_1234567890"],
-                  "max_num_results": 20
-                }],
-                "input": "What are the attributes of an ancient brown dragon?"
-              }'
-        - lang: cURL
-          label: '流式请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "instructions": "You are a helpful assistant.",
-                "input": "Hello!",
-                "stream": true
-              }'
-        - lang: cURL
-          label: '函数调用'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4.1",
-                "input": "What is the weather like in Boston today?",
-                "tools": [
-                  {
-                    "type": "function",
-                    "name": "get_current_weather",
-                    "description": "Get the current weather in a given location",
-                    "parameters": {
-                      "type": "object",
-                      "properties": {
-                        "location": {
-                          "type": "string",
-                          "description": "The city and state, e.g. San Francisco, CA"
-                        },
-                        "unit": {
-                          "type": "string",
-                          "enum": ["celsius", "fahrenheit"]
-                        }
-                      },
-                      "required": ["location", "unit"]
-                    }
-                  }
-                ],
-                "tool_choice": "auto"
-              }'
-        - lang: cURL
-          label: '带推理的请求'
-          source: |
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "o3-mini",
-                "input": "How much wood would a woodchuck chuck?",
-                "reasoning": {
-                  "effort": "high"
-                }
-              }'
-
-# 可重用的组件定义
-components:
-  # 安全方案定义
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: '在请求头中输入 Bearer {token}。'
-
-  # Schema 定义 (占位符)
-  schemas:
-    CreateSpeechRequest:
-      type: object
-      properties: {}
-    CreateSpeechResponseStreamEvent:
-      type: object
-      properties: {}
-    CreateTranscriptionRequest:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseJson:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseVerboseJson:
-      type: object
-      properties: {}
-    CreateTranscriptionResponseStreamEvent:
-      type: object
-      properties: {}
-    CreateTranslationRequest:
-      type: object
-      properties: {}
-    CreateTranslationResponseJson:
-      type: object
-      properties: {}
-    CreateTranslationResponseVerboseJson:
-      type: object
-      properties: {}
-    CreateImageEditRequest:
-      type: object
-      properties: {}
-    ImagesResponse:
-      type: object
-      properties: {}
-    ImageEditStreamEvent:
-      type: object
-      properties: {}
-    CreateImageRequest:
-      type: object
-      properties: {}
-    ImageGenStreamEvent:
-      type: object
-      properties: {}
-    CreateImageVariationRequest:
-      type: object
-      properties: {}
-    CreateResponse:
-      type: object
-      properties: {}
-    Response:
-      type: object
-      properties: {}
-    ResponseStreamEvent:
-      type: object
-      properties: {}
+        '400':
+          description: 错误的请求（例如，无效的参数）。
+        '401':
+          description: 未经授权（例如，无效的API密钥）。
