@@ -33,22 +33,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateSpeechRequest'
-      responses:
-        '200':
-          description: OK
-          headers:
-            Transfer-Encoding:
-              schema:
-                type: string
-              description: chunked
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-            text/event-stream:
-              schema:
-                $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
       # Mintlify x-codeSamples 扩展
       x-codeSamples:
         - lang: cURL
