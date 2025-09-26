@@ -80,6 +80,7 @@
             "group": "对话助手",
             "pages": [
               "usercases/chathub",
+              "usercases/chatbox",
               "usercases/gemini",
               "usercases/grok",
               "usercases/cline",
