@@ -570,7 +570,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Response'
               examples:
-                "Text input":
+                '文本输入':
                   summary: '文本输入响应'
                   value:
                     id: "resp_67ccd2bed1ec8190b14f964abc0542670bb6a6b452d3795b"
@@ -615,7 +615,7 @@ paths:
                       total_tokens: 123
                     user: null
                     metadata: {}
-                "Image input":
+                '图像输入':
                   summary: '图像输入响应'
                   value:
                     id: "resp_67ccd3a9da748190baa7f1570fe91ac604becb25c45c1d41"
@@ -660,7 +660,7 @@ paths:
                       total_tokens: 380
                     user: null
                     metadata: {}
-                "File input":
+                '文件输入':
                   summary: '文件输入响应'
                   value:
                     id: "resp_686eef60237881a2bd1180bb8b13de430e34c516d176ff86"
@@ -710,7 +710,7 @@ paths:
                       total_tokens: 8836
                     user: null
                     metadata: {}
-                "Web search":
+                '网页搜索':
                   summary: '网页搜索响应'
                   value:
                     id: "resp_67ccf18ef5fc8190b16dbee19bc54e5f087bb177ab789d5c"
@@ -782,7 +782,7 @@ paths:
                       total_tokens: 684
                     user: null
                     metadata: {}
-                "File search":
+                '文件搜索':
                   summary: '文件搜索响应'
                   value:
                     id: "resp_67ccf4c55fc48190b71bd0463ad3306d09504fb6872380d7"
@@ -873,7 +873,7 @@ paths:
                       total_tokens: 18655
                     user: null
                     metadata: {}
-                "Functions":
+                '函数调用':
                   summary: '函数调用响应'
                   value:
                     id: "resp_67ca09c5efe0819096d0511c92b8c890096610f474011cc0"
@@ -928,7 +928,7 @@ paths:
                       total_tokens: 314
                     user: null
                     metadata: {}
-                "Reasoning":
+                '带推理的请求':
                   summary: '带推理的响应'
                   value:
                     id: "resp_67ccd7eca01881908ff0b5146584e408072912b2993db808"
@@ -977,7 +977,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseStreamEvent'
               examples:
-                Streaming:
+                '流式请求':
                   summary: '流式响应'
                   value: |
                     event: response.created
