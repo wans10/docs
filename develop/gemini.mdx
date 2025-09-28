@@ -1,24 +1,16 @@
 ---
 title: "接入 Gemini CLI"
-description: "使用定制版 Gemini CLI 接入 LLM Hub 模型的完整指南"
+description: "将 LLM Hub 模型集成到 Gemini CLI 的方法"
 ---
 
 > Gemini CLI 是一个命令行界面工具，通过使用定制分支，我们可以让它与智谱 GLM 模型兼容。
 
-## 一、获取定制版本
+## 一、安装 Gemini CLI
 
-### 1. 克隆定制仓库
-
-由于 Gemini CLI 官方仓库仅支持 Google 的 Gemini 模型，我们需要使用支持 OpenRouter 兼容的定制分支：
+使用 npm 全局安装 Gemini CLI：
 
 ```bash
 npm install -g @google/gemini-cli
-```
-
-### 2. 切换到兼容分支
-
-```bash
-git checkout feature/openrouter-support
 ```
 
 ## 二、环境配置
