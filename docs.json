@@ -72,6 +72,7 @@
           {
             "group": "开发工具",
             "pages": [
+              "develop/openai",
               "develop/claude",
               "develop/gemini",
               "develop/grok",
