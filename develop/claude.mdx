@@ -1,13 +1,14 @@
-# 接入 Claude Code
-
-> 将智谱最新 GLM-4.5 系列模型集成到 Claude Code 的方法
+---
+title: "接入 Claude Code"
+description: "将 LLM Hub 模型集成到 Claude Code 的方法"
+---
 
 智谱模型 GLM-4.5 可以通过一个兼容 Anthropic API 的端点与 Claude Code 集成。这意味着可以让 Claude Code 与 GLM-4.5 通信，而不需要修改 Claude Code 的任何代码。
 
 <Tip>
-    Claude Code 玩转新体验：20 元起解锁 GLM Coding 包月，3倍用量，1/7价格，独家升级支持联网搜索&多模态理解，响应更快，调用更稳。限时羊毛价，[立即订阅](https://bigmodel.cn/claude-code?utm_source=bigmodel\&utm_medium=link\&utm_term=cc\&utm_campaign=Platform_Ops&_channel_track_key=i8kwCaos)！
+  Claude Code 玩转新体验：20 元起解锁 GLM Coding 包月，3倍用量，1/7价格，独家升级支持联网搜索&多模态理解，响应更快，调用更稳。限时羊毛价，[立即订阅](https://bigmodel.cn/claude-code?utm_source=bigmodel&utm_medium=link&utm_term=cc&utm_campaign=Platform_Ops&_channel_track_key=i8kwCaos)！
 
-    PRO 及以上等级套餐专属 [视觉理解 MCP Server](/cn/coding-plan/mcp/vision-mcp-server) 、 [网络搜索 MCP Server](/cn/coding-plan/mcp/search-mcp-server) 让您的 Code Agent 拥有搜索与视觉。
+  PRO 及以上等级套餐专属 [视觉理解 MCP Server](/cn/coding-plan/mcp/vision-mcp-server) 、 [网络搜索 MCP Server](/cn/coding-plan/mcp/search-mcp-server) 让您的 Code Agent 拥有搜索与视觉。
 </Tip>
 
 ## 1. 前往获取智谱 API key
@@ -56,7 +57,7 @@ export ANTHROPIC_AUTH_TOKEN=LLMHub_API_KEY
 
 ![Description](https://cdn.bigmodel.cn/static/platform/images/usage-guide/scenario-examples/claude-code-case1-2.jpg)
 
-* 生成文件：[megatron\_lm\_detailed\_architecture\_analysis.html](https://cdn.bigmodel.cn/static/platform/images/usage-guide/scenario-examples/megatron_lm_detailed_architecture_analysis.html)
+- 生成文件：[megatron_lm_detailed_architecture_analysis.html](https://cdn.bigmodel.cn/static/platform/images/usage-guide/scenario-examples/megatron_lm_detailed_architecture_analysis.html)
 
 **Case 2：生成一个打地鼠游戏**
 
@@ -76,7 +77,7 @@ Prompt：帮我生成日蚀过程的动态特效，尽量采用苹果手机的�
 
 ## 补充说明：如何切换使用的模型
 
-> Claude code 内部有 2 个模型环境变量，其中 ANTHROPIC\_MODEL 主模型使用 GLM-4.5（对应对话/规划/代码编写/复杂推理等场景），ANTHROPIC\_SMALL\_FAST\_MODEL 使用 GLM-4.5-Air（对应文件搜索/语法检查等辅助场景），这也是我们推荐的使用方式，兼顾性能、速度与价格，暂不支持其它模型（如 GLM-4.5-X/AirX/Flash 等）。
+> Claude code 内部有 2 个模型环境变量，其中 ANTHROPIC_MODEL 主模型使用 GLM-4.5（对应对话/规划/代码编写/复杂推理等场景），ANTHROPIC_SMALL_FAST_MODEL 使用 GLM-4.5-Air（对应文件搜索/语法检查等辅助场景），这也是我们推荐的使用方式，兼顾性能、速度与价格，暂不支持其它模型（如 GLM-4.5-X/AirX/Flash 等）。
 
 ```
 {
@@ -92,7 +93,7 @@ Prompt：帮我生成日蚀过程的动态特效，尽量采用苹果手机的�
 
 ![claudecode](https://cdn.bigmodel.cn/markdown/1756439367494claudecode.png)
 
-4. 如需切换回 GLM-4.5 模型，将\~/.claude/settings.json 改为：
+4. 如需切换回 GLM-4.5 模型，将~/.claude/settings.json 改为：
 
 ```
 {
