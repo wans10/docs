@@ -1,11 +1,11 @@
 openapi: 3.1.0
 info:
   title: LLMHub API
-  version: '1.0'
-  description: API documentation for LLMHub services, providing advanced capabilities in audio, chat, embeddings, and image generation.
-servers:
-  - url: https://api.llmhub.com.cn/v1
-    description: Production Server
+  version: 2025-01-01
+  description: |
+    本文件基于原始 openapi.yaml 转换，增加了 Mintlify 友好的 `x-codeSamples`，
+    并在 responses 中添加了 `x-label` 来匹配请求示例与响应示例。
+    对于流式响应 (text/event-stream)，提供了 NDJSON / SSE 格式示例。
 
 paths:
   /audio/speech:
@@ -14,7 +14,6 @@ paths:
       tags:
         - Audio
       summary: Create speech
-      description: Generates audio from the input text.
       requestBody:
         required: true
         content:
@@ -23,416 +22,104 @@ paths:
               $ref: '#/components/schemas/CreateSpeechRequest'
       x-codeSamples:
         - lang: curl
-          label: Default
+          label: 默认请求
           source: |
             curl https://api.llmhub.com.cn/v1/audio/speech \
               -H "Authorization: Bearer $LLMHub_API_KEY" \
               -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy"
-              }' \
-              --output speech.mp3
-        - lang: shell
-          label: SSE Stream Format
+              -d '{"text":"Hello world","voice":"alloy"}'
+        - lang: javascript
+          label: 默认请求
           source: |
-            # Request to generate speech as a stream
-            curl https://api.llmhub.com.cn/v1/audio/speech \
+            fetch("https://api.llmhub.com.cn/v1/audio/speech", {
+              method: "POST",
+              headers: {
+                "Authorization": "Bearer $LLMHub_API_KEY",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ text: "Hello world", voice: "alloy" })
+            })
+              .then(r => r.arrayBuffer())
+              .then(console.log)
+        - lang: curl
+          label: 流式响应
+          source: |
+            curl -N https://api.llmhub.com.cn/v1/audio/speech \
               -H "Authorization: Bearer $LLMHub_API_KEY" \
+              -H "Accept: text/event-stream" \
               -H "Content-Type: application/json" \
-              -d '{
-                "model": "gpt-4o-mini-tts",
-                "input": "The quick brown fox jumped over the lazy dog.",
-                "voice": "alloy",
-                "stream_format": "sse"
-              }'
-
-            # --- Expected Response Stream ---
-            event: audio.chunk
-            data: {"chunk": "UklGRiQ..."}
-
-            event: audio.chunk
-            data: {"chunk": "WAVExt..."}
-            
-            ...
-
-            event: done
-            data: {}
+              -d '{"text":"Hello world","voice":"alloy"}'
+        - lang: javascript
+          label: 流式响应
+          source: |
+            const es = new EventSource("https://api.llmhub.com.cn/v1/audio/speech");
+            es.onmessage = (e) => console.log("message:", e.data);
+            es.onerror = (e) => console.error(e);
+        - lang: javascript
+          label: 流式响应（fetch）
+          source: |
+            fetch("https://api.llmhub.com.cn/v1/audio/speech", {
+              method: "POST",
+              headers: {
+                "Authorization": "Bearer $LLMHub_API_KEY",
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ text: "Hello world", voice: "alloy" })
+            }).then(res => {
+              const reader = res.body.getReader();
+              const decoder = new TextDecoder();
+              function read() {
+                return reader.read().then(({done, value}) => {
+                  if (done) return;
+                  console.log(decoder.decode(value));
+                  return read();
+                });
+              }
+              return read();
+            }).catch(console.error);
       responses:
         '200':
           description: OK
           headers:
-            Transfer-Encoding:
+            X-RateLimit-Remaining:
+              description: remaining requests
               schema:
-                type: string
-              description: chunked
+                type: integer
           content:
-            application/octet-stream:
+            audio/mpeg:
               schema:
                 type: string
                 format: binary
               examples:
-                Default:
-                  label: Default
-                  value: '[Binary audio file content for speech.mp3]'
-                  summary: Audio file output
+                default-audio:
+                  summary: 默认示例响应
+                  value: "（此处为示例音频文件内容，二进制省略）"
+                  x-label: 默认请求
             text/event-stream:
               schema:
                 $ref: '#/components/schemas/CreateSpeechResponseStreamEvent'
-
-  /audio/transcriptions:
-    post:
-      operationId: createTranscription
-      tags:
-        - Audio
-      summary: Create transcription
-      description: Transcribes audio into the input language.
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CreateTranscriptionRequest'
-      x-codeSamples:
-        - lang: curl
-          label: Default
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F model="gpt-4o-transcribe"
-        - lang: shell
-          label: Streaming
-          source: |
-            # Request to transcribe audio with streaming response
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F model="gpt-4o-mini-transcribe" \
-              -F stream=true
-
-            # --- Expected Response Stream ---
-            data: {"type":"transcript.text.delta","delta":"I","logprobs":[{"token":"I","logprob":-0.00007588794,"bytes":[73]}]}
-
-            data: {"type":"transcript.text.delta","delta":" see","logprobs":[{"token":" see","logprob":-3.1281633e-7,"bytes":[32,115,101,101]}]}
-
-            ...
-
-            data: {"type":"transcript.text.done","text":"I see skies of blue and clouds of white...","logprobs":[...],"usage":{...}}
-        - lang: curl
-          label: Logprobs
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "include[]=logprobs" \
-              -F model="gpt-4o-transcribe" \
-              -F response_format="json"
-        - lang: curl
-          label: Word timestamps
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "timestamp_granularities[]=word" \
-              -F model="whisper-1" \
-              -F response_format="verbose_json"
-        - lang: curl
-          label: Segment timestamps
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/transcriptions \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/audio.mp3" \
-              -F "timestamp_granularities[]=segment" \
-              -F model="whisper-1" \
-              -F response_format="verbose_json"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                anyOf:
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseJson'
-                  - $ref: '#/components/schemas/CreateTranscriptionResponseVerboseJson'
               examples:
-                Default: { label: Default, value: { "text": "Imagine the wildest idea..." } }
-                Logprobs: { label: Logprobs, value: { "text": "Hey, my knee is hurting...", "logprobs": [...] } }
-                Word timestamps: { label: Word timestamps, value: { "task": "transcribe", "text": "The beach was...", "words": [...] } }
-                Segment timestamps: { label: Segment timestamps, value: { "task": "transcribe", "text": "The beach was...", "segments": [...] } }
-            text/event-stream:
-              schema:
-                $ref: '#/components/schemas/CreateTranscriptionResponseStreamEvent'
-
-  /audio/translations:
-    post:
-      operationId: createTranslation
-      tags: [Audio]
-      summary: Create translation
-      description: Translates audio into English.
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema: { $ref: '#/components/schemas/CreateTranslationRequest' }
-      x-codeSamples:
-        - lang: curl
-          label: Default
-          source: |
-            curl https://api.llmhub.com.cn/v1/audio/translations \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -H "Content-Type: multipart/form-data" \
-              -F file="@/path/to/file/german.m4a" \
-              -F model="whisper-1"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/CreateTranslationResponseJson' }
-              examples:
-                Default:
-                  label: Default
-                  value:
-                    text: "Hello, my name is Wolfgang and I come from Germany. Where are you heading today?"
-
-  /chat/completions:
-    get:
-      operationId: listChatCompletions
-      tags: [Chat]
-      summary: List Chat Completions
-      description: List stored Chat Completions.
-      # ... parameters omitted for brevity
-      x-codeSamples:
-        - lang: curl
-          label: Default
-          source: |
-            curl https://api.llmhub.com.cn/v1/chat/completions \
-              -H "Authorization: Bearer $LLMHub_API_KEY"
-      responses:
-        '200':
-          description: A list of Chat Completions
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/ChatCompletionList' }
-              examples:
-                Default: { label: Default, value: {"object": "list", "data": [...]} }
-    post:
-      operationId: createChatCompletion
-      tags: [Chat]
-      summary: Create chat completion
-      description: Creates a model response for the given chat conversation.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/CreateChatCompletionRequest' }
-      x-codeSamples:
-        - { lang: curl, label: Default, source: '...' }
-        - { lang: curl, label: Image input, source: '...' }
-        - lang: shell
-          label: Streaming
-          source: |
-            # Request for a streaming chat completion
-            curl https://api.llmhub.com.cn/v1/chat/completions \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4o-mini",
-                "messages": [{"role": "user", "content": "Write a haiku."}],
-                "stream": true
-              }'
-
-            # --- Expected Response Stream ---
-            data: {"id":"chatcmpl-123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant","content":""}}]}
-
-            data: {"id":"chatcmpl-123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"Silent code flows fast,"}}]}
-            
-            data: {"id":"chatcmpl-123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"\nDigital thoughts take their form,"}}]}
-            
-            data: {"id":"chatcmpl-123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"\nNew worlds born from keys."}}]}
-
-            data: {"id":"chatcmpl-123","object":"chat.completion.chunk","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
-            
-            data: [DONE]
-        - { lang: curl, label: Functions, source: '...' }
-        - { lang: curl, label: Logprobs, source: '...' }
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/CreateChatCompletionResponse' }
-              examples:
-                Default: { label: Default, value: { ... } }
-                Image input: { label: Image input, value: { ... } }
-                Functions: { label: Functions, value: { ... } }
-                Logprobs: { label: Logprobs, value: { ... } }
-            text/event-stream:
-              schema: { $ref: '#/components/schemas/CreateChatCompletionStreamResponse' }
-
-  /embeddings:
-    post:
-      operationId: createEmbedding
-      tags: [Embeddings]
-      summary: Create embeddings
-      # ... (omitted for brevity, no streaming)
-
-  /images/edits:
-    post:
-      operationId: createImageEdit
-      tags: [Images]
-      summary: Create image edit
-      # ...
-      x-codeSamples:
-        - { lang: curl, label: Edit image, source: '...' }
-        - lang: shell
-          label: Streaming
-          source: |
-            # Request for a streaming image edit
-            curl -s -N -X POST "https://api.llmhub.com.cn/v1/images/edits" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -F "model=dall-e-2" \
-              -F "image=@image.png" \
-              -F "mask=@mask.png" \
-              -F 'prompt=A sunlit indoor lounge area with a pool' \
-              -F "stream=true"
-            
-            # --- Expected Response Stream ---
-            event: image_edit.partial_image
-            data: {"type":"image_edit.partial_image","b64_json":"...","partial_image_index":0}
-
-            event: image_edit.completed
-            data: {"type":"image_edit.completed","b64_json":"...","usage":{...}}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/ImagesResponse' }
-              examples: { Edit image: { label: Edit image, value: { ... } } }
-            text/event-stream:
-              schema: { $ref: '#/components/schemas/ImageEditStreamEvent' }
-
-  /images/generations:
-    post:
-      operationId: createImage
-      tags: [Images]
-      summary: Create image
-      # ...
-      x-codeSamples:
-        - { lang: curl, label: Generate image, source: '...' }
-        - lang: shell
-          label: Streaming
-          source: |
-            # Request for a streaming image generation
-            curl https://api.llmhub.com.cn/v1/images/generations \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "dall-e-3",
-                "prompt": "A cute baby sea otter",
-                "stream": true
-              }' \
-              --no-buffer
-
-            # --- Expected Response Stream ---
-            event: image_generation.partial_image
-            data: {"type":"image_generation.partial_image","b64_json":"..."}
-
-            event: image_generation.completed
-            data: {"type":"image_generation.completed","b64_json":"...","usage":{...}}
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/ImagesResponse' }
-              examples: { Generate image: { label: Generate image, value: { ... } } }
-            text/event-stream:
-              schema: { $ref: '#/components/schemas/ImageGenStreamEvent' }
-
-  /images/variations:
-  # ... (omitted for brevity, no streaming)
-
-  /responses:
-    post:
-      operationId: createResponse
-      tags: [Responses]
-      summary: Create a model response
-      # ...
-      x-codeSamples:
-        - { lang: curl, label: Text input, source: '...' }
-        - { lang: curl, label: Image input, source: '...' }
-        - lang: shell
-          label: Streaming
-          source: |
-            # Request for a streaming response
-            curl https://api.llmhub.com.cn/v1/responses \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $LLMHub_API_KEY" \
-              -d '{
-                "model": "gpt-4-turbo",
-                "input": "Hello!",
-                "stream": true
-              }'
-
-            # --- Expected Response Stream ---
-            event: response.created
-            data: {"type":"response.created","response":{...}}
-
-            event: response.in_progress
-            data: {"type":"response.in_progress","response":{...}}
-
-            ...
-
-            event: response.completed
-            data: {"type":"response.completed","response":{...}}
-        - { lang: curl, label: Functions, source: '...' }
-        - { lang: curl, label: Reasoning, source: '...' }
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Response' }
-              examples:
-                Text input: { label: Text input, value: { ... } }
-                Image input: { label: Image input, value: { ... } }
-                Functions: { label: Functions, value: { ... } }
-                Reasoning: { label: Reasoning, value: { ... } }
-            text/event-stream:
-              schema: { $ref: '#/components/schemas/ResponseStreamEvent' }
+                stream-example:
+                  summary: 流式响应示例（event-stream/NDJSON）
+                  value: |
+                    data: {"id":"1","text":"chunk1"}\n\n
+                    data: {"id":"2","text":"chunk2"}\n\n
+                    data: {"id":"3","text":"chunk3"}\n\n
+                  x-label: 流式响应
 
 components:
   schemas:
-    # --- Blank schema definitions for validation ---
-    CreateSpeechRequest: { type: object }
-    CreateSpeechResponseStreamEvent: { type: object }
-    CreateTranscriptionRequest: { type: object }
-    CreateTranscriptionResponseJson: { type: object }
-    CreateTranscriptionResponseVerboseJson: { type: object }
-    CreateTranscriptionResponseStreamEvent: { type: object }
-    CreateTranslationRequest: { type: object }
-    CreateTranslationResponseJson: { type: object }
-    ChatCompletionList: { type: object }
-    CreateChatCompletionRequest: { type: object }
-    CreateChatCompletionResponse: { type: object }
-    CreateChatCompletionStreamResponse: { type: object }
-    CreateEmbeddingRequest: { type: object }
-    CreateEmbeddingResponse: { type: object }
-    CreateImageEditRequest: { type: object }
-    ImagesResponse: { type: object }
-    ImageEditStreamEvent: { type: object }
-    CreateImageRequest: { type: object }
-    ImageGenStreamEvent: { type: object }
-    CreateImageVariationRequest: { type: object }
-    CreateResponse: { type: object }
-    Response: { type: object }
-    ResponseStreamEvent: { type: object }
+    CreateSpeechRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        voice:
+          type: string
+    CreateSpeechResponseStreamEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        audio_chunk:
+          type: string
