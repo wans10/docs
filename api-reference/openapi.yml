@@ -504,12 +504,7 @@ paths:
         - Chat
       summary: Create chat completion
       description: >
-        Creates a model response for the given chat conversation. Learn more in the
-        text generation, vision, and audio guides.
-        Parameter support can differ depending on the model used to generate the
-        response, particularly for newer reasoning models. Parameters that are only
-        supported for reasoning models are noted below. For the current state of 
-        unsupported parameters in reasoning models, refer to the reasoning guide.
+        为给定的聊天对话创建模型响应。请参阅文本生成、视觉和音频指南了解更多信息。参数支持可能因用于生成响应的模型而异，尤其是对于较新的推理模型。仅推理模型支持的参数如下所示。有关推理模型中当前不受支持的参数状态，请参阅推理指南。
       requestBody:
         required: true
         content:
@@ -1083,9 +1078,7 @@ paths:
         - Responses
       summary: Create a model response
       description: >
-        Creates a model response. Provide text or image inputs to generate text
-        or JSON outputs. Have the model call your own custom code or use built-in
-        tools like web search or file search to use your own data as input for the model's response.
+        创建模型响应。提供文本或图像输入以生成文本或 JSON 输出。让模型调用您自己的自定义代码，或使用内置工具（例如网页搜索或文件搜索）将您自己的数据作为模型响应的输入。
       requestBody:
         required: true
         content:
