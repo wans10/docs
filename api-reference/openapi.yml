@@ -13,7 +13,7 @@ paths:
       tags:
         - Audio
       summary: Create speech
-      description: Generates audio from the input text.
+      description: 从输入文本生成音频。
       requestBody:
         required: true
         content:
@@ -67,7 +67,7 @@ paths:
       tags:
         - Audio
       summary: Create transcription
-      description: Transcribes audio into the input language.
+      description: 将音频转录为输入语言。
       requestBody:
         required: true
         content:
@@ -365,7 +365,7 @@ paths:
       tags:
         - Audio
       summary: Create translation
-      description: Translates audio into English.
+      description: 将音频翻译成英语。
       requestBody:
         required: true
         content:
@@ -909,8 +909,7 @@ paths:
         - Images
       summary: Create image edit
       description: >-
-        Creates an edited or extended image given one or more source images and a prompt. This endpoint only
-        supports `gpt-image-1` and `dall-e-2`.
+        根据一个或多个源图像和提示创建已编辑或扩展的图像。此端点仅支持 `gpt-image-1` 和 `dall-e-2`。
       requestBody:
         required: true
         content:
@@ -969,7 +968,7 @@ paths:
         - Images
       summary: Create image
       description: |
-        Creates an image given a prompt. Learn more.
+        根据提示创建图像。
       requestBody:
         required: true
         content:
@@ -1041,7 +1040,7 @@ paths:
       tags:
         - Images
       summary: Create image variation
-      description: Creates a variation of a given image. This endpoint only supports `dall-e-2`.
+      description: 创建给定图像的变体。此端点仅支持 `dall-e-2`。
       requestBody:
         required: true
         content:
