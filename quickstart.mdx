@@ -21,10 +21,10 @@ LLM Hub 提供统一的 API，让您可以通过单个端点访问数百个 AI �
 
     completion = client.chat.completions.create(
     extra_headers={
-        "HTTP-Referer": "<YOUR_SITE_URL>", # 可选
-        "X-Title": "<YOUR_SITE_NAME>", # 可选
+        "HTTP-Referer": "https://api.newapi.ai", # 可选
+        "X-Title": "LLM Hub", # 可选
     },
-    model="openai/gpt-4o",
+    model="gpt-5",
     messages=[
     {
         "role": "user",
@@ -44,14 +44,14 @@ LLM Hub 提供统一的 API，让您可以通过单个端点访问数百个 AI �
         baseURL: 'https://api.llmhub.com.cn/api/v1',
         apiKey: '<LLMHub_API_KEY>',
         defaultHeaders: {
-        'HTTP-Referer': '<YOUR_SITE_URL>', // 可选
-        'X-Title': '<YOUR_SITE_NAME>', // 可选
+        'HTTP-Referer': 'https://api.newapi.ai', // 可选
+        'X-Title': 'LLM Hub', // 可选
     },
     });
 
     async function main() {
         const completion = await openai.chat.completions.create({
-        model: 'openai/gpt-4o',
+        model: 'gpt-5',
         messages: [
     {
         role: 'user',
@@ -83,12 +83,12 @@ LLM Hub 提供统一的 API，让您可以通过单个端点访问数百个 AI �
     response = requests.post(
     url="https://api.llmhub.com.cn/api/v1/chat/completions",
     headers={
-    "Authorization": "Bearer <LLMHub_API_KEY>",
-    "HTTP-Referer": "<YOUR_SITE_URL>", # 可选
-    "X-Title": "<YOUR_SITE_NAME>", # 可选
+    "Authorization": "Bearer $LLMHub_API_KEY"",
+    "HTTP-Referer": "https://api.newapi.ai", # 可选
+    "X-Title": "LLM Hub", # 可选
 },
     data=json.dumps({
-    "model": "openai/gpt-4o", # 可选
+    "model": "gpt-5", # 可选
     "messages": [
 {
     "role": "user",
@@ -104,13 +104,13 @@ LLM Hub 提供统一的 API，让您可以通过单个端点访问数百个 AI �
     fetch('https://api.llmhub.com.cn/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-    Authorization: 'Bearer <LLMHub_API_KEY>',
-    'HTTP-Referer': '<YOUR_SITE_URL>', // 可选
-    'X-Title': '<YOUR_SITE_NAME>', // 可选
+    Authorization: 'Bearer $LLMHub_API_KEY"',
+    'HTTP-Referer': 'https://api.newapi.ai', // 可选
+    'X-Title': 'LLM Hub', // 可选
     'Content-Type': 'application/json',
 },
     body: JSON.stringify({
-    model: 'openai/gpt-4o',
+    model: 'gpt-5',
     messages: [
 {
     role: 'user',
@@ -127,7 +127,7 @@ LLM Hub 提供统一的 API，让您可以通过单个端点访问数百个 AI �
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $LLMHub_API_KEY" \
     -d '{
-    "model": "openai/gpt-4o",
+    "model": "gpt-5",
     "messages": [
 {
     "role": "user",
