@@ -97,11 +97,11 @@
       }
     ]
   },
-  /*"api": {
+  "api": {
     "playground": {
       "display": "simple"
     }
-  },*/
+  },
   "logo": {
     "light": "/favicon.svg",
     "dark": "/favicon.svg"
