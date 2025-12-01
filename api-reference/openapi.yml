@@ -839,6 +839,32 @@ paths:
                         rejected_prediction_tokens: 0
                     system_fingerprint: null
             text/event-stream:
+              description: |
+                **Streaming Response Format**
+                
+                When `stream: true` is set in the request, the API returns Server-Sent Events (SSE) format responses. Each event is prefixed with `data: ` followed by a JSON object representing a chunk of the completion.
+                
+                **Response Structure:**
+                - Each chunk is a `chat.completion.chunk` object
+                - The `delta` field contains incremental content
+                - The stream ends with `data: [DONE]`
+                
+                **Example Streaming Response:**
+                ```
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint":"fp_44709d6fcb","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}]}
+                
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint":"fp_44709d6fcb","choices":[{"index":0,"delta":{"content":"Hello"},"logprobs":null,"finish_reason":null}]}
+                
+                data: {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-4o-mini","system_fingerprint":"fp_44709d6fcb","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"stop"}]}
+                
+                data: [DONE]
+                ```
+                
+                **Key Points:**
+                - First chunk typically contains the `role` in the delta
+                - Subsequent chunks contain `content` fragments
+                - Final chunk has `finish_reason` set (e.g., "stop", "length", "tool_calls")
+                - Stream terminates with `data: [DONE]`
               schema:
                 $ref: '#/components/schemas/CreateChatCompletionStreamResponse'
               examples:
