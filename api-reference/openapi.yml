@@ -139,7 +139,7 @@ paths:
                     text: "Imagine the wildest idea that you've ever had, and you're curious about how it might scale to something that's a 100, a 1,000 times bigger. This is a place where you can get to do that."
                     usage:
                       type: "tokens"
-                      input_tokens": 14
+                      input_tokens: 14
                       input_token_details:
                         text_tokens: 0
                         audio_tokens: 14
@@ -233,7 +233,7 @@ paths:
                         seek: 0
                         start: 0.0
                         end: 3.319999933242798
-                        text": " The beach was a popular spot on a hot summer day."
+                        text: " The beach was a popular spot on a hot summer day."
                         tokens:
                           [
                             50364,
@@ -481,7 +481,7 @@ paths:
                         presence_penalty: 0.0
                         frequency_penalty: 0.0
                         system_fingerprint: "fp_50cad350e4"
-                        input_user": null
+                        input_user: null
                         service_tier: "default"
                         tools: null
                         metadata: {}
@@ -1270,7 +1270,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 123
-                    user": null
+                    user: null
                     metadata: {}
                 Image_input:
                   value:
@@ -1314,7 +1314,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 380
-                    user": null
+                    user: null
                     metadata: {}
                 File_input:
                   value:
@@ -1363,7 +1363,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 8836
-                    user": null
+                    user: null
                     metadata: {}
                 Web_search:
                   value:
@@ -1434,7 +1434,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 684
-                    user": null
+                    user: null
                     metadata: {}
                 File_search:
                   value:
@@ -1524,7 +1524,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 18655
-                    user": null
+                    user: null
                     metadata: {}
                 Functions:
                   value:
@@ -1578,7 +1578,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 0
                       total_tokens: 314
-                    user": null
+                    user: null
                     metadata: {}
                 Reasoning:
                   value:
@@ -1622,7 +1622,7 @@ paths:
                       output_tokens_details:
                         reasoning_tokens: 832
                       total_tokens: 1116
-                    user": null
+                    user: null
                     metadata: {}
             text/event-stream:
               schema:
